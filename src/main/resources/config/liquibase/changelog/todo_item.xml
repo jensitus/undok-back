@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="todo-1" author="jensitus">
+        <createTable tableName="todos">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" unique="true"/>
+            </column>
+            <column name="title" type="VARCHAR2(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="updated_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="done" type="BOOLEAN" defaultValue="false"></column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="item-1" author="jensitus">
+        <createTable tableName="items">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR2(255)"/>
+            <column name="done" type="BOOLEAN" defaultValue="false"/>
+            <column name="todo_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="todo_id" referencedTableName="todos"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet id="join_table_user_todo" author="jensitus">
+        <createTable tableName="todos_users">
+            <column name="user_id" type="BIGINT"/>
+            <column name="todo_id" type="BIGINT">
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="todos_users" columnNames="user_id, todo_id" constraintName="todos_users_unique" />
+    </changeSet>
+
+</databaseChangeLog>

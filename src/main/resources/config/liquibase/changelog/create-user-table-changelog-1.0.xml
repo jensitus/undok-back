@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet author="jensitus" id="1">
+        <createTable tableName="users">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="users"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="jensitus" id="addColumn-created_at">
+        <addColumn tableName="users">
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="add_role_table" author="jensitus">
+        <createTable tableName="roles">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="name" type="VARCHAR(40)" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add_password_to_users_and_uniqueconstraint" author="jensitus">
+        <addColumn tableName="users">
+            <column name="password" type="VARCHAR(255)"/>
+        </addColumn>
+        <addUniqueConstraint tableName="users" columnNames="username" />
+    </changeSet>
+
+    <changeSet id="insert_roles" author="jensitus">
+        <insert tableName="roles">
+            <column name="name" value="ROLE_ADMIN"></column>
+        </insert>
+        <insert tableName="roles">
+            <column name="name" value="ROLE_USER"></column>
+        </insert>
+    </changeSet>
+    
+    <changeSet id="create_join_table" author="jensitus">
+        <createTable tableName="user_roles">
+            <column name="user_id" type="BIGINT"></column>
+            <column name="role_id" type="INT"></column>
+        </createTable>
+        <addUniqueConstraint tableName="user_roles" columnNames="user_id, role_id" />
+    </changeSet>
+
+    <changeSet id="create_password_reset_token" author="jensitus">
+        <createTable tableName="password_reset_token">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"></constraints>
+            </column>
+            <column name="token" type="VARCHAR(255)"></column>
+            <column name="user_id" type="BIGINT"></column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add_expiry_date_to_password_reset_token" author="jensitus">
+        <addColumn tableName="password_reset_token">
+            <column name="expiryDate" type="DATE"></column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="change_column_expiry_date" author="jensitus">
+        <renameColumn tableName="password_reset_token" oldColumnName="expiryDate" newColumnName="expiry_date"/>
+    </changeSet>
+
+    <changeSet id="change_expiry_date_to_timestamp" author="jensitus">
+        <dropColumn tableName="password_reset_token" columnName="expiry_date" />
+        <addColumn tableName="password_reset_token">
+            <column name="expiry_date" type="TIMESTAMP WITHOUT TIME ZONE"></column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="add_unique_constraint_to_password_reset_token" author="jensitus">
+        <addUniqueConstraint tableName="password_reset_token" columnNames="token" />
+    </changeSet>
+
+</databaseChangeLog>
