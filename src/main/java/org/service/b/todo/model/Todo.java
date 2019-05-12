@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 @Entity
 @Table(name = "todos")
@@ -37,12 +38,13 @@ public class Todo {
   @Column(name = "done")
   private boolean done;
 
-  @OneToMany(mappedBy = "todo")
+  @OneToMany
+  @JoinColumn(name = "todo_id")
   private Set<Item> items;
 
   @ManyToMany(mappedBy = "todos")
   @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-  private Set<User> users = new HashSet<>();
+  private Set<User> users;
 
   public Todo() {}
 

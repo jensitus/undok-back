@@ -45,4 +45,12 @@
         <addUniqueConstraint tableName="todos_users" columnNames="user_id, todo_id" constraintName="todos_users_unique" />
     </changeSet>
 
+    <changeSet id="add_created_and_updated_by_and_at_to_items" author="jensitus">
+        <addColumn tableName="items">
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="updated_at" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="created_by" type="BIGINT" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

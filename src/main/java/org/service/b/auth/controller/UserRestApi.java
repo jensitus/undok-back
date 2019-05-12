@@ -1,11 +1,15 @@
 package org.service.b.auth.controller;
 
+import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.model.User;
 import org.service.b.auth.repository.UserRepo;
+import org.service.b.auth.security.JwtProvider;
+import org.service.b.auth.service.UserService;
 import org.service.b.auth.serviceimpl.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +29,16 @@ public class UserRestApi {
   @Autowired
   private UserDetailsServiceImpl userDetailsService;
 
+  @Autowired
+  private UserService userService;
+
+  @Autowired
+  JwtProvider jwtProvider;
+
   @GetMapping("/all")
-  public List<User> getAllUsers() {
-    return userRepo.findAll();
+  public List<UserDto> getAllUsers() {
+    List<UserDto> userDtoList = userService.getAll();
+    return userDtoList;
   }
 
   @GetMapping("/principle/{username}")
@@ -36,8 +47,15 @@ public class UserRestApi {
   }
 
   @PostMapping("/check_auth_token")
-  public void checkTheAuthToken(@RequestBody String token) {
-    logger.info("hier sind wir jetzt beim auth token check");
+  public boolean checkTheAuthToken(@RequestBody String token) {
+    logger.info("hier sind wir jetzt beim auth token check " + token);
+    if (jwtProvider.validateJwtToken(token)) {
+      logger.info("passt");
+      return true;
+    } else {
+      logger.info("naja");
+      return false;
+    }
   }
 
 }

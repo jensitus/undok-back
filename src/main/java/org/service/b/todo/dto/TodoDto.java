@@ -1,6 +1,6 @@
 package org.service.b.todo.dto;
 
-import org.service.b.todo.model.Item;
+import org.service.b.auth.dto.UserDto;
 
 import java.util.Set;
 
@@ -14,7 +14,9 @@ public class TodoDto {
 
   private boolean done;
 
-  private Set<Item> items;
+  private Set<ItemDto> items;
+
+  private Set<UserDto> users;
 
   public TodoDto() {}
 
@@ -50,11 +52,19 @@ public class TodoDto {
     this.done = done;
   }
 
-  public Set<Item> getItems() {
+  public Set<ItemDto> getItems() {
     return items;
   }
 
-  public void setItems(Set<Item> items) {
+  public void setItems(Set<ItemDto> items) {
     this.items = items;
+  }
+
+  public Set<UserDto> getUsers() {
+    return users;
+  }
+
+  public void setUsers(Set<UserDto> users) {
+    this.users = users;
   }
 }

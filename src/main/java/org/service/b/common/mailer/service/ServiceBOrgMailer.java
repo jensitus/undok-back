@@ -1,4 +1,4 @@
-package org.service.b.mailer.service;
+package org.service.b.common.mailer.service;
 
 public interface ServiceBOrgMailer {
 

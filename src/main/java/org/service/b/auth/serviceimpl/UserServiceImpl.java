@@ -1,19 +1,25 @@
 package org.service.b.auth.serviceimpl;
 
 import io.jsonwebtoken.impl.Base64Codec;
+import org.modelmapper.ModelMapper;
+import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.model.PasswordResetToken;
 import org.service.b.auth.model.User;
 import org.service.b.auth.repository.PasswordResetTokenRepo;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.service.UserService;
 import org.service.b.auth.security.JwtProvider;
-import org.service.b.mailer.service.ServiceBOrgMailer;
+import org.service.b.common.mailer.service.ServiceBOrgMailer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -32,6 +38,9 @@ public class UserServiceImpl implements UserService {
 
   @Autowired
   private UserRepo userRepo;
+
+  @Autowired
+  private ModelMapper modelMapper;
 
   @Override
   public void createPasswordResetTokenForUser(User user) {
@@ -65,4 +74,22 @@ public class UserServiceImpl implements UserService {
     return true;
   }
 
+  @Override
+  public List<UserDto> getAll() {
+    List<User> users = userRepo.findAll();
+    List<UserDto> userDtoList = new ArrayList<>();
+    for (User user : users) {
+      userDtoList.add(modelMapper.map(user, UserDto.class));
+    }
+    return userDtoList;
+  }
+
+  @Override
+  public UserDto getCurrentUser() {
+    UserDto userDto;
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    UserPrinciple userPrinciple = (UserPrinciple) auth.getPrincipal();
+    userDto = modelMapper.map(userPrinciple, UserDto.class);
+    return userDto;
+  }
 }

@@ -2,15 +2,18 @@ package org.service.b.todo.dto;
 
 import org.service.b.todo.model.Todo;
 
+import javax.validation.constraints.NotNull;
+
 public class ItemDto {
 
+  @NotNull
   private Long id;
 
   private String name;
 
   private boolean done;
 
-  private Todo todo;
+  private Long todo_id;
 
   public ItemDto() {}
 
@@ -38,11 +41,11 @@ public class ItemDto {
     this.done = done;
   }
 
-  public Todo getTodo() {
-    return todo;
+  public Long getTodo_id() {
+    return todo_id;
   }
 
-  public void setTodo(Todo todo) {
-    this.todo = todo;
+  public void setTodo_id(Long todo_id) {
+    this.todo_id = todo_id;
   }
 }

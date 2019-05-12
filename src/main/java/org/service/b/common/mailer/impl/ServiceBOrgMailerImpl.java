@@ -1,6 +1,6 @@
-package org.service.b.mailer.impl;
+package org.service.b.common.mailer.impl;
 
-import org.service.b.mailer.service.ServiceBOrgMailer;
+import org.service.b.common.mailer.service.ServiceBOrgMailer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
