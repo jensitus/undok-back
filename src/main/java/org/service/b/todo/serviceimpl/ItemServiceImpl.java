@@ -1,7 +1,6 @@
 package org.service.b.todo.serviceimpl;
 
 import org.modelmapper.ModelMapper;
-import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.service.UserService;
 import org.service.b.todo.dto.ItemDto;
 import org.service.b.todo.model.Item;
@@ -42,7 +41,7 @@ public class ItemServiceImpl implements ItemService {
     item.setDone(false);
     item.setCreatedAt(LocalDateTime.now());
     item.setCreatedBy(userService.getCurrentUser().getId());
-    item.setTodo_id(todo_id);
+    item.setTodoId(todo_id);
     itemRepo.save(item);
     return item;
   }

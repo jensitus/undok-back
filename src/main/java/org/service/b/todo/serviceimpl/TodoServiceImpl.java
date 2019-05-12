@@ -10,6 +10,7 @@ import org.service.b.todo.dto.ItemDto;
 import org.service.b.todo.dto.TodoDto;
 import org.service.b.todo.model.Item;
 import org.service.b.todo.model.Todo;
+import org.service.b.todo.repository.ItemRepo;
 import org.service.b.todo.repository.TodoRepo;
 import org.service.b.todo.service.TodoService;
 import org.slf4j.Logger;
@@ -29,6 +30,9 @@ public class TodoServiceImpl implements TodoService {
 
   @Autowired
   private TodoRepo todoRepo;
+
+  @Autowired
+  private ItemRepo itemRepo;
 
   @Autowired
   private ModelMapper modelMapper;
@@ -74,22 +78,24 @@ public class TodoServiceImpl implements TodoService {
       userDtoSet.add(modelMapper.map(user, UserDto.class));
     }
     Set<Item> itemSet = todo.getItems();
-    Set<ItemDto> itemDtoSet = new HashSet<>();
-    for (Item item : itemSet) {
-      itemDtoSet.add(modelMapper.map(item, ItemDto.class));
+    List<Item> itemList = itemRepo.findByTodoIdOrderByCreatedAt(todo_id);
+    List<ItemDto> itemDtoList = new ArrayList<>();
+    for (Item item : itemList) {
+      itemDtoList.add(modelMapper.map(item, ItemDto.class));
     }
     TodoDto todoDto = modelMapper.map(todo, TodoDto.class);
     todoDto.setUsers(userDtoSet);
-    todoDto.setItems(itemDtoSet);
+    todoDto.setItems(itemDtoList);
     return todoDto;
   }
 
   @Override
   public List getTodoItems(Long todo_id) {
-    Todo todo = todoRepo.getOne(todo_id);
+    // Todo todo = todoRepo.getOne(todo_id);
+    List<Item> itemList = itemRepo.findByTodoIdOrderByCreatedAt(todo_id);
     List<ItemDto> itemDtos = new ArrayList();
-    Set<Item> items = todo.getItems();
-    for (Item item : items) {
+    // Set<Item> items = todo.getItems();
+    for (Item item : itemList) {
       itemDtos.add(modelMapper.map(item, ItemDto.class));
     }
     return itemDtos;

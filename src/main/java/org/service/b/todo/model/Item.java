@@ -22,7 +22,7 @@ public class Item {
   private boolean done;
 
   @Column(name = "todo_id", nullable = false)
-  private Long todo_id;
+  private Long todoId;
 
   @Column(name = "created_at")
   private LocalDateTime createdAt;
@@ -63,12 +63,12 @@ public class Item {
     this.done = done;
   }
 
-  public Long getTodo_id() {
-    return todo_id;
+  public Long getTodoId() {
+    return todoId;
   }
 
-  public void setTodo_id(Long todo_id) {
-    this.todo_id = todo_id;
+  public void setTodoId(Long todoId) {
+    this.todoId = todoId;
   }
 
   public LocalDateTime getCreatedAt() {
