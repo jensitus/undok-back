@@ -1,6 +1,7 @@
 package org.service.b.todo.service;
 
 import org.service.b.auth.dto.UserDto;
+import org.service.b.common.message.Message;
 import org.service.b.todo.dto.ItemDto;
 import org.service.b.todo.dto.TodoDto;
 import org.service.b.todo.model.Todo;
@@ -10,7 +11,7 @@ import java.util.Set;
 
 public interface TodoService {
 
-  Todo createTodo(String title);
+  TodoDto createTodo(String title);
 
   List<TodoDto> getTodos();
 
@@ -21,5 +22,9 @@ public interface TodoService {
   List<UserDto> getTodoUsers(Long todo_id);
 
   TodoDto addUserToTodo(Long todo_id, Long user_id);
+
+  TodoDto updateTodo(Long todo_id);
+
+  Message deleteTodo(Long todo_id);
 
 }

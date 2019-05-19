@@ -3,6 +3,7 @@ package org.service.b.auth.security;
 import io.jsonwebtoken.*;
 import org.service.b.auth.model.User;
 import org.service.b.auth.serviceimpl.UserPrinciple;
+import org.service.b.common.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,22 +39,27 @@ public class JwtProvider {
     return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
   }
 
-  public boolean validateJwtToken(String authToken) {
+  public Message validateJwtToken(String authToken) {
     try {
       Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
-      return true;
+      return new Message(true);
     } catch (SignatureException e) {
       logger.error("Invalid JWT signature -> Message: {} ", e);
+      return new Message(e.toString(), false);
     } catch (MalformedJwtException e) {
       logger.error("Invalid JWT token -> Message: {}", e);
+      return new Message(e.toString(), false);
     } catch (ExpiredJwtException e) {
       logger.error("Expired JWT token -> Message: {}", e);
+      return new Message(e.toString(), false);
     } catch (UnsupportedJwtException e) {
       logger.error("Unsupported JWT token -> Message: {}", e);
+      return new Message(e.toString(), false);
     } catch (IllegalArgumentException e) {
       logger.error("JWT claims string is empty -> Message: {}", e);
+      return new Message(e.toString(), false);
     }
-    return false;
+    // return new Message(false);
   }
 
 }

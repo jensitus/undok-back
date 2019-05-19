@@ -13,6 +13,7 @@ import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.service.AuthService;
 import org.service.b.auth.service.UserService;
 import org.service.b.auth.security.JwtProvider;
+import org.service.b.common.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +42,6 @@ public class AuthRestApi {
   UserRepo userRepo;
 
   @Autowired
-  RoleRepo roleRepo;
-
-  @Autowired
-  PasswordEncoder encoder;
-
-  @Autowired
   JwtProvider jwtProvider;
 
   @Autowired
@@ -62,44 +57,22 @@ public class AuthRestApi {
   }
 
   @PostMapping(value = "/signup", consumes = {})
-  public ResponseEntity<String> registerUser(@Valid @RequestBody SignUpForm signUpForm) {
+  public ResponseEntity registerUser(@Valid @RequestBody SignUpForm signUpForm) {
 
     // check if user or email already present
     if (userRepo.existsByUsername(signUpForm.getUsername())) {
-      return new ResponseEntity<String>("Too Bad -> Username is already taken", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity(new Message("Too Bad -> Username is already taken"), HttpStatus.BAD_REQUEST);
     }
     if (userRepo.existsByEmail(signUpForm.getEmail())) {
-      return new ResponseEntity<String>("It's a pity -> but this Email is already in use!", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity(new Message("It's a pity -> but this Email is already in use!"), HttpStatus.BAD_REQUEST);
     }
     if (!signUpForm.getPassword_confirmation().equals(signUpForm.getPassword())) {
       logger.info("Tja, war wohl nix");
-      return new ResponseEntity<>("password does not match the confirmation", HttpStatus.CONFLICT);
+      return new ResponseEntity(new Message("password does not match the confirmation"), HttpStatus.CONFLICT);
     }
 
-    // create the new user:
-    logger.info("signUpRequest " + signUpForm.toString());
-    User user = new User(signUpForm.getUsername(), signUpForm.getEmail(), encoder.encode(signUpForm.getPassword()));
-    Role uRole = new Role(RoleName.ROLE_USER);
-    Set<String> roleSet = new HashSet<>();
-    roleSet.add(uRole.getName().toString());
-    signUpForm.setRole(roleSet);
-    Set<String> strRoles = signUpForm.getRole();
-    Set<Role> roles = new HashSet<>();
-    strRoles.forEach(role -> {
-      switch (role) {
-        case "admin":
-          Role adminRole = roleRepo.findByName(RoleName.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("The Fucking Role couldn't be found, sorry"));
-          roles.add(adminRole);
-          break;
-        default:
-          Role userRole = roleRepo.findByName(RoleName.ROLE_USER).orElseThrow(() -> new RuntimeException("No Role Today my Love is gone away"));
-          roles.add(userRole);
-      }
-    });
-    user.setRoles(roles);
-    userRepo.save(user);
-
-    return new ResponseEntity<String>("It is a god damn pretty cool", HttpStatus.CREATED);
+    Message message = authService.createUser(signUpForm);
+    return new ResponseEntity(message, HttpStatus.CREATED);
   }
 
   @GetMapping("/mist")
@@ -108,18 +81,12 @@ public class AuthRestApi {
   }
 
   @PostMapping("/reset_password")
-  public ResponseEntity<String> resetPassword(@RequestBody PasswordResetForm passwordResetForm) {
-    User user = userRepo.findByEmail(passwordResetForm.getEmail());
-    if (user == null) {
-      logger.info("no user with email: " + passwordResetForm.getEmail() + " found");
-      return new ResponseEntity<>("Die Emailadresse gibt es nicht", HttpStatus.NOT_FOUND);
-    }
-    logger.info("user found: " + user.getUsername() + " " + user.getEmail());
-    userService.createPasswordResetTokenForUser(user);
-    return new ResponseEntity<>("Schauns ins Postfach", HttpStatus.OK);
+  public ResponseEntity resetPassword(@RequestBody PasswordResetForm passwordResetForm) {
+    Message message = userService.createPasswordResetTokenForUser(passwordResetForm.getEmail());
+    return new ResponseEntity(message, HttpStatus.OK);
   }
 
-  @GetMapping(value = "/reset_password/{token}")
+  @GetMapping(value = "/reset_password/{token}/edit")
   @ResponseStatus
   public ResponseEntity resetPassword(@PathVariable("token") String base64Token, @RequestParam("email") String email) {
     boolean tokenNotExpired = userService.checkResetToken(base64Token, email);
@@ -137,21 +104,14 @@ public class AuthRestApi {
   @PutMapping("/reset_password/{token}")
   @ResponseStatus
   public ResponseEntity resetPassword(@Valid @RequestBody PasswordResetForm passwordResetForm, @PathVariable("token") String base64Token, @RequestParam("email") String email) {
-    logger.info("RESET_PASSWORD");
-    logger.info("form " + passwordResetForm.toString());
-    logger.info(passwordResetForm.getEmail());
-    logger.info("token " + base64Token);
-    logger.info("email " + email);
-    if (passwordResetForm.getPassword().equals(passwordResetForm.getPassword_confirmation())) {
-      User user = userRepo.findByEmail(passwordResetForm.getEmail());
-      user.setPassword(encoder.encode(passwordResetForm.getPassword()));
-      userRepo.save(user);
-      return ResponseEntity.status(HttpStatus.OK).body("passt alles");
+    Message message = userService.resetPassword(passwordResetForm, base64Token, email);
+    HttpStatus status;
+    if (message.getTrueOrFalse()) {
+      status = HttpStatus.OK;
     } else {
-      logger.warn("password confirmation doesn't match");
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("password confirmation does not match");
+      status = HttpStatus.BAD_REQUEST;
     }
+    return new ResponseEntity(message, status);
   }
-
 
 }

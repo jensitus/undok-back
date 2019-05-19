@@ -6,6 +6,7 @@ import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.security.JwtProvider;
 import org.service.b.auth.service.UserService;
 import org.service.b.auth.serviceimpl.UserDetailsServiceImpl;
+import org.service.b.common.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,16 +47,25 @@ public class UserRestApi {
     return userDetailsService.loadUserByUsername(username);
   }
 
-  @PostMapping("/check_auth_token")
-  public boolean checkTheAuthToken(@RequestBody String token) {
+  @PostMapping("/auth/check_auth_token")
+  public ResponseEntity checkTheAuthToken(@RequestBody String token) {
     logger.info("hier sind wir jetzt beim auth token check " + token);
-    if (jwtProvider.validateJwtToken(token)) {
-      logger.info("passt");
-      return true;
+    Message message = jwtProvider.validateJwtToken(token);
+    logger.info("message {}", message.toString());
+    if (jwtProvider.validateJwtToken(token).getTrueOrFalse() == true) {
+      logger.info("passt" + message);
+      return new ResponseEntity(message, HttpStatus.OK);
     } else {
-      logger.info("naja");
-      return false;
+      logger.info("naja" + message);
+      return new ResponseEntity(message, HttpStatus.FORBIDDEN);
     }
+  }
+
+  @PostMapping("/auth/password_resets")
+  public ResponseEntity password_resets(@RequestBody String email) {
+    logger.info(email);
+    userService.createPasswordResetTokenForUser(email);
+    return new ResponseEntity(new Message("jess god damn"), HttpStatus.OK);
   }
 
 }

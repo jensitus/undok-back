@@ -42,7 +42,8 @@ public class Todo {
   @JoinColumn(name = "todo_id")
   private Set<Item> items;
 
-  @ManyToMany(mappedBy = "todos")
+  @ManyToMany(fetch = FetchType.LAZY) // (mappedBy = "todos")
+  @JoinTable(name = "todos_users", joinColumns = @JoinColumn(name = "todo_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
   @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
   private Set<User> users;
 

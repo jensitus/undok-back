@@ -2,6 +2,7 @@ package org.service.b.todo.controller;
 
 import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.message.UserForm;
+import org.service.b.common.message.Message;
 import org.service.b.todo.dto.TodoDto;
 import org.service.b.todo.form.TodoForm;
 import org.service.b.todo.model.Todo;
@@ -35,8 +36,8 @@ public class TodoRestApi {
   @PostMapping("/create")
   public ResponseEntity createTodo(@RequestBody TodoForm todoForm) {
     logger.info("Todo Title: " + todoForm.getTitle());
-    Todo todo = todoService.createTodo(todoForm.getTitle());
-    return new ResponseEntity(todo, HttpStatus.OK);
+    TodoDto todoDto = todoService.createTodo(todoForm.getTitle());
+    return new ResponseEntity(todoDto, HttpStatus.OK);
   }
 
   @GetMapping("/{todo_id}")
@@ -55,6 +56,23 @@ public class TodoRestApi {
     logger.info("todo_id: " + todo_id + " userForm.getId(): " + userForm.getUser_id());
     TodoDto todoDto = todoService.addUserToTodo(todo_id, userForm.getUser_id());
     return new ResponseEntity(todoDto, HttpStatus.OK);
+  }
+
+  @PutMapping("/{todo_id}")
+  public ResponseEntity updateTodo(@PathVariable("todo_id") Long todo_id) {
+    TodoDto todoDto = todoService.updateTodo(todo_id);
+    return new ResponseEntity(todoDto, HttpStatus.OK);
+  }
+
+  @DeleteMapping("/{todo_id}")
+  public ResponseEntity deleteTodo(@PathVariable("todo_id") Long todo_id) {
+    Message message = todoService.deleteTodo(todo_id);
+    logger.info("delete Todo message: {}", message.toString());
+    if (message.getTrueOrFalse()) {
+      return new ResponseEntity(message, HttpStatus.OK);
+    } else {
+      return new ResponseEntity(message, HttpStatus.OK);
+    }
   }
 
 }

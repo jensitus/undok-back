@@ -34,5 +34,4 @@ public class PasswordResetForm {
   public void setPassword_confirmation(String password_confirmation) {
     this.password_confirmation = password_confirmation;
   }
-
 }

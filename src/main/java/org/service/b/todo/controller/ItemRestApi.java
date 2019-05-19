@@ -43,7 +43,7 @@ public class ItemRestApi {
       ItemDto itemDto = itemService.updateItem(item_id);
       return new ResponseEntity(itemDto, HttpStatus.OK);
     } else {
-      return new ResponseEntity("ach bitte", HttpStatus.I_AM_A_TEAPOT);
+      return new ResponseEntity(new Message("ach bitte"), HttpStatus.I_AM_A_TEAPOT);
     }
   }
 

@@ -6,6 +6,7 @@ import org.service.b.auth.model.User;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.service.UserService;
 import org.service.b.auth.serviceimpl.UserPrinciple;
+import org.service.b.common.message.Message;
 import org.service.b.todo.dto.ItemDto;
 import org.service.b.todo.dto.TodoDto;
 import org.service.b.todo.model.Item;
@@ -44,16 +45,17 @@ public class TodoServiceImpl implements TodoService {
   private UserService userService;
 
   @Override
-  public Todo createTodo(String title) {
+  public TodoDto createTodo(String title) {
     Todo todo = new Todo(title);
     UserDto userDto = userService.getCurrentUser();
+    logger.info("currentUser" + userDto.getUsername());
     todo.setCreatedBy(userDto.getId());
     todo.setCreated_at(LocalDateTime.now());
     Set<User> users = new HashSet<>();
     users.add(modelMapper.map(userDto, User.class));
     todo.setUsers(users);
     Todo newTodo = todoRepo.save(todo);
-    return newTodo;
+    return modelMapper.map(newTodo, TodoDto.class);
   }
 
   @Override
@@ -61,11 +63,12 @@ public class TodoServiceImpl implements TodoService {
     UserDto userDto = userService.getCurrentUser();
     User user = userRepo.findByEmail(userDto.getEmail());
     Set<Todo> todoSet = user.getTodos();
-    List<TodoDto> todoDtoList = new ArrayList<>();
+    ArrayList<TodoDto> todoDtoList = new ArrayList<>();
     for (Todo todo : todoSet) {
       TodoDto todoDto = modelMapper.map(todo, TodoDto.class);
       todoDtoList.add(todoDto);
     }
+    Collections.sort(todoDtoList, (TodoDto a, TodoDto b) -> a.getId().compareTo(b.getId()));
     return todoDtoList;
   }
 
@@ -122,4 +125,26 @@ public class TodoServiceImpl implements TodoService {
     return modelMapper.map(todo, TodoDto.class);
   }
 
+  @Override
+  public TodoDto updateTodo(Long todo_id) {
+    Todo todo = todoRepo.getOne(todo_id);
+    todo.setDone(!todo.isDone());
+    todoRepo.save(todo);
+    return modelMapper.map(todo, TodoDto.class);
+  }
+
+  @Override
+  public Message deleteTodo(Long todo_id) {
+    Todo todo = todoRepo.getOne(todo_id);
+    logger.info("todo to delete " + todo);
+    logger.info(todo.getId().toString());
+    logger.info(todo.getTitle());
+    logger.info(todo.getItems().toString());
+    if (todo.getItems().isEmpty()) {
+      todoRepo.delete(todo);
+      return new Message("Todo successfully deleted", true);
+    } else {
+      return new Message("There is still so much to do", false);
+    }
+  }
 }
