@@ -10,9 +10,10 @@ import org.service.b.todo.model.Item;
 import org.service.b.todo.repository.DescriptionRepo;
 import org.service.b.todo.repository.ItemRepo;
 import org.service.b.todo.service.DescriptionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.security.krb5.internal.crypto.Des;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ import java.util.List;
 
 @Service
 public class DescriptionServiceImpl implements DescriptionService {
+
+  private static final Logger logger = LoggerFactory.getLogger(DescriptionServiceImpl.class);
 
   @Autowired
   private DescriptionRepo descriptionRepo;
@@ -38,6 +41,7 @@ public class DescriptionServiceImpl implements DescriptionService {
     List<Description> descriptionList = descriptionRepo.findByItemId(item_id);
     List<DescriptionDto> descriptionDtoList = new ArrayList<>();
     for (Description description : descriptionList) {
+      logger.info("Description for Item {} found: {}", item_id, description);
       descriptionDtoList.add(modelMapper.map(description, DescriptionDto.class));
     }
     return descriptionDtoList;
