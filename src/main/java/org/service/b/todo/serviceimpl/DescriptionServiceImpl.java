@@ -58,4 +58,12 @@ public class DescriptionServiceImpl implements DescriptionService {
     descriptionRepo.save(description);
     return modelMapper.map(description, DescriptionDto.class);
   }
+
+  @Override
+  public DescriptionDto updateDescription(DescriptionForm descriptionForm, Long item_id) {
+    Description description = descriptionRepo.getOne(descriptionForm.getId());
+    description.setText(descriptionForm.getText());
+    descriptionRepo.save(description);
+    return modelMapper.map(description, DescriptionDto.class);
+  }
 }

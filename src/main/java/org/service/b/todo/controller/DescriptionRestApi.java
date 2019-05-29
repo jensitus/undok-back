@@ -1,5 +1,6 @@
 package org.service.b.todo.controller;
 
+import org.service.b.common.message.Message;
 import org.service.b.todo.dto.DescriptionDto;
 import org.service.b.todo.form.DescriptionForm;
 import org.service.b.todo.model.Description;
@@ -34,6 +35,13 @@ public class DescriptionRestApi {
     logger.info("Description Form: " + descriptionForm);
     DescriptionDto descriptionDto = descriptionService.createDescription(descriptionForm, item_id);
     return new ResponseEntity(descriptionDto, HttpStatus.OK);
+  }
+
+  @PutMapping("/{item_id}/descriptions/{description_id}/update")
+  public ResponseEntity updateDescription(@RequestBody DescriptionForm descriptionForm, @PathVariable("item_id") Long item_id, @PathVariable("description_id") Long description_id) {
+    logger.info("description: " + descriptionForm.toString());
+    DescriptionDto descriptionDto = descriptionService.updateDescription(descriptionForm, item_id);
+    return new ResponseEntity(new Message("jessas"), HttpStatus.OK);
   }
 
 }
