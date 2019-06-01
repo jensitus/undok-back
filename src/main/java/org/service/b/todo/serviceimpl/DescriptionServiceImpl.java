@@ -38,7 +38,7 @@ public class DescriptionServiceImpl implements DescriptionService {
 
   @Override
   public List<DescriptionDto> getDescriptionsByItemId(Long item_id) {
-    List<Description> descriptionList = descriptionRepo.findByItemId(item_id);
+    List<Description> descriptionList = descriptionRepo.findByItemIdOrderByCreatedAt(item_id);
     List<DescriptionDto> descriptionDtoList = new ArrayList<>();
     for (Description description : descriptionList) {
       logger.info("Description for Item {} found: {}", item_id, description);

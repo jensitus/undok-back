@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface DescriptionRepo extends JpaRepository<Description, Long> {
 
-  List findByItemId(Long itemId);
+  List findByItemIdOrderByCreatedAt(Long itemId);
 
 }

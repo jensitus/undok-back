@@ -82,4 +82,16 @@ public class Description {
   public void setUpdatedAt(LocalDateTime updatedAt) {
     this.updatedAt = updatedAt;
   }
+
+  @Override
+  public String toString() {
+    return "Description{" +
+            "id=" + id +
+            ", text='" + text + '\'' +
+            ", item=" + item +
+            ", userId=" + userId +
+            ", createdAt=" + createdAt +
+            ", updatedAt=" + updatedAt +
+            '}';
+  }
 }
