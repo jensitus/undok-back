@@ -63,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
   @Override
   public Message createUser(SignUpForm signUpForm) {
     // create the new user:
-    User user = new User(signUpForm.getUsername(), signUpForm.getEmail(), encoder.encode(signUpForm.getPassword()));
+    User user = new User(signUpForm.getUsername(), signUpForm.getEmail().toLowerCase(), encoder.encode(signUpForm.getPassword()));
     Role uRole = new Role(RoleName.ROLE_USER);
     Set<String> roleSet = new HashSet<>();
     roleSet.add(uRole.getName().toString());

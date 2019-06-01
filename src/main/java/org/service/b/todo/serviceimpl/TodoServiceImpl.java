@@ -5,7 +5,6 @@ import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.model.User;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.service.UserService;
-import org.service.b.auth.serviceimpl.UserPrinciple;
 import org.service.b.common.message.Message;
 import org.service.b.todo.dto.ItemDto;
 import org.service.b.todo.dto.TodoDto;
@@ -17,8 +16,6 @@ import org.service.b.todo.service.TodoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

@@ -3,6 +3,7 @@ package org.service.b.todo.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "items")
@@ -32,6 +33,9 @@ public class Item {
 
   @Column(name = "created_by")
   private Long createdBy;
+
+  @OneToMany(mappedBy = "item")
+  private Set<Description> descriptions;
 
   public Item() {}
 
@@ -93,5 +97,13 @@ public class Item {
 
   public void setCreatedBy(Long createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public Set<Description> getDescriptions() {
+    return descriptions;
+  }
+
+  public void setDescriptions(Set<Description> descriptions) {
+    this.descriptions = descriptions;
   }
 }

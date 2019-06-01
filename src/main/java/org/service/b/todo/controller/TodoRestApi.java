@@ -1,11 +1,9 @@
 package org.service.b.todo.controller;
 
-import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.message.UserForm;
 import org.service.b.common.message.Message;
 import org.service.b.todo.dto.TodoDto;
 import org.service.b.todo.form.TodoForm;
-import org.service.b.todo.model.Todo;
 import org.service.b.todo.service.TodoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @CrossOrigin(origins = "*")
 @RestController
