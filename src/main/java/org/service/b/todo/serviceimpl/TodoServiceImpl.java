@@ -116,9 +116,12 @@ public class TodoServiceImpl implements TodoService {
   public TodoDto addUserToTodo(Long todo_id, Long user_id) {
     Todo todo = todoRepo.getOne(todo_id);
     User user = userRepo.getOne(user_id);
-    Set<Todo> todoSet = user.getTodos();
-    todoSet.add(todo);
-    userRepo.save(user);
+    Set<User> userSet = new HashSet<>();
+    userSet = todo.getUsers();
+    userSet.add(user);
+    todo.setUsers(userSet);
+    todoRepo.save(todo);
+    // userRepo.save(user);
     return modelMapper.map(todo, TodoDto.class);
   }
 

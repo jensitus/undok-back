@@ -7,4 +7,5 @@
 
   <include file="config/liquibase/changelog/create-user-table-changelog-1.0.xml"/>
   <include file="config/liquibase/changelog/todo_item.xml"/>
+  <include file="config/liquibase/changelog/user_friendship.xml"/>
 </databaseChangeLog> 
