@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200"})
 @RestController
 @RequestMapping("/todos")
 public class TodoRestApi {

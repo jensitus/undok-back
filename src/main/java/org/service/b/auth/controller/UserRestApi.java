@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200"}, maxAge = 3600)
 @RestController
 @RequestMapping("/users")
 public class UserRestApi {
@@ -49,21 +49,17 @@ public class UserRestApi {
 
   @PostMapping("/auth/check_auth_token")
   public ResponseEntity checkTheAuthToken(@RequestBody String token) {
-    logger.info("hier sind wir jetzt beim auth token check " + token);
     Message message = jwtProvider.validateJwtToken(token);
-    logger.info("message {}", message.toString());
     if (jwtProvider.validateJwtToken(token).getTrueOrFalse() == true) {
-      logger.info("passt" + message);
       return new ResponseEntity(message, HttpStatus.OK);
     } else {
-      logger.info("naja" + message);
+      logger.info(message.toString());
       return new ResponseEntity(message, HttpStatus.FORBIDDEN);
     }
   }
 
   @PostMapping("/auth/password_resets")
   public ResponseEntity password_resets(@RequestBody String email) {
-    logger.info(email);
     userService.createPasswordResetTokenForUser(email);
     return new ResponseEntity(new Message("jess god damn"), HttpStatus.OK);
   }

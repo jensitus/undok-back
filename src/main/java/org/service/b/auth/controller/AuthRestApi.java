@@ -28,7 +28,7 @@ import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.Set;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200"}, maxAge = 3600)
 @RestController
 @RequestMapping("/auth")
 public class AuthRestApi {
@@ -83,7 +83,11 @@ public class AuthRestApi {
   @PostMapping("/reset_password")
   public ResponseEntity resetPassword(@RequestBody PasswordResetForm passwordResetForm) {
     Message message = userService.createPasswordResetTokenForUser(passwordResetForm.getEmail());
-    return new ResponseEntity(message, HttpStatus.OK);
+    if (message.getTrueOrFalse() == false) {
+      return new ResponseEntity(message, HttpStatus.NOT_FOUND);
+    } else {
+      return new ResponseEntity(message, HttpStatus.OK);
+    }
   }
 
   @GetMapping(value = "/reset_password/{token}/edit")

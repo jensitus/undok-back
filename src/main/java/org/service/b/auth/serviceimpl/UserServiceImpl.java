@@ -54,10 +54,10 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Message createPasswordResetTokenForUser(String email) {
-    User user = userRepo.findByEmail(email);
+    User user = userRepo.findByEmail(email.toLowerCase());
     if (user == null) {
       logger.info("no user with email: " + email + " found");
-      return new Message("Die Emailadresse gibt es nicht");
+      return new Message("Die Emailadresse gibt es nicht", false);
     }
     String token = UUID.randomUUID().toString();
     String base64token = Base64Codec.BASE64.encode(token);
@@ -66,9 +66,9 @@ public class UserServiceImpl implements UserService {
     passwordResetTokenRepo.save(passwordResetToken);
     String url = "http://localhost:4200/auth/reset_password/" + base64token + "/edit?email=" + user.getEmail();
     String subject = "[service-b.org] reset instructions";
-    String text = "click the fucking url below";
+    String text = "click the fucking link below";
     serviceBOrgMailer.getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), url);
-    return new Message("alles Super");
+    return new Message("We've sent you a message with reset instructions", true);
   }
 
   @Override
