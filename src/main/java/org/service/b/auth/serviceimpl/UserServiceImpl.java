@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
     LocalDateTime localDateTime = LocalDateTime.now();
     PasswordResetToken passwordResetToken = new PasswordResetToken(user, token, localDateTime);
     passwordResetTokenRepo.save(passwordResetToken);
-    String url = "http://localhost:4200/auth/reset_password/" + base64token + "/edit?email=" + user.getEmail();
+    String url = "https://service-b.org/auth/reset_password/" + base64token + "/edit?email=" + user.getEmail();
     String subject = "[service-b.org] reset instructions";
     String text = "click the fucking link below";
     serviceBOrgMailer.getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), url);
