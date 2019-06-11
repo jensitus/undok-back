@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Component
@@ -42,6 +45,15 @@ public class JwtProvider {
   public Message validateJwtToken(String authToken) {
     try {
       Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+      Date parsedToken = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken).getBody().getExpiration();
+      ZoneId defaultZoneId = ZoneId.systemDefault();
+      Instant instant = parsedToken.toInstant();
+      LocalDateTime localDateTime = instant.atZone(defaultZoneId).toLocalDateTime();
+      if (localDateTime.isAfter(localDateTime.minusHours(2))) {
+//        logger.info(localDateTime.toString());
+//        logger.info(localDateTime.minusHours(2).toString());
+      }
+
       return new Message(true);
     } catch (SignatureException e) {
       logger.error("Invalid JWT signature -> Message: {} ", e);
