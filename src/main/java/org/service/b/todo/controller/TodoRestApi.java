@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200"})
+@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200", "http://localhost:8080"})
 @RestController
-@RequestMapping("/todos")
+@RequestMapping("/service/todos")
 public class TodoRestApi {
 
   private static final Logger logger = LoggerFactory.getLogger(TodoRestApi.class);

@@ -44,7 +44,6 @@ public class ItemServiceImpl implements ItemService {
 
   @Override
   public Item createItem(Long todo_id, String name) {
-    logger.info(name + " " + todo_id);
     Todo todo = todoRepo.getOne(todo_id);
     Item item = new Item();
     item.setName(name);

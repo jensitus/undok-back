@@ -14,8 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200"}, maxAge = 3600)
-@RequestMapping("/todos")
+@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)
+@RequestMapping("/service/todos")
 public class ItemRestApi {
 
   private static final Logger logger = LoggerFactory.getLogger(ItemRestApi.class);
