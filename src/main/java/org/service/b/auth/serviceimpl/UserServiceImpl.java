@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
     passwordResetTokenRepo.save(passwordResetToken);
     String url = "https://service-b.org/auth/reset_password/" + base64token + "/edit?email=" + user.getEmail();
     String subject = "[service-b.org] reset instructions";
-    String text = "click the fucking link below";
+    String text = "click the link below within the next 2 hours, after this it will expire";
     serviceBOrgMailer.getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), url);
     return new Message("We've sent you a message with reset instructions", true);
   }
