@@ -6,6 +6,7 @@ import org.service.b.auth.model.User;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.service.UserService;
 import org.service.b.common.message.Message;
+import org.service.b.common.processservice.TodoProcessService;
 import org.service.b.todo.dto.ItemDto;
 import org.service.b.todo.dto.TodoDto;
 import org.service.b.todo.model.Item;
@@ -41,6 +42,9 @@ public class TodoServiceImpl implements TodoService {
   @Autowired
   private UserService userService;
 
+  @Autowired
+  private TodoProcessService todoProcessService;
+
   @Override
   public TodoDto createTodo(String title) {
     Todo todo = new Todo(title);
@@ -52,6 +56,7 @@ public class TodoServiceImpl implements TodoService {
     users.add(modelMapper.map(userDto, User.class));
     todo.setUsers(users);
     Todo newTodo = todoRepo.save(todo);
+    todoProcessService.startTodo(newTodo.getId());
     return modelMapper.map(newTodo, TodoDto.class);
   }
 
