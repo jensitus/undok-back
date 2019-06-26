@@ -6,6 +6,7 @@ import org.service.b.auth.model.User;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.service.UserService;
 import org.service.b.common.message.Message;
+import org.service.b.common.message.service.MessageService;
 import org.service.b.common.processservice.TodoProcessService;
 import org.service.b.todo.dto.ItemDto;
 import org.service.b.todo.dto.TodoDto;
@@ -44,6 +45,9 @@ public class TodoServiceImpl implements TodoService {
 
   @Autowired
   private TodoProcessService todoProcessService;
+
+  @Autowired
+  private MessageService messageService;
 
   @Override
   public TodoDto createTodo(String title) {
@@ -139,14 +143,21 @@ public class TodoServiceImpl implements TodoService {
   }
 
   @Override
+  public Message todoFinished(Long todo_id) {
+    TodoDto todoDto = getTodoById(todo_id);
+    if (todoDto.getItems().isEmpty()) {
+      messageService.sendMessageToCatchEvent("todo-finished", "service-b-todo", todo_id);
+      return new Message("Todo successfully deleted", true);
+    } else {
+      messageService.sendMessageToCatchEvent("todo-finished", "service-b-todo", todo_id);
+      return new Message("There is still so much to do", false);
+    }
+  }
+
+  @Override
   public Message deleteTodo(Long todo_id) {
     Todo todo = todoRepo.getOne(todo_id);
-    logger.info("todo to delete " + todo);
-    logger.info(todo.getId().toString());
-    logger.info(todo.getTitle());
-    logger.info(todo.getItems().toString());
     if (todo.getItems().isEmpty()) {
-      todoRepo.delete(todo);
       return new Message("Todo successfully deleted", true);
     } else {
       return new Message("There is still so much to do", false);

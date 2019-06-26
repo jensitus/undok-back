@@ -47,6 +47,9 @@ public class ItemServiceImpl implements ItemService {
   @Autowired
   private TodoProcessService todoProcessService;
 
+  @Autowired
+  private MessageService messageService;
+
   @Override
   public Item createItem(Long todo_id, String name) {
     Todo todo = todoRepo.getOne(todo_id);
@@ -77,5 +80,6 @@ public class ItemServiceImpl implements ItemService {
     List<Description> itemDescriptions = descriptionRepo.findByItemIdOrderByCreatedAt(item.getId());
     descriptionRepo.deleteInBatch(itemDescriptions);
     itemRepo.delete(item);
+
   }
 }

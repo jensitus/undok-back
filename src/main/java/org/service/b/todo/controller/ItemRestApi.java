@@ -1,6 +1,7 @@
 package org.service.b.todo.controller;
 
 import org.service.b.common.message.Message;
+import org.service.b.common.message.service.MessageService;
 import org.service.b.todo.dto.ItemDto;
 import org.service.b.todo.form.ItemForm;
 import org.service.b.todo.model.Item;
@@ -26,6 +27,9 @@ public class ItemRestApi {
   @Autowired
   private ItemService itemService;
 
+  @Autowired
+  private MessageService messageService;
+
   @GetMapping("/{todo_id}/items")
   public ResponseEntity getTodoItems(@PathVariable("todo_id") Long todo_id) {
     return new ResponseEntity(todoService.getTodoItems(todo_id), HttpStatus.OK);
@@ -49,7 +53,8 @@ public class ItemRestApi {
 
   @DeleteMapping("/{todo_id}/items/{item_id}")
   public ResponseEntity deleteTodoItem(@PathVariable("todo_id") Long todo_id, @PathVariable("item_id") Long item_id) {
-    itemService.deleteItem(item_id);
+    // itemService.deleteItem(item_id);
+    messageService.sendMessageToCatchEvent("sub-item-done", "sub-todo-service-item", item_id);
     Message message = new Message("successfully deleted");
     return new ResponseEntity(message, HttpStatus.OK);
   }

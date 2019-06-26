@@ -7,43 +7,38 @@
     <bpmn:laneSet id="LaneSet_1hb66cb">
       <bpmn:lane id="Lane_1xv8pyl">
         <bpmn:flowNodeRef>start-service-todo</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>EndEvent_01ms3wl</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>check-items</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>me-item-done</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>st-check-if-items-open</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>gw-items-open</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>catch-todo-end</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>exclusive-todo-finished</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ExclusiveGateway_0zu1yuy</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>exclusive-todo-finished</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>st-todo-finished</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_01ms3wl</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>st-delete-todo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ut-finish-todo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ut-todo</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:startEvent id="start-service-todo" name="Start Service Todo">
       <bpmn:outgoing>SequenceFlow_16iky1x</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:endEvent id="EndEvent_01ms3wl">
-      <bpmn:incoming>exclusive-todo-finished-yes</bpmn:incoming>
-    </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_16iky1x" sourceRef="start-service-todo" targetRef="check-items" />
     <bpmn:sequenceFlow id="SequenceFlow_1guxlgj" sourceRef="check-items" targetRef="me-item-done" />
-    <bpmn:sequenceFlow id="SequenceFlow_0zqawc1" sourceRef="me-item-done" targetRef="st-check-if-items-open" />
-    <bpmn:sequenceFlow id="gw-items-open-yes" name="yes" sourceRef="gw-items-open" targetRef="ExclusiveGateway_0zu1yuy">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${itemsOpen}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="gw-items-open-no" name="no" sourceRef="gw-items-open" targetRef="catch-todo-end" />
-    <bpmn:sequenceFlow id="SequenceFlow_1htjrmp" sourceRef="st-check-if-items-open" targetRef="gw-items-open" />
+    <bpmn:sequenceFlow id="SequenceFlow_0zqawc1" sourceRef="me-item-done" targetRef="ut-todo" />
     <bpmn:serviceTask id="check-items" name="Check Items" camunda:expression="${todoProcessService.testTheProcessService()}">
       <bpmn:incoming>SequenceFlow_16iky1x</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1guxlgj</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="SequenceFlow_11ag7oh" sourceRef="catch-todo-end" targetRef="exclusive-todo-finished" />
     <bpmn:intermediateCatchEvent id="me-item-done" name="Item Done">
       <bpmn:incoming>SequenceFlow_1guxlgj</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_0nux7a5</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0zqawc1</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_1mcahbz" />
     </bpmn:intermediateCatchEvent>
-    <bpmn:serviceTask id="st-check-if-items-open" name="Check If Items Open" camunda:expression="${todoProcessService.checkIfItemsOpen(execution)}">
-      <bpmn:incoming>SequenceFlow_0zqawc1</bpmn:incoming>
+    <bpmn:sequenceFlow id="SequenceFlow_0nux7a5" sourceRef="ExclusiveGateway_0zu1yuy" targetRef="me-item-done" />
+    <bpmn:serviceTask id="st-check-if-items-open" name="Check If Items Open" camunda:expression="${todoProcessService.checkIfItemsOpen(execution, entityId)}">
+      <bpmn:incoming>SequenceFlow_0ltiayx</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1htjrmp</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:exclusiveGateway id="gw-items-open" name="Items Open?">
@@ -51,38 +46,63 @@
       <bpmn:outgoing>gw-items-open-yes</bpmn:outgoing>
       <bpmn:outgoing>gw-items-open-no</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:intermediateCatchEvent id="catch-todo-end" name="Todo Finished">
-      <bpmn:incoming>gw-items-open-no</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_11ag7oh</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_0a5nmil" />
-    </bpmn:intermediateCatchEvent>
-    <bpmn:exclusiveGateway id="exclusive-todo-finished" name="Todo finished?">
-      <bpmn:incoming>SequenceFlow_11ag7oh</bpmn:incoming>
-      <bpmn:outgoing>exclusive-todo-finished-yes</bpmn:outgoing>
-      <bpmn:outgoing>exclusive-todo-finished-no</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="exclusive-todo-finished-yes" name="yes" sourceRef="exclusive-todo-finished" targetRef="EndEvent_01ms3wl">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${todoFinished}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
     <bpmn:exclusiveGateway id="ExclusiveGateway_0zu1yuy">
       <bpmn:incoming>gw-items-open-yes</bpmn:incoming>
       <bpmn:incoming>exclusive-todo-finished-no</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0nux7a5</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_0nux7a5" sourceRef="ExclusiveGateway_0zu1yuy" targetRef="me-item-done" />
+    <bpmn:exclusiveGateway id="exclusive-todo-finished" name="Todo finished?">
+      <bpmn:incoming>SequenceFlow_1hkk9x8</bpmn:incoming>
+      <bpmn:outgoing>exclusive-todo-finished-yes</bpmn:outgoing>
+      <bpmn:outgoing>exclusive-todo-finished-no</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="st-todo-finished" name="Todo finished" camunda:expression="${todoProcessService.deleteTodo(execution, entityId)}">
+      <bpmn:incoming>SequenceFlow_1y18k2b</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1hkk9x8</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="EndEvent_01ms3wl">
+      <bpmn:incoming>SequenceFlow_1ixq9u1</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:manualTask id="st-delete-todo" name="Delete Todo">
+      <bpmn:incoming>exclusive-todo-finished-yes</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1ixq9u1</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:userTask id="ut-finish-todo" name="Finish Todo" camunda:formKey="ut-finish-todo">
+      <bpmn:incoming>gw-items-open-no</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1y18k2b</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1htjrmp" sourceRef="st-check-if-items-open" targetRef="gw-items-open" />
+    <bpmn:sequenceFlow id="gw-items-open-yes" name="yes" sourceRef="gw-items-open" targetRef="ExclusiveGateway_0zu1yuy">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${itemsOpen}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="gw-items-open-no" name="no" sourceRef="gw-items-open" targetRef="ut-finish-todo">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!itemsOpen}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="exclusive-todo-finished-no" name="no" sourceRef="exclusive-todo-finished" targetRef="ExclusiveGateway_0zu1yuy">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!todoFinished}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1hkk9x8" sourceRef="st-todo-finished" targetRef="exclusive-todo-finished" />
+    <bpmn:sequenceFlow id="exclusive-todo-finished-yes" name="yes" sourceRef="exclusive-todo-finished" targetRef="st-delete-todo">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${todoFinished}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1y18k2b" sourceRef="ut-finish-todo" targetRef="st-todo-finished" />
+    <bpmn:sequenceFlow id="SequenceFlow_1ixq9u1" sourceRef="st-delete-todo" targetRef="EndEvent_01ms3wl" />
+    <bpmn:sequenceFlow id="SequenceFlow_0ltiayx" sourceRef="ut-todo" targetRef="st-check-if-items-open" />
+    <bpmn:userTask id="ut-todo" name="Todo" camunda:formKey="ut-todo">
+      <bpmn:incoming>SequenceFlow_0zqawc1</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0ltiayx</bpmn:outgoing>
+    </bpmn:userTask>
   </bpmn:process>
   <bpmn:message id="Message_1mcahbz" name="item-done" />
   <bpmn:message id="Message_0mdk0pe" name="sub-item-done" />
   <bpmn:message id="Message_0rr4k7j" name="send-sub-item-done" />
   <bpmn:message id="Message_0vraz4g" name="start-sub-item" />
   <bpmn:message id="Message_0a5nmil" name="todo-finished" />
+  <bpmn:message id="Message_05gtf44" name="delete-todo" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1qw6fwu">
       <bpmndi:BPMNShape id="Participant_0hjptyl_di" bpmnElement="pr-service-b-todo" isHorizontal="true">
-        <dc:Bounds x="156" y="66" width="1029" height="288" />
+        <dc:Bounds x="156" y="66" width="1621" height="303" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start-service-todo">
         <dc:Bounds x="228" y="162" width="36" height="36" />
@@ -102,7 +122,7 @@
         <di:waypoint x="496" y="180" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Lane_1xv8pyl_di" bpmnElement="Lane_1xv8pyl" isHorizontal="true">
-        <dc:Bounds x="186" y="66" width="999" height="288" />
+        <dc:Bounds x="186" y="66" width="1591" height="303" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="IntermediateCatchEvent_0f55ofz_di" bpmnElement="me-item-done">
         <dc:Bounds x="496" y="162" width="36" height="36" />
@@ -112,77 +132,95 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0zqawc1_di" bpmnElement="SequenceFlow_0zqawc1">
         <di:waypoint x="532" y="180" />
-        <di:waypoint x="583" y="180" />
+        <di:waypoint x="587" y="180" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0ny0qa7_di" bpmnElement="gw-items-open-yes">
-        <di:waypoint x="765" y="205" />
-        <di:waypoint x="765" y="270" />
+        <di:waypoint x="928" y="205" />
+        <di:waypoint x="928" y="270" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="770" y="238" width="18" height="14" />
+          <dc:Bounds x="933" y="238" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="EndEvent_01ms3wl_di" bpmnElement="EndEvent_01ms3wl">
-        <dc:Bounds x="1051" y="162" width="36" height="36" />
+        <dc:Bounds x="1676" y="162" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1rxz1d8_di" bpmnElement="gw-items-open-no">
-        <di:waypoint x="790" y="180" />
-        <di:waypoint x="853" y="180" />
+        <di:waypoint x="953" y="180" />
+        <di:waypoint x="1006" y="180" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="815" y="162" width="13" height="14" />
+          <dc:Bounds x="973" y="162" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1htjrmp_di" bpmnElement="SequenceFlow_1htjrmp">
-        <di:waypoint x="683" y="180" />
-        <di:waypoint x="740" y="180" />
+        <di:waypoint x="846" y="180" />
+        <di:waypoint x="903" y="180" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ServiceTask_0n2yzgb_di" bpmnElement="st-check-if-items-open">
-        <dc:Bounds x="583" y="140" width="100" height="80" />
+        <dc:Bounds x="746" y="140" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ExclusiveGateway_00axw4x_di" bpmnElement="gw-items-open" isMarkerVisible="true">
-        <dc:Bounds x="740" y="155" width="50" height="50" />
+        <dc:Bounds x="903" y="155" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="733" y="134" width="64" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_11ag7oh_di" bpmnElement="SequenceFlow_11ag7oh">
-        <di:waypoint x="889" y="180" />
-        <di:waypoint x="941" y="180" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="IntermediateCatchEvent_1h1bayb_di" bpmnElement="catch-todo-end">
-        <dc:Bounds x="853" y="162" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="838" y="205" width="69" height="14" />
+          <dc:Bounds x="896" y="134" width="64" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ExclusiveGateway_1hxpud7_di" bpmnElement="exclusive-todo-finished" isMarkerVisible="true">
-        <dc:Bounds x="941" y="155" width="50" height="50" />
+        <dc:Bounds x="1336" y="155" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="931" y="125" width="71" height="14" />
+          <dc:Bounds x="1326" y="125" width="71" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0b772im_di" bpmnElement="exclusive-todo-finished-yes">
-        <di:waypoint x="991" y="180" />
-        <di:waypoint x="1051" y="180" />
+        <di:waypoint x="1386" y="180" />
+        <di:waypoint x="1484" y="180" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1012" y="162" width="18" height="14" />
+          <dc:Bounds x="1408" y="162" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ExclusiveGateway_0zu1yuy_di" bpmnElement="ExclusiveGateway_0zu1yuy" isMarkerVisible="true">
-        <dc:Bounds x="740" y="270" width="50" height="50" />
+        <dc:Bounds x="903" y="270" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0nux7a5_di" bpmnElement="SequenceFlow_0nux7a5">
-        <di:waypoint x="740" y="295" />
+        <di:waypoint x="903" y="295" />
         <di:waypoint x="514" y="295" />
         <di:waypoint x="514" y="198" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1pbljy8_di" bpmnElement="exclusive-todo-finished-no">
-        <di:waypoint x="966" y="205" />
-        <di:waypoint x="966" y="295" />
-        <di:waypoint x="790" y="295" />
+        <di:waypoint x="1361" y="205" />
+        <di:waypoint x="1361" y="295" />
+        <di:waypoint x="953" y="295" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="975" y="247" width="13" height="14" />
+          <dc:Bounds x="1369" y="221" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1hkk9x8_di" bpmnElement="SequenceFlow_1hkk9x8">
+        <di:waypoint x="1248" y="180" />
+        <di:waypoint x="1336" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_08kwouw_di" bpmnElement="st-todo-finished">
+        <dc:Bounds x="1148" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ixq9u1_di" bpmnElement="SequenceFlow_1ixq9u1">
+        <di:waypoint x="1584" y="180" />
+        <di:waypoint x="1676" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ManualTask_0hb800j_di" bpmnElement="st-delete-todo">
+        <dc:Bounds x="1484" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1y18k2b_di" bpmnElement="SequenceFlow_1y18k2b">
+        <di:waypoint x="1106" y="180" />
+        <di:waypoint x="1148" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_0qos9b0_di" bpmnElement="ut-finish-todo">
+        <dc:Bounds x="1006" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0ltiayx_di" bpmnElement="SequenceFlow_0ltiayx">
+        <di:waypoint x="687" y="180" />
+        <di:waypoint x="746" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_16o2auu_di" bpmnElement="ut-todo">
+        <dc:Bounds x="587" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
