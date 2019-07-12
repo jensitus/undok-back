@@ -88,7 +88,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_1y18k2b" sourceRef="ut-finish-todo" targetRef="st-todo-finished" />
     <bpmn:sequenceFlow id="SequenceFlow_1ixq9u1" sourceRef="st-delete-todo" targetRef="EndEvent_01ms3wl" />
     <bpmn:sequenceFlow id="SequenceFlow_0ltiayx" sourceRef="ut-todo" targetRef="st-check-if-items-open" />
-    <bpmn:userTask id="ut-todo" name="Todo" camunda:formKey="ut-todo">
+    <bpmn:userTask id="ut-todo" name="Todo" camunda:formKey="ut-todo" camunda:candidateUsers="${todoProcessService.getUsers(entityId)}" camunda:candidateGroups="${todoProcessService.getGroup(entityId)}">
       <bpmn:incoming>SequenceFlow_0zqawc1</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0ltiayx</bpmn:outgoing>
     </bpmn:userTask>

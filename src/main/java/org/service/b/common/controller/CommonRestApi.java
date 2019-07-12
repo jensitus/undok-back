@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.Path;
+import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -53,6 +54,12 @@ public class CommonRestApi {
     TaskDto taskDto = serviceBTaskService.getSingleTask(task_id);
     logger.info(taskDto.toString());
     return new ResponseEntity(taskDto, HttpStatus.OK);
+  }
+
+  @GetMapping("/task/list/{user_id}")
+  public ResponseEntity getTaskList(@PathVariable("user_id") String user_id) {
+    List<TaskDto> taskList = serviceBTaskService.taskList(user_id);
+    return new ResponseEntity(taskList, HttpStatus.OK);
   }
 
 }

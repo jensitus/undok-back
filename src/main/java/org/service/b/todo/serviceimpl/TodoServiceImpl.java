@@ -60,7 +60,7 @@ public class TodoServiceImpl implements TodoService {
     users.add(modelMapper.map(userDto, User.class));
     todo.setUsers(users);
     Todo newTodo = todoRepo.save(todo);
-    todoProcessService.startTodo(newTodo.getId());
+    todoProcessService.startTodo(newTodo.getId(), userDto);
     return modelMapper.map(newTodo, TodoDto.class);
   }
 

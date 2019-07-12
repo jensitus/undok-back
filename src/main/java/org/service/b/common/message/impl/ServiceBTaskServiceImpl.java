@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ServiceBTaskServiceImpl implements ServiceBTaskService {
@@ -39,6 +41,17 @@ public class ServiceBTaskServiceImpl implements ServiceBTaskService {
   public TaskDto getSingleTask(String task_id) {
     Task task = taskService.createTaskQuery().initializeFormKeys().taskId(task_id).singleResult();
     return mapTaskToDto(task);
+  }
+
+  @Override
+  public List<TaskDto> taskList(String user_id) {
+    List<Task> tasks = taskService.createTaskQuery().active().taskCandidateUser(user_id).list();
+    List<TaskDto> taskDtoList = new ArrayList<>();
+    for (Task t : tasks) {
+      Task task = taskService.createTaskQuery().initializeFormKeys().taskId(t.getId()).singleResult();
+      taskDtoList.add(mapTaskToDto(task));
+    }
+    return taskDtoList;
   }
 
   private TaskDto mapTaskToDto(Task t) {
