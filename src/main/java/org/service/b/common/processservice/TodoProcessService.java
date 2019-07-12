@@ -78,7 +78,13 @@ public class TodoProcessService {
     identityService.createMembership(userId, groupId);
   }
 
-  public void testTheProcessService() {
+  private void setTodoTaskName(Execution execution, String todoTitle) {
+    runtimeService.setVariable(execution.getId(), "todoTaskName", todoTitle);
+  }
+
+  public void setTheTodoProcess(Execution execution, Long entityId) {
+    TodoDto todoDto = todoService.getTodoById(entityId);
+    setTodoTaskName(execution, todoDto.getTitle());
     logger.info("The Process Service is working well God Damn Hell Yeah!");
   }
 
