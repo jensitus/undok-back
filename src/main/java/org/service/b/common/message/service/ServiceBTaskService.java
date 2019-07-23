@@ -14,4 +14,8 @@ public interface ServiceBTaskService {
 
   List<TaskDto> taskList(String user_id);
 
+  void completeTask(String task_id);
+
+  String getVariable(String execution_id, String variableName);
+
 }

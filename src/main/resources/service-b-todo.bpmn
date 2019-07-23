@@ -15,15 +15,15 @@
         <bpmn:flowNodeRef>EndEvent_01ms3wl</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>st-delete-todo</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ut-finish-todo</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>st-set-todo-process-service</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>st-set-todo-process-ser</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ut-todo</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:startEvent id="start-service-todo" name="Start Service Todo">
       <bpmn:outgoing>SequenceFlow_16iky1x</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_16iky1x" sourceRef="start-service-todo" targetRef="st-set-todo-process-service" />
-    <bpmn:sequenceFlow id="SequenceFlow_1guxlgj" sourceRef="st-set-todo-process-service" targetRef="ut-todo" />
+    <bpmn:sequenceFlow id="SequenceFlow_16iky1x" sourceRef="start-service-todo" targetRef="st-set-todo-process-ser" />
+    <bpmn:sequenceFlow id="SequenceFlow_1guxlgj" sourceRef="st-set-todo-process-ser" targetRef="ut-todo" />
     <bpmn:sequenceFlow id="SequenceFlow_0nux7a5" sourceRef="ExclusiveGateway_0zu1yuy" targetRef="ut-todo" />
     <bpmn:serviceTask id="st-check-if-items-open" name="Check If Items Open" camunda:expression="${todoProcessService.checkIfItemsOpen(execution, entityId)}">
       <bpmn:incoming>SequenceFlow_0ltiayx</bpmn:incoming>
@@ -76,7 +76,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_1y18k2b" sourceRef="ut-finish-todo" targetRef="st-todo-finished" />
     <bpmn:sequenceFlow id="SequenceFlow_1ixq9u1" sourceRef="st-delete-todo" targetRef="EndEvent_01ms3wl" />
     <bpmn:sequenceFlow id="SequenceFlow_0ltiayx" sourceRef="ut-todo" targetRef="st-check-if-items-open" />
-    <bpmn:serviceTask id="st-set-todo-process-service" name="Set The Todo Process Service" camunda:expression="${todoProcessService.setTheTodoProcess(execution, entityId)}">
+    <bpmn:serviceTask id="st-set-todo-process-ser" name="Set The Todo Process Service" camunda:expression="${todoProcessService.setTheTodoProcess(execution, entityId)}">
       <bpmn:incoming>SequenceFlow_16iky1x</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1guxlgj</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -107,7 +107,7 @@
         <di:waypoint x="264" y="180" />
         <di:waypoint x="347" y="180" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ServiceTask_1su4kh3_di" bpmnElement="st-set-todo-process-service">
+      <bpmndi:BPMNShape id="ServiceTask_1su4kh3_di" bpmnElement="st-set-todo-process-ser">
         <dc:Bounds x="347" y="140" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1guxlgj_di" bpmnElement="SequenceFlow_1guxlgj">

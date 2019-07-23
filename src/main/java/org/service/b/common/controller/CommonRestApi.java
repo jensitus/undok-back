@@ -11,10 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.Path;
 import java.util.List;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)
 @RestController
 @RequestMapping("/service/app")
 public class CommonRestApi {
@@ -60,6 +59,18 @@ public class CommonRestApi {
   public ResponseEntity getTaskList(@PathVariable("user_id") String user_id) {
     List<TaskDto> taskList = serviceBTaskService.taskList(user_id);
     return new ResponseEntity(taskList, HttpStatus.OK);
+  }
+
+  @PostMapping("/task/complete")
+  public ResponseEntity completeTask(@RequestBody String task_id) {
+    serviceBTaskService.completeTask(task_id);
+    Message message = new Message("Task successfully completed, congrats, @lter");
+    return new ResponseEntity(message, HttpStatus.OK);
+  }
+
+  @GetMapping("/{execution_id}/variable")
+  public ResponseEntity getVariable(@PathVariable("execution_id") String execution_id, @RequestParam("name") String variable_name) {
+    return new ResponseEntity(serviceBTaskService.getVariable(execution_id, variable_name), HttpStatus.OK);
   }
 
 }

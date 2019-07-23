@@ -54,6 +54,17 @@ public class ServiceBTaskServiceImpl implements ServiceBTaskService {
     return taskDtoList;
   }
 
+  @Override
+  public void completeTask(String task_id) {
+    taskService.complete(task_id);
+  }
+
+  @Override
+  public String getVariable(String execution_id, String variableName) {
+    Object entityId = runtimeService.getVariable(execution_id, variableName);
+    return entityId.toString();
+  }
+
   private TaskDto mapTaskToDto(Task t) {
     TaskDto taskDto = new TaskDto();
     taskDto.setId(t.getId());
