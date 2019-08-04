@@ -1,9 +1,12 @@
 package org.service.b.common.controller;
 
+import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.service.b.common.dto.TaskDto;
 import org.service.b.common.message.Message;
 import org.service.b.common.message.service.MigrationService;
+import org.service.b.common.message.service.ServiceBProcessService;
 import org.service.b.common.message.service.ServiceBTaskService;
+import org.service.b.todo.service.TodoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,12 @@ public class CommonRestApi {
 
   @Autowired
   private ServiceBTaskService serviceBTaskService;
+
+  @Autowired
+  ServiceBProcessService serviceBProcessService;
+
+  @Autowired
+  private TodoService todoService;
 
   @PostMapping("/migrate/{sourceVersion}/{targetVersion}/{sourceAct}/{targetAct}/{processInstanceId}")
   public void migrateProcessInstances(@PathVariable("sourceVersion") String sourceVersion,
@@ -63,6 +72,7 @@ public class CommonRestApi {
 
   @PostMapping("/task/complete")
   public ResponseEntity completeTask(@RequestBody String task_id) {
+    logger.info("completeTask " + task_id);
     serviceBTaskService.completeTask(task_id);
     Message message = new Message("Task successfully completed, congrats, @lter");
     return new ResponseEntity(message, HttpStatus.OK);
@@ -71,6 +81,18 @@ public class CommonRestApi {
   @GetMapping("/{execution_id}/variable")
   public ResponseEntity getVariable(@PathVariable("execution_id") String execution_id, @RequestParam("name") String variable_name) {
     return new ResponseEntity(serviceBTaskService.getVariable(execution_id, variable_name), HttpStatus.OK);
+  }
+
+  @GetMapping("/check/subprocesses/{business_key}")
+  public ResponseEntity checkSubprocesses(@PathVariable("business_key") String businessKey) {
+    List<ProcessInstance> pis = serviceBProcessService.getProcessInstancesByBusinessKey(businessKey);
+    return new ResponseEntity(pis, HttpStatus.OK);
+  }
+
+  @GetMapping("/check/items/{task_id}")
+  public ResponseEntity checkItems(@PathVariable("task_id") String task_id) {
+    boolean itemsOpen = todoService.checkOpenItems(task_id);
+    return new ResponseEntity(itemsOpen, HttpStatus.OK);
   }
 
 }

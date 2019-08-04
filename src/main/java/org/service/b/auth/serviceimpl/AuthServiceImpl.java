@@ -12,6 +12,7 @@ import org.service.b.auth.security.JwtProvider;
 import org.service.b.auth.service.AuthService;
 import org.modelmapper.ModelMapper;
 import org.service.b.common.message.Message;
+import org.service.b.common.message.service.ServiceBCamundaUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,9 @@ public class AuthServiceImpl implements AuthService {
   @Autowired
   RoleRepo roleRepo;
 
+  @Autowired
+  private ServiceBCamundaUserService serviceBCamundaUserService;
+
   @Override
   public UserDto getUserDtoWithJwt(LoginForm loginForm) {
     Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginForm.getUsername(), loginForm.getPassword()));
@@ -83,6 +87,8 @@ public class AuthServiceImpl implements AuthService {
     });
     user.setRoles(roles);
     userRepo.save(user);
+    serviceBCamundaUserService.addNewUserToCamunda(user.getId().toString(), user.getEmail(), user.getUsername());
     return new Message("user created");
   }
+
 }

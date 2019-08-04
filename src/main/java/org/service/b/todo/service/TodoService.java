@@ -29,4 +29,6 @@ public interface TodoService {
 
   Message deleteTodo(Long todo_id);
 
+  boolean checkOpenItems(String task_id);
+
 }
