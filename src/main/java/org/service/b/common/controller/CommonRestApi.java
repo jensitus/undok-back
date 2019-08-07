@@ -1,6 +1,7 @@
 package org.service.b.common.controller;
 
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.service.b.common.MigrationForm;
 import org.service.b.common.dto.TaskDto;
 import org.service.b.common.message.Message;
 import org.service.b.common.message.service.MigrationService;
@@ -35,18 +36,20 @@ public class CommonRestApi {
   @Autowired
   private TodoService todoService;
 
-  @PostMapping("/migrate/{sourceVersion}/{targetVersion}/{sourceAct}/{targetAct}/{processInstanceId}")
-  public void migrateProcessInstances(@PathVariable("sourceVersion") String sourceVersion,
-                                      @PathVariable("targetVersion") String targetVersion,
-                                      @PathVariable("sourceAct") String sourceAct,
-                                      @PathVariable("targetAct") String targetAct,
-                                      @PathVariable("processInstanceId") String processInstanceId) {
-    logger.info(sourceVersion);
-    logger.info(targetVersion);
-    logger.info(sourceAct);
-    logger.info(targetAct);
-    logger.info(processInstanceId);
+  @PostMapping("/migrate")
+  public ResponseEntity migrateProcessInstances(@RequestBody MigrationForm migrationForm) {
+    String sourceVersion = migrationForm.getSourceVersion();
+    String targetVersion = migrationForm.getTargetVersion();
+    String sourceAct = migrationForm.getSourceAct();
+    String targetAct = migrationForm.getTargetAct();
+    String processInstanceId = migrationForm.getProcessInstanceId();
+    logger.info(migrationForm.getSourceVersion());
+    logger.info(migrationForm.getTargetVersion());
+    logger.info(migrationForm.getSourceAct());
+    logger.info(migrationForm.getTargetAct());
+    logger.info(migrationForm.getProcessInstanceId());
     migrationService.migrateProcessInstance(sourceVersion, targetVersion, sourceAct, targetAct, processInstanceId);
+    return new ResponseEntity(new Message("ois in urdnung"), HttpStatus.OK);
   }
 
   @GetMapping("/formkey/{processDefinitionId}/{taskDefinitionKey}")

@@ -37,8 +37,9 @@ public class ServiceBProcessServiceImpl implements ServiceBProcessService {
   @Override
   public ProcessInstance getProcessInstanceByTask(String taskId) {
     Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-    ProcessInstance pi = runtimeService.createProcessInstanceQuery().processDefinitionId(task.getProcessDefinitionId()).singleResult();
+    ProcessInstance pi = runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
     logger.info("process Instance " + pi.toString());
+    logger.info(pi.getProcessDefinitionId() + " " + pi.getBusinessKey() + " " + pi.getProcessInstanceId());
     return pi;
   }
 

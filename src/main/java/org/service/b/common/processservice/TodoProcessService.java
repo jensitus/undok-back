@@ -135,4 +135,8 @@ public class TodoProcessService {
     return userPerTodo;
   }
 
+  public String getGroup(Long todoId) {
+    return serviceBCamundaUserService.getTheCamundaGroupId("todo", todoId);
+  }
+
 }
