@@ -8,6 +8,7 @@ import org.camunda.bpm.engine.identity.User;
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.service.b.auth.dto.UserDto;
+import org.service.b.auth.service.UserService;
 import org.service.b.common.message.service.ServiceBCamundaUserService;
 import org.service.b.common.message.service.MessageService;
 import org.service.b.todo.dto.TodoDto;
@@ -27,6 +28,10 @@ import java.util.Map;
 public class TodoProcessService {
 
   private static final Logger logger = LoggerFactory.getLogger(TodoProcessService.class);
+
+  private static final String TODO_TASK_NAME = "todoTaskName";
+
+  private static final String TODO_GROUP_PREFIX = "todo";
 
   @Autowired
   private RuntimeService runtimeService;
@@ -49,34 +54,27 @@ public class TodoProcessService {
   @Autowired
   private ServiceBCamundaUserService serviceBCamundaUserService;
 
+  @Autowired
+  private UserService userService;
+
   public void startTodo(Long todo_id, UserDto createUser) {
     Map variables = new HashMap();
     variables.put("entityId", todo_id);
     ProcessInstance todoProcessInstance = runtimeService.startProcessInstanceByKey("service-b-todo", "service-b-todo-" + todo_id.toString(), variables);
     List<String> stringList = new ArrayList<>();
-    String theFinalGroupId = serviceBCamundaUserService.getTheCamundaGroupId("todo", todo_id);
+    String theFinalGroupId = serviceBCamundaUserService.getTheCamundaGroupId(TODO_GROUP_PREFIX, todo_id);
     Group todoGroup = identityService.newGroup(theFinalGroupId);
     todoGroup.setName("Todo " + theFinalGroupId);
     todoGroup.setType("service-b-todo");
     identityService.saveGroup(todoGroup);
-    logger.info(todoGroup.toString());
-    logger.info(todoGroup.getId());
-    logger.info("createUser: " + createUser);
-    logger.info(createUser.toString());
-    /**
-     * @TODO the Camunda User has to be created in der auth section when a new user registered
-     * DONE!!
-     */
 
     String userId = createUser.getId().toString();
-    logger.info(userId);
     String groupId = todoGroup.getId();
-    logger.info(groupId);
     identityService.createMembership(userId, groupId);
   }
 
   private void setTodoTaskName(Execution execution, String todoTitle) {
-    runtimeService.setVariable(execution.getId(), "todoTaskName", todoTitle);
+    runtimeService.setVariable(execution.getId(), TODO_TASK_NAME, todoTitle);
   }
 
   public void setTheTodoProcess(Execution execution, Long entityId) {
@@ -91,6 +89,12 @@ public class TodoProcessService {
     variables.put("item", "item-" + item_id.toString());
     variables.put("todo", todo_id);
     runtimeService.startProcessInstanceByKey("sub-todo-service-item", "service-b-todo-" + todo_id.toString(), variables);
+  }
+
+  public String getCreateUserAsAssignee(Long todo_id) {
+    TodoDto todoDto = todoService.getTodoById(todo_id);
+    UserDto userDto = userService.getById(todoDto.getCreatedBy());
+    return userDto.getId().toString();
   }
 
   public void deleteTodoItem(Long item_id) {
@@ -130,7 +134,7 @@ public class TodoProcessService {
     for (UserDto user : userDtoList) {
       userPerTodo.add(user.getId().toString());
     }
-    List<User> userList = identityService.createUserQuery().memberOfGroup(serviceBCamundaUserService.getTheCamundaGroupId("todo", todoId)).orderByUserId().asc().list();
+    List<User> userList = identityService.createUserQuery().memberOfGroup(serviceBCamundaUserService.getTheCamundaGroupId(TODO_GROUP_PREFIX, todoId)).orderByUserId().asc().list();
 
     return userPerTodo;
   }

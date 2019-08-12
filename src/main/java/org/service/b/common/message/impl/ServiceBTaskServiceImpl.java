@@ -43,9 +43,14 @@ public class ServiceBTaskServiceImpl implements ServiceBTaskService {
 
   @Override
   public List<TaskDto> taskList(String user_id) {
-    List<Task> tasks = taskService.createTaskQuery().active().taskCandidateUser(user_id).list();
+    List<Task> candidateTasks = taskService.createTaskQuery().active().taskCandidateUser(user_id).list();
+    List<Task> assigneeTasks = taskService.createTaskQuery().active().taskAssignee(user_id).list();
     List<TaskDto> taskDtoList = new ArrayList<>();
-    for (Task t : tasks) {
+    for (Task t : candidateTasks) {
+      Task task = taskService.createTaskQuery().initializeFormKeys().taskId(t.getId()).singleResult();
+      taskDtoList.add(mapTaskToDto(task));
+    }
+    for (Task t : assigneeTasks) {
       Task task = taskService.createTaskQuery().initializeFormKeys().taskId(t.getId()).singleResult();
       taskDtoList.add(mapTaskToDto(task));
     }
