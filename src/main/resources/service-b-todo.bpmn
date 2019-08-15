@@ -88,10 +88,10 @@
       <bpmn:outgoing>SequenceFlow_0qcav3n</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_11k2mie</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_0qcav3n" name="simple" sourceRef="gw-simple-or-complex" targetRef="ut-finish-todo">
+    <bpmn:sequenceFlow id="SequenceFlow_0qcav3n" name="complex" sourceRef="gw-simple-or-complex" targetRef="ut-finish-todo">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${complex}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_11k2mie" name="complex" sourceRef="gw-simple-or-complex" targetRef="ExclusiveGateway_00oblwu">
+    <bpmn:sequenceFlow id="SequenceFlow_11k2mie" name="simple" sourceRef="gw-simple-or-complex" targetRef="ExclusiveGateway_00oblwu">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!complex}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:userTask id="ut-finish-todo" name="Finish ${todoTaskName}" camunda:formKey="finish-todo" camunda:candidateUsers="${todoProcessService.getUsers(entityId)}" camunda:candidateGroups="odoProcessService.getGroup(entityId)}">
@@ -245,7 +245,7 @@
         <di:waypoint x="1336" y="381" />
         <di:waypoint x="1413" y="381" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1354" y="384" width="32" height="14" />
+          <dc:Bounds x="1349" y="384" width="42" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_11k2mie_di" bpmnElement="SequenceFlow_11k2mie">
@@ -254,7 +254,7 @@
         <di:waypoint x="1922" y="213" />
         <di:waypoint x="1922" y="356" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1323" y="225" width="42" height="14" />
+          <dc:Bounds x="1328" y="225" width="32" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ExclusiveGateway_00oblwu_di" bpmnElement="ExclusiveGateway_00oblwu" isMarkerVisible="true">
