@@ -4,6 +4,7 @@ import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
+import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.Task;
 import org.service.b.common.message.service.ServiceBProcessService;
@@ -43,4 +44,11 @@ public class ServiceBProcessServiceImpl implements ServiceBProcessService {
     return pi;
   }
 
+  @Override
+  public void setVariable(String executionId, String variableName, Boolean value) {
+    logger.info(executionId);
+    logger.info(variableName);
+    logger.info(value.toString());
+    runtimeService.setVariable(executionId, variableName, value);
+  }
 }
