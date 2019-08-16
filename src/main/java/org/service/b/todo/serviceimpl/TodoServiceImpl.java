@@ -167,11 +167,8 @@ public class TodoServiceImpl implements TodoService {
   @Override
   public Message deleteTodo(Long todo_id) {
     Todo todo = todoRepo.getOne(todo_id);
-    if (todo.getItems().isEmpty()) {
-      return new Message("Todo successfully deleted", true);
-    } else {
-      return new Message("There is still so much to do", false);
-    }
+    todoRepo.delete(todo);
+    return new Message("yepp", false);
   }
 
   @Override

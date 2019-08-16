@@ -7,6 +7,8 @@ import org.camunda.bpm.engine.task.Task;
 import org.modelmapper.ModelMapper;
 import org.service.b.common.dto.TaskDto;
 import org.service.b.common.message.service.ServiceBTaskService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ import java.util.List;
 
 @Service
 public class ServiceBTaskServiceImpl implements ServiceBTaskService {
+
+  private static final Logger logger = LoggerFactory.getLogger(ServiceBTaskServiceImpl.class);
 
   @Autowired
   private FormService formService;
@@ -65,6 +69,8 @@ public class ServiceBTaskServiceImpl implements ServiceBTaskService {
   @Override
   public String getVariable(String execution_id, String variableName) {
     Object entityId = runtimeService.getVariable(execution_id, variableName);
+    String classNameDonnerWetter = entityId.getClass().toString();
+    logger.info(entityId.getClass().toString());
     return entityId.toString();
   }
 

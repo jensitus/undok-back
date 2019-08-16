@@ -29,6 +29,9 @@
       <bpmn:outgoing>SequenceFlow_1guxlgj</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:endEvent id="EndEvent_01ms3wl">
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${todoProcessService.deleteTodo(execution, entityId)}" event="start" />
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1idvfg9</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:exclusiveGateway id="exclusive-todo-finished" name="Todo finished?">
@@ -36,7 +39,7 @@
       <bpmn:outgoing>exclusive-todo-finished-yes</bpmn:outgoing>
       <bpmn:outgoing>exclusive-todo-finished-no</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="st-todo-finished" name="Todo finished" camunda:expression="${todoProcessService.deleteTodo(execution, entityId)}">
+    <bpmn:serviceTask id="st-todo-finished" name="Todo finished" camunda:expression="${todoProcessService.finishTodo(execution, entityId)}">
       <bpmn:incoming>SequenceFlow_1y18k2b</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1hkk9x8</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -89,10 +92,10 @@
       <bpmn:outgoing>SequenceFlow_11k2mie</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="SequenceFlow_0qcav3n" name="complex" sourceRef="gw-simple-or-complex" targetRef="ut-finish-todo">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${complex}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!simple}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_11k2mie" name="simple" sourceRef="gw-simple-or-complex" targetRef="ExclusiveGateway_00oblwu">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!complex}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${simple}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:userTask id="ut-finish-todo" name="Finish ${todoTaskName}" camunda:formKey="finish-todo" camunda:candidateUsers="${todoProcessService.getUsers(entityId)}" camunda:candidateGroups="odoProcessService.getGroup(entityId)}">
       <bpmn:incoming>SequenceFlow_0qcav3n</bpmn:incoming>

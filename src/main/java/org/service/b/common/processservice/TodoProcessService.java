@@ -120,12 +120,11 @@ public class TodoProcessService {
 
   public void deleteTodo(Execution execution, Long todo_id) {
     TodoDto todoDto = todoService.getTodoById(todo_id);
-    if (todoDto.getItems().isEmpty()) {
-      runtimeService.setVariable(execution.getId(), "todoFinished", true);
       todoService.deleteTodo(todo_id);
-    } else {
-      runtimeService.setVariable(execution.getId(), "todoFinished", false);
-    }
+  }
+
+  public void finishTodo(Execution execution, Long entityId) {
+    logger.info("We try to finish this TODO carefully");
   }
 
   public List<String> getUsers(Long todoId) {
