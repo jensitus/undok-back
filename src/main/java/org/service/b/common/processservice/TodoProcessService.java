@@ -9,6 +9,7 @@ import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.service.UserService;
+import org.service.b.common.config.ServiceBProcessVarNames;
 import org.service.b.common.message.service.ServiceBCamundaUserService;
 import org.service.b.common.message.service.MessageService;
 import org.service.b.todo.dto.TodoDto;
@@ -57,20 +58,22 @@ public class TodoProcessService {
   @Autowired
   private UserService userService;
 
-  public void startTodo(Long todo_id, UserDto createUser) {
+  public ProcessInstance startTodo(Long todo_id, UserDto createUser) {
+    String pdk = ServiceBProcessVarNames.TODO_PROCESS_DEFINITION_KEY.value;
     Map variables = new HashMap();
-    variables.put("entityId", todo_id);
-    ProcessInstance todoProcessInstance = runtimeService.startProcessInstanceByKey("service-b-todo", "service-b-todo-" + todo_id.toString(), variables);
+    variables.put(ServiceBProcessVarNames.ENTITY_ID.value, todo_id);
+    ProcessInstance todoProcessInstance = runtimeService.startProcessInstanceByKey(pdk, pdk + "-" + todo_id.toString(), variables);
     List<String> stringList = new ArrayList<>();
     String theFinalGroupId = serviceBCamundaUserService.getTheCamundaGroupId(TODO_GROUP_PREFIX, todo_id);
     Group todoGroup = identityService.newGroup(theFinalGroupId);
     todoGroup.setName("Todo " + theFinalGroupId);
-    todoGroup.setType("service-b-todo");
+    todoGroup.setType(pdk);
     identityService.saveGroup(todoGroup);
 
     String userId = createUser.getId().toString();
     String groupId = todoGroup.getId();
     identityService.createMembership(userId, groupId);
+    return todoProcessInstance;
   }
 
   private void setTodoTaskName(Execution execution, String todoTitle) {
