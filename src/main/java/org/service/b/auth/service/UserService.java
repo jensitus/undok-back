@@ -19,5 +19,6 @@ public interface UserService {
 
   UserDto getCurrentUser();
 
+  UserDto getById(Long user_id);
 
 }

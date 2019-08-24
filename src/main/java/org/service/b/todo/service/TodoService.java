@@ -25,6 +25,10 @@ public interface TodoService {
 
   TodoDto updateTodo(Long todo_id);
 
+  Message todoFinished(Long todo_id);
+
   Message deleteTodo(Long todo_id);
+
+  boolean checkOpenItems(String task_id);
 
 }

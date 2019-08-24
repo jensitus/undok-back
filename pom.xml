@@ -41,6 +41,18 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
+        <!-- the camunda stuff -->
+        <dependency>
+            <groupId>org.camunda.bpm.springboot</groupId>
+            <artifactId>camunda-bpm-spring-boot-starter</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.camunda.bpm.springboot</groupId>
+            <artifactId>camunda-bpm-spring-boot-starter-webapp</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+
         <!-- all the other stuff -->
         <dependency>
             <groupId>org.postgresql</groupId>

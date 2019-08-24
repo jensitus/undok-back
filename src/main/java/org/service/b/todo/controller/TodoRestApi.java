@@ -2,6 +2,7 @@ package org.service.b.todo.controller;
 
 import org.service.b.auth.message.UserForm;
 import org.service.b.common.message.Message;
+import org.service.b.common.message.service.MessageService;
 import org.service.b.todo.dto.TodoDto;
 import org.service.b.todo.form.TodoForm;
 import org.service.b.todo.service.TodoService;
@@ -14,15 +15,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200"})
+@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200", "http://localhost:8080"})
 @RestController
-@RequestMapping("/todos")
+@RequestMapping("/service/todos")
 public class TodoRestApi {
 
   private static final Logger logger = LoggerFactory.getLogger(TodoRestApi.class);
 
   @Autowired
   private TodoService todoService;
+
+  @Autowired
+  private MessageService messageService;
 
   @GetMapping("/")
   public ResponseEntity getTodos() {
@@ -63,7 +67,7 @@ public class TodoRestApi {
 
   @DeleteMapping("/{todo_id}")
   public ResponseEntity deleteTodo(@PathVariable("todo_id") Long todo_id) {
-    Message message = todoService.deleteTodo(todo_id);
+    Message message = todoService.todoFinished(todo_id);
     logger.info("delete Todo message: {}", message.toString());
     if (message.getTrueOrFalse()) {
       return new ResponseEntity(message, HttpStatus.OK);

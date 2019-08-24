@@ -19,6 +19,8 @@ public class TodoDto {
 
   private Set<UserDto> users;
 
+  private DescriptionDto description;
+
   public TodoDto() {}
 
   public Long getId() {
@@ -67,5 +69,13 @@ public class TodoDto {
 
   public void setUsers(Set<UserDto> users) {
     this.users = users;
+  }
+
+  public DescriptionDto getDescription() {
+    return description;
+  }
+
+  public void setDescription(DescriptionDto description) {
+    this.description = description;
   }
 }

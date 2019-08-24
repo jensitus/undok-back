@@ -28,9 +28,9 @@ import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.Set;
 
-@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200"}, maxAge = 3600)
+@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/service/auth")
 public class AuthRestApi {
 
   private static final Logger logger = LoggerFactory.getLogger(AuthRestApi.class);

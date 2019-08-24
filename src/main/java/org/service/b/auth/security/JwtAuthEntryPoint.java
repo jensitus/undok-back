@@ -18,6 +18,12 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
 
   @Override
   public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
+    logger.info("e begin: ");
+    logger.info(e.getClass().getSimpleName().toString());
+    logger.info(e.toString());
+    logger.info(e.getMessage());
+    logger.info(e.getLocalizedMessage());
+    logger.info("e end");
     if (e.getClass().getSimpleName().equals("UsernameNotFoundException")) {
       logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
       response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());

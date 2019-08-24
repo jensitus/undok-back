@@ -2,6 +2,8 @@ package org.service.b.todo.serviceimpl;
 
 import org.modelmapper.ModelMapper;
 import org.service.b.auth.service.UserService;
+import org.service.b.common.message.service.MessageService;
+import org.service.b.common.processservice.TodoProcessService;
 import org.service.b.todo.dto.ItemDto;
 import org.service.b.todo.model.Description;
 import org.service.b.todo.model.Item;
@@ -42,9 +44,14 @@ public class ItemServiceImpl implements ItemService {
   @Autowired
   private DescriptionService descriptionService;
 
+  @Autowired
+  private TodoProcessService todoProcessService;
+
+  @Autowired
+  private MessageService messageService;
+
   @Override
   public Item createItem(Long todo_id, String name) {
-    logger.info(name + " " + todo_id);
     Todo todo = todoRepo.getOne(todo_id);
     Item item = new Item();
     item.setName(name);
@@ -52,7 +59,9 @@ public class ItemServiceImpl implements ItemService {
     item.setCreatedAt(LocalDateTime.now());
     item.setCreatedBy(userService.getCurrentUser().getId());
     item.setTodoId(todo_id);
-    itemRepo.save(item);
+    Item newItem = itemRepo.save(item);
+    todoProcessService.startSubTodoServiceItem(todo_id, newItem.getId());
+    // messageService.sendMessageToCatchEvent("start-sub-item", "service-b-todo", todo_id);
     return item;
   }
 
@@ -71,5 +80,6 @@ public class ItemServiceImpl implements ItemService {
     List<Description> itemDescriptions = descriptionRepo.findByItemIdOrderByCreatedAt(item.getId());
     descriptionRepo.deleteInBatch(itemDescriptions);
     itemRepo.delete(item);
+
   }
 }

@@ -1,11 +1,17 @@
 package org.service.b.todo.serviceimpl;
 
+import org.camunda.bpm.engine.IdentityService;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.modelmapper.ModelMapper;
 import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.model.User;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.service.UserService;
 import org.service.b.common.message.Message;
+import org.service.b.common.message.service.MessageService;
+import org.service.b.common.message.service.ServiceBCamundaUserService;
+import org.service.b.common.message.service.ServiceBProcessService;
+import org.service.b.common.processservice.TodoProcessService;
 import org.service.b.todo.dto.ItemDto;
 import org.service.b.todo.dto.TodoDto;
 import org.service.b.todo.model.Item;
@@ -41,6 +47,18 @@ public class TodoServiceImpl implements TodoService {
   @Autowired
   private UserService userService;
 
+  @Autowired
+  private TodoProcessService todoProcessService;
+
+  @Autowired
+  private MessageService messageService;
+
+  @Autowired
+  private ServiceBCamundaUserService serviceBCamundaUserService;
+
+  @Autowired
+  private ServiceBProcessService serviceBProcessService;
+
   @Override
   public TodoDto createTodo(String title) {
     Todo todo = new Todo(title);
@@ -52,6 +70,7 @@ public class TodoServiceImpl implements TodoService {
     users.add(modelMapper.map(userDto, User.class));
     todo.setUsers(users);
     Todo newTodo = todoRepo.save(todo);
+    todoProcessService.startTodo(newTodo.getId(), userDto);
     return modelMapper.map(newTodo, TodoDto.class);
   }
 
@@ -121,7 +140,7 @@ public class TodoServiceImpl implements TodoService {
     userSet.add(user);
     todo.setUsers(userSet);
     todoRepo.save(todo);
-    // userRepo.save(user);
+    serviceBCamundaUserService.addUserToCamundaGroup(user_id.toString(), todo_id, "todo");
     return modelMapper.map(todo, TodoDto.class);
   }
 
@@ -134,17 +153,36 @@ public class TodoServiceImpl implements TodoService {
   }
 
   @Override
-  public Message deleteTodo(Long todo_id) {
-    Todo todo = todoRepo.getOne(todo_id);
-    logger.info("todo to delete " + todo);
-    logger.info(todo.getId().toString());
-    logger.info(todo.getTitle());
-    logger.info(todo.getItems().toString());
-    if (todo.getItems().isEmpty()) {
-      todoRepo.delete(todo);
+  public Message todoFinished(Long todo_id) {
+    TodoDto todoDto = getTodoById(todo_id);
+    if (todoDto.getItems().isEmpty()) {
+      messageService.sendMessageToCatchEvent("todo-finished", "service-b-todo", todo_id);
       return new Message("Todo successfully deleted", true);
     } else {
+      messageService.sendMessageToCatchEvent("todo-finished", "service-b-todo", todo_id);
       return new Message("There is still so much to do", false);
     }
+  }
+
+  @Override
+  public Message deleteTodo(Long todo_id) {
+    Todo todo = todoRepo.getOne(todo_id);
+    todoRepo.delete(todo);
+    return new Message("yepp", false);
+  }
+
+  @Override
+  public boolean checkOpenItems(String task_id) {
+    ProcessInstance processInstance = serviceBProcessService.getProcessInstanceByTask(task_id);
+    List<ProcessInstance> pis = serviceBProcessService.getProcessInstancesByBusinessKey(processInstance.getBusinessKey());
+    boolean openItems = true;
+    if (pis.size() > 1) {
+      openItems = true;
+    } else if (pis.size() == 1) {
+      openItems = false;
+    } else {
+      openItems = false;
+    }
+    return openItems;
   }
 }

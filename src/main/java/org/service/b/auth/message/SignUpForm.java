@@ -19,7 +19,7 @@ public class SignUpForm {
   private Set<String> role;
 
   @NotBlank
-  @Size(min = 6, max = 40)
+  @Size(min = 6, max = 70)
   private String password;
 
   private String password_confirmation;

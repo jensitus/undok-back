@@ -6,6 +6,7 @@ public class DescriptionDto {
   private String text;
   private Long item_id;
   private Long user_id;
+  private Long todo_id;
 
   public DescriptionDto() {
   }
@@ -40,6 +41,14 @@ public class DescriptionDto {
 
   public void setUser_id(Long user_id) {
     this.user_id = user_id;
+  }
+
+  public Long getTodo_id() {
+    return todo_id;
+  }
+
+  public void setTodo_id(Long todo_id) {
+    this.todo_id = todo_id;
   }
 
   @Override

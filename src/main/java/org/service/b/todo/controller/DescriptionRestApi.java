@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200"}, maxAge = 3600)
-@RequestMapping("/todos/{todo_id}/items")
+@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)
+@RequestMapping("/service/todos/{todo_id}/items")
 public class DescriptionRestApi {
 
   private static final Logger logger = LoggerFactory.getLogger(DescriptionRestApi.class);
@@ -30,17 +30,17 @@ public class DescriptionRestApi {
     return new ResponseEntity(descriptionDtos, HttpStatus.OK);
   }
 
-  @PostMapping("/{item_id}/descriptions/create")
-  public ResponseEntity createDescription(@RequestBody DescriptionForm descriptionForm, @PathVariable("item_id") Long item_id) {
+  @PostMapping("/{entity_id}/descriptions/create")
+  public ResponseEntity createDescription(@RequestBody DescriptionForm descriptionForm, @PathVariable("entity_id") Long entity_id, @RequestParam("entity") String entityName) {
     logger.info("Description Form: " + descriptionForm);
-    DescriptionDto descriptionDto = descriptionService.createDescription(descriptionForm, item_id);
+    DescriptionDto descriptionDto = descriptionService.createDescription(descriptionForm, entity_id, entityName);
     return new ResponseEntity(descriptionDto, HttpStatus.OK);
   }
 
-  @PutMapping("/{item_id}/descriptions/{description_id}/update")
-  public ResponseEntity updateDescription(@RequestBody DescriptionForm descriptionForm, @PathVariable("item_id") Long item_id, @PathVariable("description_id") Long description_id) {
+  @PutMapping("/{entity_id}/descriptions/{description_id}/update")
+  public ResponseEntity updateDescription(@RequestBody DescriptionForm descriptionForm, @PathVariable("entity_id") Long entity_id, @PathVariable("description_id") Long description_id, @RequestParam("entity") String entityName) {
     logger.info("description: " + descriptionForm.toString());
-    DescriptionDto descriptionDto = descriptionService.updateDescription(descriptionForm, item_id);
+    DescriptionDto descriptionDto = descriptionService.updateDescription(descriptionForm, entity_id, entityName);
     return new ResponseEntity(new Message("jessas"), HttpStatus.OK);
   }
 

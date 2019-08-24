@@ -7,8 +7,10 @@ import org.service.b.todo.dto.DescriptionDto;
 import org.service.b.todo.form.DescriptionForm;
 import org.service.b.todo.model.Description;
 import org.service.b.todo.model.Item;
+import org.service.b.todo.model.Todo;
 import org.service.b.todo.repository.DescriptionRepo;
 import org.service.b.todo.repository.ItemRepo;
+import org.service.b.todo.repository.TodoRepo;
 import org.service.b.todo.service.DescriptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,10 @@ public class DescriptionServiceImpl implements DescriptionService {
 
   private static final Logger logger = LoggerFactory.getLogger(DescriptionServiceImpl.class);
 
+  private static final String TODO_ENTITIY_NAME = "todo";
+
+  private static final String ITEM_ENTITIY_NAME = "item";
+
   @Autowired
   private DescriptionRepo descriptionRepo;
 
@@ -32,6 +38,9 @@ public class DescriptionServiceImpl implements DescriptionService {
 
   @Autowired
   private ItemRepo itemRepo;
+
+  @Autowired
+  private TodoRepo todoRepo;
 
   @Autowired
   private UserService userService;
@@ -48,19 +57,23 @@ public class DescriptionServiceImpl implements DescriptionService {
   }
 
   @Override
-  public DescriptionDto createDescription(DescriptionForm descriptionForm, Long item_id) {
+  public DescriptionDto createDescription(DescriptionForm descriptionForm, Long entity_id, String entityName) {
     Description description = new Description(descriptionForm.getText());
-    Item item = itemRepo.getOne(item_id);
-
     description.setCreatedAt(LocalDateTime.now());
-    description.setItem(item);
     description.setUserId(userService.getCurrentUser().getId());
+    if (TODO_ENTITIY_NAME.equals(entityName)) {
+      Todo todo = todoRepo.getOne(entity_id);
+      description.setTodoId(todo.getId());
+    } else if (ITEM_ENTITIY_NAME.equals(entityName)) {
+      Item item = itemRepo.getOne(entity_id);
+      description.setItem(item);
+    }
     descriptionRepo.save(description);
     return modelMapper.map(description, DescriptionDto.class);
   }
 
   @Override
-  public DescriptionDto updateDescription(DescriptionForm descriptionForm, Long item_id) {
+  public DescriptionDto updateDescription(DescriptionForm descriptionForm, Long entity_id, String entityName) {
     Description description = descriptionRepo.getOne(descriptionForm.getId());
     description.setText(descriptionForm.getText());
     descriptionRepo.save(description);

@@ -126,6 +126,9 @@ public class UserServiceImpl implements UserService {
     return userDto;
   }
 
-
-
+  @Override
+  public UserDto getById(Long user_id) {
+    User user = userRepo.getOne(user_id);
+    return modelMapper.map(user, UserDto.class);
+  }
 }

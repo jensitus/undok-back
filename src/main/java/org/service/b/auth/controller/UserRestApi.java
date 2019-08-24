@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200"}, maxAge = 3600)
+@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/service/users")
 public class UserRestApi {
 
   private static final Logger logger = LoggerFactory.getLogger(UserRestApi.class);
