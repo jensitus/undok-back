@@ -74,4 +74,15 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="rename_description_column" author="jensitus">
+        <renameColumn tableName="description" oldColumnName="text" newColumnName="text_"></renameColumn>
+    </changeSet>
+
+    <changeSet id="add_a_bigger_column_to_description" author="jensitus">
+        <addColumn tableName="description">
+            <column name="text" type="TEXT" />
+            <column name="todo_id" type="BIGINT" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -116,4 +116,5 @@ public class Todo {
   public void setUsers(Set<User> users) {
     this.users = users;
   }
+
 }

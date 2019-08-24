@@ -10,8 +10,8 @@ public interface DescriptionService {
 
   List<DescriptionDto> getDescriptionsByItemId(Long item_id);
 
-  DescriptionDto createDescription(DescriptionForm descriptionForm, Long item_id);
+  DescriptionDto createDescription(DescriptionForm descriptionForm, Long entity_id, String entityName);
 
-  DescriptionDto updateDescription(DescriptionForm descriptionForm, Long item_id);
+  DescriptionDto updateDescription(DescriptionForm descriptionForm, Long entity_id, String entityName);
 
 }

@@ -28,6 +28,9 @@ public class Description {
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
+  @Column(name = "todo_id")
+  private Long todoId;
+
   public Description() {
   }
 
@@ -83,15 +86,12 @@ public class Description {
     this.updatedAt = updatedAt;
   }
 
-  @Override
-  public String toString() {
-    return "Description{" +
-            "id=" + id +
-            ", text='" + text + '\'' +
-            ", item=" + item +
-            ", userId=" + userId +
-            ", createdAt=" + createdAt +
-            ", updatedAt=" + updatedAt +
-            '}';
+  public Long getTodoId() {
+    return todoId;
   }
+
+  public void setTodoId(Long todoId) {
+    this.todoId = todoId;
+  }
+
 }
