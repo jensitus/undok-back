@@ -9,7 +9,7 @@ import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.service.UserService;
-import org.service.b.common.config.ServiceBProcessVarNames;
+import org.service.b.common.config.ServiceBProcessEnums;
 import org.service.b.common.message.service.ServiceBCamundaUserService;
 import org.service.b.common.message.service.MessageService;
 import org.service.b.todo.dto.TodoDto;
@@ -59,9 +59,10 @@ public class TodoProcessService {
   private UserService userService;
 
   public ProcessInstance startTodo(Long todo_id, UserDto createUser) {
-    String pdk = ServiceBProcessVarNames.TODO_PROCESS_DEFINITION_KEY.value;
+    String pdk = ServiceBProcessEnums.TODO_PROCESS_DEFINITION_KEY.value;
     Map variables = new HashMap();
-    variables.put(ServiceBProcessVarNames.ENTITY_ID.value, todo_id);
+    variables.put(ServiceBProcessEnums.ENTITY_ID.value, todo_id);
+    variables.put(ServiceBProcessEnums.TODO_SIMPLE.value, false);
     ProcessInstance todoProcessInstance = runtimeService.startProcessInstanceByKey(pdk, pdk + "-" + todo_id.toString(), variables);
     List<String> stringList = new ArrayList<>();
     String theFinalGroupId = serviceBCamundaUserService.getTheCamundaGroupId(TODO_GROUP_PREFIX, todo_id);
@@ -123,7 +124,9 @@ public class TodoProcessService {
 
   public void deleteTodo(Execution execution, Long todo_id) {
     TodoDto todoDto = todoService.getTodoById(todo_id);
-      todoService.deleteTodo(todo_id);
+    todoService.deleteTodo(todo_id);
+    String theFinalGroupId = serviceBCamundaUserService.getTheCamundaGroupId(TODO_GROUP_PREFIX, todo_id);
+    identityService.deleteGroup(theFinalGroupId);
   }
 
   public void finishTodo(Execution execution, Long entityId) {

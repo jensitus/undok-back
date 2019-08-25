@@ -70,7 +70,6 @@ public class ServiceBTaskServiceImpl implements ServiceBTaskService {
   public String getVariable(String execution_id, String variableName) {
     Object entityId = runtimeService.getVariable(execution_id, variableName);
     String classNameDonnerWetter = entityId.getClass().toString();
-    logger.info(entityId.getClass().toString());
     return entityId.toString();
   }
 

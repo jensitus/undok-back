@@ -29,6 +29,8 @@ public class ServiceBCamundaUserServiceImpl implements ServiceBCamundaUserServic
   @Override
   public void addUserToCamundaGroup(String user_id, Long entity_id, String groupPrefix) {
     String groupId = theGroupId(groupPrefix, entity_id);
+    logger.info(groupId);
+    logger.info(user_id);
     identityService.createMembership(user_id, groupId);
   }
 

@@ -39,16 +39,13 @@ public class ServiceBProcessServiceImpl implements ServiceBProcessService {
   public ProcessInstance getProcessInstanceByTask(String taskId) {
     Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
     ProcessInstance pi = runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
-    logger.info("process Instance " + pi.toString());
     logger.info(pi.getProcessDefinitionId() + " " + pi.getBusinessKey() + " " + pi.getProcessInstanceId());
     return pi;
   }
 
   @Override
   public void setVariable(String executionId, String variableName, Boolean value) {
-    logger.info(executionId);
-    logger.info(variableName);
-    logger.info(value.toString());
+    logger.info("set " + variableName + " to " + value.toString());
     runtimeService.setVariable(executionId, variableName, value);
   }
 }

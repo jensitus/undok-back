@@ -100,10 +100,6 @@ public class CommonRestApi {
 
   @PostMapping("/setvariable/{execution_id}")
   public ResponseEntity setVariable(@PathVariable("execution_id") String executionId, @RequestParam("name") String name, @RequestBody String value) {
-    logger.info(executionId);
-    logger.info(name);
-    logger.info("value: " + value);
-    logger.info("");
     serviceBProcessService.setVariable(executionId, name, Boolean.valueOf(value));
     return new ResponseEntity(new Message("all good"), HttpStatus.OK);
   }
