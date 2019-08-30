@@ -34,7 +34,7 @@ public class TodoServiceImpl implements TodoService {
 
   private static final Logger logger = LoggerFactory.getLogger(TodoServiceImpl.class);
 
-  private static final String ADD_USER_EMAIL_SUBJECT = " someone added you to TODO";
+  private static final String ADD_USER_EMAIL_SUBJECT = " someone added you to ";
 
   private static final String ADD_USER_EMAIL_TEXT = "Hi there, you are added to ";
 
@@ -150,7 +150,7 @@ public class TodoServiceImpl implements TodoService {
     todo.setUsers(userSet);
     todoRepo.save(todo);
     serviceBCamundaUserService.addUserToCamundaGroup(user_id.toString(), todo_id, ServiceBProcessEnums.TODO_GROUP_PREFIX.value);
-    String subject = ServiceBProcessEnums.SERVICE_B_EMAIL_SUBJECT_PREFIX.value + ADD_USER_EMAIL_SUBJECT;
+    String subject = ServiceBProcessEnums.SERVICE_B_EMAIL_SUBJECT_PREFIX.value + ADD_USER_EMAIL_SUBJECT + todo.getTitle();
     String text = ADD_USER_EMAIL_TEXT + todo.getTitle();
     String salutation = user.getUsername();
     String url = ServiceBProcessEnums.SERVICE_B_BASE_URL.value;
