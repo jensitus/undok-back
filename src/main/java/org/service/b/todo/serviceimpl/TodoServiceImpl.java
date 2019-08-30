@@ -7,6 +7,8 @@ import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.model.User;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.service.UserService;
+import org.service.b.common.config.ServiceBProcessEnums;
+import org.service.b.common.mailer.service.ServiceBOrgMailer;
 import org.service.b.common.message.Message;
 import org.service.b.common.message.service.MessageService;
 import org.service.b.common.message.service.ServiceBCamundaUserService;
@@ -31,6 +33,10 @@ import java.util.*;
 public class TodoServiceImpl implements TodoService {
 
   private static final Logger logger = LoggerFactory.getLogger(TodoServiceImpl.class);
+
+  private static final String ADD_USER_EMAIL_SUBJECT = " someone added you to TODO";
+
+  private static final String ADD_USER_EMAIL_TEXT = "Hi there, you are added to ";
 
   @Autowired
   private TodoRepo todoRepo;
@@ -58,6 +64,9 @@ public class TodoServiceImpl implements TodoService {
 
   @Autowired
   private ServiceBProcessService serviceBProcessService;
+
+  @Autowired
+  private ServiceBOrgMailer serviceBOrgMailer;
 
   @Override
   public TodoDto createTodo(String title) {
@@ -140,7 +149,12 @@ public class TodoServiceImpl implements TodoService {
     userSet.add(user);
     todo.setUsers(userSet);
     todoRepo.save(todo);
-    serviceBCamundaUserService.addUserToCamundaGroup(user_id.toString(), todo_id, "todo");
+    serviceBCamundaUserService.addUserToCamundaGroup(user_id.toString(), todo_id, ServiceBProcessEnums.TODO_GROUP_PREFIX.value);
+    String subject = ServiceBProcessEnums.SERVICE_B_EMAIL_SUBJECT_PREFIX.value + ADD_USER_EMAIL_SUBJECT;
+    String text = ADD_USER_EMAIL_TEXT + todo.getTitle();
+    String salutation = user.getUsername();
+    String url = ServiceBProcessEnums.SERVICE_B_BASE_URL.value;
+    serviceBOrgMailer.getTheMailDetails(user.getEmail(),subject,text, salutation, url);
     return modelMapper.map(todo, TodoDto.class);
   }
 
