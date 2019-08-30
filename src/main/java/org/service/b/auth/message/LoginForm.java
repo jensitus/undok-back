@@ -12,7 +12,7 @@ public class LoginForm {
   private String email;
 
   @NotBlank
-  @Size(min = 6, max = 40)
+  @Size(min = 6, max = 70)
   private String password;
 
   public String getUsername() {
