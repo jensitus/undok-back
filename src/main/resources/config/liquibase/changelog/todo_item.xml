@@ -85,4 +85,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="add_due_date_to_item" author="jensitus">
+        <addColumn tableName="items">
+            <column name="due_date" type="DATE"></column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

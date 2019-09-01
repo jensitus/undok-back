@@ -50,7 +50,7 @@ public class DescriptionServiceImpl implements DescriptionService {
     List<Description> descriptionList = descriptionRepo.findByItemIdOrderByCreatedAt(item_id);
     List<DescriptionDto> descriptionDtoList = new ArrayList<>();
     for (Description description : descriptionList) {
-      logger.info("Description for Item {} found: {}", item_id, description);
+//      logger.info("Description for Item {} found: {}", item_id, description);
       descriptionDtoList.add(modelMapper.map(description, DescriptionDto.class));
     }
     return descriptionDtoList;

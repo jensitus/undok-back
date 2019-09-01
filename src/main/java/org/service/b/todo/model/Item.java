@@ -2,6 +2,7 @@ package org.service.b.todo.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -36,6 +37,9 @@ public class Item {
 
   @OneToMany(mappedBy = "item")
   private Set<Description> descriptions;
+
+  @Column(name = "due_date")
+  private LocalDate dueDate;
 
   public Item() {}
 
@@ -105,5 +109,13 @@ public class Item {
 
   public void setDescriptions(Set<Description> descriptions) {
     this.descriptions = descriptions;
+  }
+
+  public LocalDate getDueDate() {
+    return dueDate;
+  }
+
+  public void setDueDate(LocalDate dueDate) {
+    this.dueDate = dueDate;
   }
 }
