@@ -102,7 +102,7 @@ public class TodoProcessService {
   }
 
   public void deleteTodoItem(Long item_id) {
-    itemService.deleteItem(item_id);
+    // itemService.deleteItem(item_id);
   }
 
   public void checkIfItemsOpen(Execution execution, Long todo_id) {

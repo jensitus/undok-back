@@ -14,7 +14,7 @@ public interface ItemService {
 
   void deleteItem(Long item_id);
 
-  ItemDto setItemDueDate(Long item_id, LocalDate dueDate);
+  ItemDto setItemDueDate(Long item_id, String dueDate);
 
 
 

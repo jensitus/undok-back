@@ -91,4 +91,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="new_table_notify_users" author="jensitus">
+        <createTable tableName="notify_users">
+            <column name="id_" type="VARCHAR2(40)" />
+            <column name="notified" type="BOOLEAN" />
+            <column name="model_id" type="BIGINT" />
+            <column name="model_type" type="VARCHAR2(40)" />
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>

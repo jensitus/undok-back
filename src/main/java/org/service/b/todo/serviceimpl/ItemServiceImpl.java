@@ -16,11 +16,11 @@ import org.service.b.todo.service.ItemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -62,7 +62,7 @@ public class ItemServiceImpl implements ItemService {
     item.setCreatedBy(userService.getCurrentUser().getId());
     item.setTodoId(todo_id);
     Item newItem = itemRepo.save(item);
-    todoProcessService.startSubTodoServiceItem(todo_id, newItem.getId());
+    // todoProcessService.startSubTodoServiceItem(todo_id, newItem.getId());
     // messageService.sendMessageToCatchEvent("start-sub-item", "service-b-todo", todo_id);
     return item;
   }
@@ -79,6 +79,7 @@ public class ItemServiceImpl implements ItemService {
   @Override
   public void deleteItem(Long item_id) {
     Item item = itemRepo.getOne(item_id);
+    logger.info(item.toString());
     List<Description> itemDescriptions = descriptionRepo.findByItemIdOrderByCreatedAt(item.getId());
     descriptionRepo.deleteInBatch(itemDescriptions);
     itemRepo.delete(item);
@@ -86,15 +87,34 @@ public class ItemServiceImpl implements ItemService {
   }
 
   @Override
-  public ItemDto setItemDueDate(Long item_id, LocalDate dueDate) {
+  public ItemDto setItemDueDate(Long item_id, String dueDate) {
+    logger.info(dueDate.toString());
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    LocalDate formattedDueDate = LocalDate.parse(dueDate, formatter);
     Item item = itemRepo.getOne(item_id);
-    item.setDueDate(dueDate);
+    item.setDueDate(formattedDueDate);
     itemRepo.save(item);
-    return modelMapper.map(item, ItemDto.class);
+    ItemDto itemDto = modelMapper.map(item, ItemDto.class);
+    logger.info(itemDto.toString());
+    return itemDto;
   }
 
-//  @Scheduled(fixedRate = 1000)
-//  public void checkFixedRateTask() {
-//    logger.info("fix the Rate " + System.currentTimeMillis() / 1000);
+  /**
+  * We will need the scheduler below in future versions
+  * */
+//  @Scheduled(cron = "0 34 14 * * *")
+//  private void checkFixedRateTask() {
+//    logger.info("fix the Rate " + LocalDateTime.now());
+//    LocalDate dueDateStart = LocalDate.now();
+//    LocalDate dueDateEnd = LocalDate.now().plusDays(2);
+//    getDueDatedItems(dueDateStart, dueDateEnd);
 //  }
+//
+//  private void getDueDatedItems(LocalDate dueDateStart, LocalDate dueDateEnd) {
+//    List<Item> itemList = itemRepo.findByDueDateBetween(dueDateStart, dueDateEnd);
+//    for (Item item : itemList) {
+//      logger.info(item.toString());
+//    }
+//  }
+
 }

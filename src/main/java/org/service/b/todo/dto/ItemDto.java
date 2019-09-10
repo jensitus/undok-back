@@ -57,4 +57,15 @@ public class ItemDto {
   public void setDueDate(LocalDate dueDate) {
     this.dueDate = dueDate;
   }
+
+  @Override
+  public String toString() {
+    return "ItemDto{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", done=" + done +
+            ", todo_id=" + todo_id +
+            ", dueDate=" + dueDate +
+            '}';
+  }
 }

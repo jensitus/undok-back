@@ -47,6 +47,11 @@ public class Item {
     this.name = name;
   }
 
+  public Item(@NotNull String name, @NotNull boolean done, Long todoId, LocalDate dueDate) {
+    this.name = name;
+    this.dueDate = dueDate;
+  }
+
   public Long getId() {
     return id;
   }
@@ -117,5 +122,19 @@ public class Item {
 
   public void setDueDate(LocalDate dueDate) {
     this.dueDate = dueDate;
+  }
+
+  @Override
+  public String toString() {
+    return "Item{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", done=" + done +
+            ", todoId=" + todoId +
+            ", createdAt=" + createdAt +
+            ", updatedAt=" + updatedAt +
+            ", createdBy=" + createdBy +
+            ", dueDate=" + dueDate +
+            '}';
   }
 }
