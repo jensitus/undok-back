@@ -14,6 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.Path;
+import java.time.LocalDate;
+
 @RestController
 @CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)
 @RequestMapping("/service/todos")
@@ -53,10 +56,17 @@ public class ItemRestApi {
 
   @DeleteMapping("/{todo_id}/items/{item_id}")
   public ResponseEntity deleteTodoItem(@PathVariable("todo_id") Long todo_id, @PathVariable("item_id") Long item_id) {
-    // itemService.deleteItem(item_id);
     messageService.sendMessageToCatchEvent("sub-item-done", "sub-todo-service-item", item_id);
+    itemService.deleteItem(item_id);
     Message message = new Message("successfully deleted");
     return new ResponseEntity(message, HttpStatus.OK);
+  }
+
+  @PutMapping("/{todo_id}/items/{item_id}/due_date")
+  public ResponseEntity setItemDuedate(@PathVariable("todo_id") Long todo_id, @PathVariable("item_id") Long item_id, @RequestBody String dueDate) {
+    logger.info(dueDate.toString());
+    ItemDto itemDto = itemService.setItemDueDate(item_id, dueDate);
+    return new ResponseEntity(itemDto, HttpStatus.OK);
   }
 
 }

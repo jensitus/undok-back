@@ -1,8 +1,7 @@
 package org.service.b.todo.dto;
 
-import org.service.b.todo.model.Todo;
-
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 public class ItemDto {
 
@@ -14,6 +13,8 @@ public class ItemDto {
   private boolean done;
 
   private Long todo_id;
+
+  private LocalDate dueDate;
 
   public ItemDto() {}
 
@@ -47,5 +48,24 @@ public class ItemDto {
 
   public void setTodo_id(Long todo_id) {
     this.todo_id = todo_id;
+  }
+
+  public LocalDate getDueDate() {
+    return dueDate;
+  }
+
+  public void setDueDate(LocalDate dueDate) {
+    this.dueDate = dueDate;
+  }
+
+  @Override
+  public String toString() {
+    return "ItemDto{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", done=" + done +
+            ", todo_id=" + todo_id +
+            ", dueDate=" + dueDate +
+            '}';
   }
 }
