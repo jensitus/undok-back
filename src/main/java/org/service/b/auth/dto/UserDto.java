@@ -44,4 +44,14 @@ public class UserDto {
   public void setAccessToken(String accessToken) {
     this.accessToken = accessToken;
   }
+
+  @Override
+  public String toString() {
+    return "UserDto{" +
+            "id=" + id +
+            ", username='" + username + '\'' +
+            ", email='" + email + '\'' +
+            ", accessToken='" + accessToken + '\'' +
+            '}';
+  }
 }

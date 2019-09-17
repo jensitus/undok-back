@@ -99,5 +99,11 @@
             <column name="model_type" type="VARCHAR2(40)" />
         </createTable>
     </changeSet>
+    <changeSet id="what_notification" author="jensitus">
+        <addColumn tableName="notify_users">
+            <column name="what_is_reported" type="VARCHAR2(40)" />
+            <column name="id" type="VARCHAR2(40)" />
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

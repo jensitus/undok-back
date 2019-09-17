@@ -40,7 +40,7 @@ public class ItemRestApi {
 
   @PostMapping("/{todo_id}/items")
   public ResponseEntity createTodoItem(@PathVariable("todo_id") Long todo_id, @RequestBody ItemForm itemForm) {
-    Item jepp = itemService.createItem(todo_id, itemForm.getName());
+    ItemDto jepp = itemService.createItem(todo_id, itemForm.getName());
     return new ResponseEntity(jepp, HttpStatus.OK);
   }
 

@@ -78,4 +78,17 @@ public class TodoDto {
   public void setDescription(DescriptionDto description) {
     this.description = description;
   }
+
+  @Override
+  public String toString() {
+    return "TodoDto{" +
+            "id=" + id +
+            ", title='" + title + '\'' +
+            ", createdBy=" + createdBy +
+            ", done=" + done +
+            ", items=" + items +
+            ", users=" + users +
+            ", description=" + description +
+            '}';
+  }
 }
