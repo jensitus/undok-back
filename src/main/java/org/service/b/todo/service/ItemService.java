@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 public interface ItemService {
 
-  Item createItem(Long todo_id, String name);
+  ItemDto createItem(Long todo_id, String name);
 
   ItemDto updateItem(Long item_id);
 

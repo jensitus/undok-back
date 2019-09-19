@@ -11,8 +11,12 @@ public enum ServiceBProcessEnums {
 
   public final String value;
 
-  private ServiceBProcessEnums(String value) {
+  ServiceBProcessEnums(String value) {
     this.value = value;
+  }
+
+  public String getValue() {
+    return value;
   }
 
 }

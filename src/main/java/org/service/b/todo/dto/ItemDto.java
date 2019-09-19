@@ -12,9 +12,11 @@ public class ItemDto {
 
   private boolean done;
 
-  private Long todo_id;
+  private Long todoId;
 
   private LocalDate dueDate;
+
+  private Long createdBy;
 
   public ItemDto() {}
 
@@ -42,12 +44,12 @@ public class ItemDto {
     this.done = done;
   }
 
-  public Long getTodo_id() {
-    return todo_id;
+  public Long getTodoId() {
+    return todoId;
   }
 
-  public void setTodo_id(Long todo_id) {
-    this.todo_id = todo_id;
+  public void setTodoId(Long todoId) {
+    this.todoId = todoId;
   }
 
   public LocalDate getDueDate() {
@@ -58,13 +60,21 @@ public class ItemDto {
     this.dueDate = dueDate;
   }
 
+  public Long getCreatedBy() {
+    return createdBy;
+  }
+
+  public void setCreatedBy(Long createdBy) {
+    this.createdBy = createdBy;
+  }
+
   @Override
   public String toString() {
     return "ItemDto{" +
             "id=" + id +
             ", name='" + name + '\'' +
             ", done=" + done +
-            ", todo_id=" + todo_id +
+            ", todo_id=" + todoId +
             ", dueDate=" + dueDate +
             '}';
   }
