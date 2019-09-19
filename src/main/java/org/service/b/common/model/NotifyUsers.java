@@ -10,6 +10,9 @@ public class NotifyUsers {
   private String id;
 
   @Id
+  @Column(name = "string_id")
+  private String stringId;
+
   @Column(name = "id_")
   private String id_;
 
@@ -36,6 +39,14 @@ public class NotifyUsers {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public String getStringId() {
+    return stringId;
+  }
+
+  public void setStringId(String stringId) {
+    this.stringId = stringId;
   }
 
   public String getId_() {
@@ -82,6 +93,7 @@ public class NotifyUsers {
   public String toString() {
     return "NotifyUsers{" +
             "id='" + id + '\'' +
+            ", stringId='" + stringId + '\'' +
             ", id_='" + id_ + '\'' +
             ", notified=" + notified +
             ", modelId=" + modelId +

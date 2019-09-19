@@ -40,7 +40,7 @@ public class ItemServiceImpl implements ItemService {
 
   private static final Logger logger = LoggerFactory.getLogger(ItemServiceImpl.class);
 
-  private static final String NEW_ITEMS_EMAIL_SUBJECT = "new items";
+  private static final String NEW_ITEMS_EMAIL_SUBJECT = "new items ";
 
   @Autowired
   private TodoRepo todoRepo;
@@ -83,15 +83,13 @@ public class ItemServiceImpl implements ItemService {
     item.setTodoId(todo_id);
     Item newItem = itemRepo.save(item);
     ItemDto itemDto = modelMapper.map(newItem, ItemDto.class);
-    // todoProcessService.startSubTodoServiceItem(todo_id, newItem.getId());
-    // messageService.sendMessageToCatchEvent("start-sub-item", "service-b-todo", todo_id);
     NotifyUsers notifyUsers = new NotifyUsers();
     notifyUsers.setId(createIdForNotifyingTheUser(itemDto.getId(), itemDto.getName()));
-    notifyUsers.setId_(createIdForNotifyingTheUser(itemDto.getId(), itemDto.getName()));
     notifyUsers.setWhatIsReported(WhatIsReported.NEW_ITEM);
     notifyUsers.setModelId(itemDto.getId());
     notifyUsers.setModelType(ModelType.ITEM);
     notifyUsers.setNotified(false);
+    notifyUsers.setStringId(createIdForNotifyingTheUser(itemDto.getId(), itemDto.getName()));
     notifyUsersRepo.save(notifyUsers);
     return itemDto;
   }
@@ -111,7 +109,7 @@ public class ItemServiceImpl implements ItemService {
     logger.info(item.toString());
     List<Description> itemDescriptions = descriptionRepo.findByItemIdOrderByCreatedAt(item.getId());
     descriptionRepo.deleteInBatch(itemDescriptions);
-    NotifyUsers notifyUsers = notifyUsersRepo.findById_(createIdForNotifyingTheUser(item.getId(), item.getName()));
+    NotifyUsers notifyUsers = notifyUsersRepo.findByStringId(createIdForNotifyingTheUser(item.getId(), item.getName()));
     if (notifyUsers != null) {
       notifyUsersRepo.delete(notifyUsers);
     }
@@ -157,49 +155,44 @@ public class ItemServiceImpl implements ItemService {
     return id.toString() + "_" + donnerString;
   }
 
-  @Scheduled(fixedRate = 60000)
+  @Scheduled(cron = "0 0/10 6-22 * * *")
   @Transactional
-  public void informAboutNewItem() {
+  public synchronized void informAboutNewItem() {
     List<ItemDto> itemDtoList = new ArrayList<>();
     Map<Long, List<ItemDto>> itemMap = new HashMap<>();
     List<NotifyUsers> notifyList = notifyUsersRepo.findByModelTypeAndNotified(ModelType.ITEM, false);
-
-    itemMap = notifyList.stream().map(n -> getItemDto(n.getModelId())).collect(Collectors.groupingBy(ItemDto::getTodoId));
-    Map<TodoDto, List<ItemDto>> todoItemMap = itemMap.entrySet().stream().collect(Collectors.toMap(e -> getTodoDto(e.getKey()), e -> e.getValue()));
-    Set users = todoItemMap.entrySet().stream().flatMap(e -> e.getKey().getUsers().stream()).distinct().collect(Collectors.toSet());
-    for (TodoDto todoDto : todoItemMap.keySet()) {
-      logger.info("todoItemMapKey" + todoDto.toString());
-      String subject = ServiceBProcessEnums.SERVICE_B_EMAIL_SUBJECT_PREFIX.getValue() + NEW_ITEMS_EMAIL_SUBJECT + todoDto.getTitle();
-      String text = "the following items are new in<br>" + todoDto.getTitle();
-      String username = null;
-      String url = ServiceBProcessEnums.SERVICE_B_BASE_URL.getValue();
-      for (ItemDto itemDto : todoItemMap.get(todoDto)) {
-        logger.info(itemDto.toString());
-        text = text + "<br>&nbsp; - " + itemDto.getName();
+    if (!notifyList.isEmpty()) {
+      List<ItemDto> itemsToSetNotified = new ArrayList<>();
+      itemMap = notifyList.stream().map(n -> getItemDto(n.getModelId())).collect(Collectors.groupingBy(ItemDto::getTodoId));
+      Map<TodoDto, List<ItemDto>> todoItemMap = itemMap.entrySet().stream().collect(Collectors.toMap(e -> getTodoDto(e.getKey()), e -> e.getValue()));
+      for (TodoDto todoDto : todoItemMap.keySet()) {
+        logger.info("todoItemMapKey" + todoDto.toString());
+        String subject = ServiceBProcessEnums.SERVICE_B_EMAIL_SUBJECT_PREFIX.getValue() + NEW_ITEMS_EMAIL_SUBJECT + todoDto.getTitle();
+        String text = "the following items are new in<br><b>" + todoDto.getTitle() + ":</b>";
+        String url = ServiceBProcessEnums.SERVICE_B_BASE_URL.getValue();
+        for (ItemDto itemDto : todoItemMap.get(todoDto)) {
+          logger.info(itemDto.toString());
+          text = text + "<br>&nbsp; - " + itemDto.getName();
+          if (itemDto != null) {
+            itemsToSetNotified.add(itemDto);
+          }
+        }
+        sendTheMail(todoDto, subject, text, url);
       }
-      // todoDto.getUsers().stream().filter(u -> serviceBOrgMailer.getTheMailDetails(u.getEmail(), subject, text, u.getUsername(), url));
-      for (UserDto u : todoDto.getUsers()) {
-        username = u.getUsername();
-        serviceBOrgMailer.getTheMailDetails(u.getEmail(), subject, text, username, url);
-      }
-
+      setNotifiedTrue(itemsToSetNotified);
     }
-//    Map<User, Map<Todo, List<ItemDto>>> itemsPerUser =
-//            (Map<User, Map<Todo, List<ItemDto>>>) users.stream()
-//                    .collect(Collectors.toMap(
-//                            u -> u,
-//                            u -> todoItemMap.entrySet().stream()
-//                                    .filter(e -> e.getKey().getUsers().contains(u))
-//                                    .collect(Collectors.toMap(
-//                                            e -> e.getKey(),
-//                                            e -> e.getValue().stream().filter(i -> !i.getCreatedBy().equals(((User) u).getId()))))));
+  }
 
-//    logger.info("Collections: " + itemsPerUser.entrySet().stream()
-//              .map(e -> e.getKey().getEmail() + ":"
-//                      + e.getValue().entrySet().stream()
-//                      .map(e2 -> e2.getKey().getTitle() + ":"
-//                      + Arrays.toString(e2.getValue().stream().map(i -> i.getName()).collect(Collectors.toList()).toArray()))));
-    logger.info("stop here");
+  private void sendTheMail(TodoDto todoDto, String subject, String text, String url) {
+    todoDto.getUsers().forEach(u -> serviceBOrgMailer.getTheMailDetails(u.getEmail(), subject, text, u.getUsername(), url));
+  }
+
+  private void setNotifiedTrue(List<ItemDto> itemToSetNotified) {
+    for (ItemDto itemDto : itemToSetNotified) {
+      NotifyUsers notifyUsers = notifyUsersRepo.findByStringId(createIdForNotifyingTheUser(itemDto.getId(), itemDto.getName()));
+      notifyUsers.setNotified(true);
+      notifyUsersRepo.save(notifyUsers);
+    }
   }
 
   private ItemDto getItemDto(Long id) {
@@ -211,7 +204,5 @@ public class ItemServiceImpl implements ItemService {
     Todo todo = todoRepo.getOne(id);
     return modelMapper.map(todo, TodoDto.class);
   }
-
-
 
 }

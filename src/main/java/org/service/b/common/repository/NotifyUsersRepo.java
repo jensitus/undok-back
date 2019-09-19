@@ -12,4 +12,6 @@ public interface NotifyUsersRepo extends JpaRepository<NotifyUsers, String> {
 
   List findByModelTypeAndNotified(ModelType modelType, boolean notified);
 
+  NotifyUsers findByStringId(String string_id);
+
 }
