@@ -155,7 +155,7 @@ public class ItemServiceImpl implements ItemService {
     return id.toString() + "_" + donnerString;
   }
 
-  @Scheduled(cron = "0 0/10 6-23 * * *")
+  @Scheduled(cron = "0 0/20 7-21 * * *")
   @Transactional
   public synchronized void informAboutNewItem() {
     List<ItemDto> itemDtoList = new ArrayList<>();
