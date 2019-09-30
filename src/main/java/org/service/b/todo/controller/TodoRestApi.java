@@ -54,8 +54,8 @@ public class TodoRestApi {
 
   @PostMapping("/{todo_id}/add_user")
   public ResponseEntity addUserToTodo(@PathVariable("todo_id") Long todo_id, @RequestBody UserForm userForm) {
-    logger.info("todo_id: " + todo_id + " userForm.getId(): " + userForm.getUser_id());
-    TodoDto todoDto = todoService.addUserToTodo(todo_id, userForm.getUser_id());
+    logger.info("todo_id: " + todo_id + " userForm.getId(): " + userForm.getUserId());
+    TodoDto todoDto = todoService.addUserToTodo(todo_id, userForm.getUserId());
     return new ResponseEntity(todoDto, HttpStatus.OK);
   }
 

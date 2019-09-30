@@ -1,6 +1,7 @@
 package org.service.b.todo.serviceimpl;
 
 import org.camunda.bpm.engine.IdentityService;
+import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.modelmapper.ModelMapper;
 import org.service.b.auth.dto.UserDto;
@@ -67,6 +68,9 @@ public class TodoServiceImpl implements TodoService {
 
   @Autowired
   private ServiceBOrgMailer serviceBOrgMailer;
+
+  @Autowired
+  private RuntimeService runtimeService;
 
   @Override
   public TodoDto createTodo(String title) {
@@ -189,14 +193,18 @@ public class TodoServiceImpl implements TodoService {
   public boolean checkOpenItems(String task_id) {
     ProcessInstance processInstance = serviceBProcessService.getProcessInstanceByTask(task_id);
     List<ProcessInstance> pis = serviceBProcessService.getProcessInstancesByBusinessKey(processInstance.getBusinessKey());
+
+    Long todoId = (Long) runtimeService.getVariable(processInstance.getProcessInstanceId(), ServiceBProcessEnums.ENTITY_ID.getValue());
+    List todoItems = getTodoItems(todoId);
     boolean openItems = true;
-    if (pis.size() > 1) {
+    if (todoItems.size() > 1) {
       openItems = true;
-    } else if (pis.size() == 1) {
+    } else if (todoItems.size() == 1) {
       openItems = false;
     } else {
       openItems = false;
     }
+
     return openItems;
   }
 }
