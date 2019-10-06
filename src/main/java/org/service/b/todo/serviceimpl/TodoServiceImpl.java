@@ -192,8 +192,6 @@ public class TodoServiceImpl implements TodoService {
   @Override
   public boolean checkOpenItems(String task_id) {
     ProcessInstance processInstance = serviceBProcessService.getProcessInstanceByTask(task_id);
-    List<ProcessInstance> pis = serviceBProcessService.getProcessInstancesByBusinessKey(processInstance.getBusinessKey());
-
     Long todoId = (Long) runtimeService.getVariable(processInstance.getProcessInstanceId(), ServiceBProcessEnums.ENTITY_ID.getValue());
     List todoItems = getTodoItems(todoId);
     boolean openItems = true;
@@ -204,7 +202,6 @@ public class TodoServiceImpl implements TodoService {
     } else {
       openItems = false;
     }
-
     return openItems;
   }
 }
