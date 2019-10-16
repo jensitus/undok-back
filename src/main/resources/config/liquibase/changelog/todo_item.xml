@@ -110,5 +110,26 @@
             <column name="string_id" type="VARCHAR2(40)" />
         </addColumn>
     </changeSet>
+    
+    <changeSet id="drop_underscore_id_from_notify_users" author="jensitus">
+        <dropColumn tableName="notify_users" columnName="id_" />
+    </changeSet>
+
+    <changeSet id="drop_id_from_notify_users" author="jensitus">
+        <dropColumn tableName="notify_users" columnName="id" />
+    </changeSet>
+
+    <changeSet id="add_uuid_id" author="jensitus">
+        <addColumn tableName="notify_users">
+            <column name="id" type="VARCHAR2(40)">
+                <constraints primaryKey="true" unique="true" nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="modify_id_data_type_notify_users" author="jensitus">
+        <modifyDataType tableName="notify_users" columnName="id" newDataType="uuid" />
+    </changeSet>
+
 
 </databaseChangeLog>

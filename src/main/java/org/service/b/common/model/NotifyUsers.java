@@ -1,20 +1,23 @@
 package org.service.b.common.model;
 
+import lombok.val;
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "notify_users")
 public class NotifyUsers {
 
-  @Column(name = "id")
-  private String id;
-
   @Id
+  @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @Column(name = "id", length = 16, unique = true, nullable = false)
+  private UUID id;
+
   @Column(name = "string_id")
   private String stringId;
-
-  @Column(name = "id_")
-  private String id_;
 
   @Column(name = "notified")
   private boolean notified;
@@ -33,11 +36,11 @@ public class NotifyUsers {
   public NotifyUsers() {
   }
 
-  public String getId() {
+  public UUID getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(UUID id) {
     this.id = id;
   }
 
@@ -47,14 +50,6 @@ public class NotifyUsers {
 
   public void setStringId(String stringId) {
     this.stringId = stringId;
-  }
-
-  public String getId_() {
-    return id_;
-  }
-
-  public void setId_(String id_) {
-    this.id_ = id_;
   }
 
   public boolean isNotified() {
@@ -92,9 +87,8 @@ public class NotifyUsers {
   @Override
   public String toString() {
     return "NotifyUsers{" +
-            "id='" + id + '\'' +
+            "id=" + id +
             ", stringId='" + stringId + '\'' +
-            ", id_='" + id_ + '\'' +
             ", notified=" + notified +
             ", modelId=" + modelId +
             ", modelType=" + modelType +
