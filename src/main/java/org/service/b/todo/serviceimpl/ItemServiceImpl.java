@@ -188,7 +188,7 @@ public class ItemServiceImpl implements ItemService {
   public synchronized void informAboutNewItem() {
     List<ItemDto> itemDtoList = new ArrayList<>();
     Map<Long, List<ItemDto>> itemMap = new HashMap<>();
-    List<NotifyUsers> notifyList = notifyUsersRepo.findByModelTypeAndNotified(ModelType.ITEM, false);
+    List<NotifyUsers> notifyList = notifyUsersRepo.findByWhatIsReportedAndNotified(WhatIsReported.NEW_ITEM, false);
     if (!notifyList.isEmpty()) {
       List<ItemDto> itemsToSetNotified = new ArrayList<>();
       itemMap = notifyList.stream().map(n -> getItemDto(n.getModelId())).collect(Collectors.groupingBy(ItemDto::getTodoId));
