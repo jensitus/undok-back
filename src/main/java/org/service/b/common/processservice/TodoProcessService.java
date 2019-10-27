@@ -1,6 +1,7 @@
 package org.service.b.common.processservice;
 
 import org.camunda.bpm.engine.FormService;
+import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.identity.Group;
@@ -57,6 +58,9 @@ public class TodoProcessService {
 
   @Autowired
   private UserService userService;
+
+  @Autowired
+  private HistoryService historyService;
 
   public ProcessInstance startTodo(Long todo_id, UserDto createUser) {
     String pdk = ServiceBProcessEnums.TODO_PROCESS_DEFINITION_KEY.value;
@@ -146,6 +150,9 @@ public class TodoProcessService {
 
   public String getGroup(Long todoId) {
     return serviceBCamundaUserService.getTheCamundaGroupId("todo", todoId);
+  }
+
+  public void deleteProcessInstance() {
   }
 
 }
