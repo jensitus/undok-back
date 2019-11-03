@@ -18,6 +18,4 @@ public interface ItemService {
 
   ItemDto setItemDueDate(Long item_id, String dueDate);
 
-  List<TimelineItemDto> getItemsForTimeline(Long user_id);
-
 }

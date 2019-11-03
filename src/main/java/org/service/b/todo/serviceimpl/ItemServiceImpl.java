@@ -152,22 +152,6 @@ public class ItemServiceImpl implements ItemService {
     return itemDto;
   }
 
-  @Override
-  public List<TimelineItemDto> getItemsForTimeline(Long user_id) {
-    List<TimelineItemDto> timelineItemDtos = new ArrayList<>();
-    List<Item> oldItems = itemRepo.findItemsByUserIdOrderByCreatedAt(user_id);
-    // oldItems.stream().filter(oldItem -> oldItemDtos.add(modelMapper.map(oldItem, ItemDto.class)));
-    for (Item item : oldItems) {
-      TodoDto todoDto = getTodoDto(item.getTodoId());
-      TimelineItemDto timelineItemDto = modelMapper.map(item, TimelineItemDto.class);
-      String taskId = serviceBTaskService.getTaskForTimeLine(timelineItemDto.getTodoId());
-      timelineItemDto.setTaskId(taskId);
-      timelineItemDto.setTodoTitle(todoDto.getTitle());
-      timelineItemDtos.add(timelineItemDto);
-    }
-    return timelineItemDtos;
-  }
-
   /**
    * We will need the scheduler below in future versions
    */

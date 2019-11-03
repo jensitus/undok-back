@@ -1,6 +1,7 @@
 package org.service.b.common.controller;
 
 import org.service.b.common.dto.TimelineItemDto;
+import org.service.b.common.message.service.TimelineService;
 import org.service.b.todo.service.ItemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,11 +21,19 @@ public class TimelineController {
   @Autowired
   private ItemService itemService;
 
+  @Autowired
+  private TimelineService timelineService;
+
   @GetMapping("/{user_id}/items")
-  public ResponseEntity getItemsByUserId(@PathVariable("user_id") Long user_id) {logger.info("user_id", user_id);
-    final List<TimelineItemDto> itemsForTimeline = itemService.getItemsForTimeline(user_id);
+  public ResponseEntity getItemsByUserId(@PathVariable("user_id") Long user_id) {
+    List<TimelineItemDto> itemsForTimeline = timelineService.getItemsForTimeline(user_id);
     List itemList = itemsForTimeline;
     return new ResponseEntity(itemList, HttpStatus.OK);
+  }
+
+  @GetMapping("/{user_id}/items/month")
+  public ResponseEntity getItemsByUserIdSortedByMonth(@PathVariable("user_id") Long user_id) {
+    return new ResponseEntity(timelineService.getItemsGroupedByMonth(user_id), HttpStatus.OK);
   }
 
 }
