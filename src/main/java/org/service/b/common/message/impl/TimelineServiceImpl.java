@@ -16,9 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -41,7 +39,14 @@ public class TimelineServiceImpl implements TimelineService {
 
   @Override
   public List<TimelineItemDto> getItemsForTimeline(Long user_id) {
-    return getTimelineDtos(user_id);
+    List<TimelineItemDto> timelineItemDtoList = getTimelineDtos(user_id);
+    List<TimelineItemDto> dueDateFirstList = timelineItemDtoList.stream().filter(x -> x.getDueDate() != null).collect(Collectors.toList());
+    for (TimelineItemDto t : timelineItemDtoList) {
+      if (t.getDueDate() == null) {
+        dueDateFirstList.add(t);
+      }
+    }
+    return dueDateFirstList;
   }
 
   @Override
@@ -73,5 +78,7 @@ public class TimelineServiceImpl implements TimelineService {
     }
     return timelineItemDtos;
   }
+
+
 
 }
