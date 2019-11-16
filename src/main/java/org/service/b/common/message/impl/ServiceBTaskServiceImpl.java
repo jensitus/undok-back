@@ -3,8 +3,10 @@ package org.service.b.common.message.impl;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.Task;
 import org.modelmapper.ModelMapper;
+import org.service.b.common.config.ServiceBProcessEnums;
 import org.service.b.common.dto.TaskDto;
 import org.service.b.common.message.service.ServiceBTaskService;
 import org.slf4j.Logger;
@@ -42,7 +44,30 @@ public class ServiceBTaskServiceImpl implements ServiceBTaskService {
   @Override
   public TaskDto getSingleTask(String task_id) {
     Task task = taskService.createTaskQuery().initializeFormKeys().taskId(task_id).singleResult();
-    return mapTaskToDto(task);
+    if (task == null) {
+      return null;
+    } else {
+      return mapTaskToDto(task);
+    }
+  }
+
+  @Override
+  public String getTaskForTimeLine(Long todo_id) {
+    String businessKey = ServiceBProcessEnums.TODO_PROCESS_DEFINITION_KEY.getValue() + "-" + todo_id.toString();
+    List<Task> taskList = new ArrayList<>();
+    List<ProcessInstance> piList = runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey).active().list();
+    for (ProcessInstance pi : piList) {
+       for (Task task : taskService.createTaskQuery().active().processInstanceId(pi.getProcessInstanceId()).list()) {
+         taskList.add(task);
+       }
+    }
+    if (taskList.size() == 1) {
+      return taskList.get(0).getId();
+    } else if (taskList.size() > 1) {
+      return taskList.get(0).getId();
+    } else {
+      return null;
+    }
   }
 
   @Override

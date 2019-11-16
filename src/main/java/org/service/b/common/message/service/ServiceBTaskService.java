@@ -17,4 +17,6 @@ public interface ServiceBTaskService {
 
   String getVariable(String execution_id, String variableName);
 
+  String getTaskForTimeLine(Long todo_id);
+
 }

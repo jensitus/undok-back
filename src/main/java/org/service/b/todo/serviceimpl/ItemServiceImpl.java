@@ -3,13 +3,16 @@ package org.service.b.todo.serviceimpl;
 import org.modelmapper.ModelMapper;
 import org.service.b.auth.service.UserService;
 import org.service.b.common.config.ServiceBProcessEnums;
+import org.service.b.common.dto.TimelineItemDto;
 import org.service.b.common.mailer.service.ServiceBOrgMailer;
 import org.service.b.common.message.service.MessageService;
+import org.service.b.common.message.service.ServiceBTaskService;
 import org.service.b.common.model.ModelType;
 import org.service.b.common.model.NotifyUsers;
 import org.service.b.common.model.WhatIsReported;
 import org.service.b.common.processservice.TodoProcessService;
 import org.service.b.common.repository.NotifyUsersRepo;
+import org.service.b.todo.dto.DescriptionDto;
 import org.service.b.todo.dto.ItemDto;
 import org.service.b.todo.dto.TodoDto;
 import org.service.b.todo.model.Description;
@@ -74,6 +77,9 @@ public class ItemServiceImpl implements ItemService {
 
   @Autowired
   private ServiceBOrgMailer serviceBOrgMailer;
+
+  @Autowired
+  private ServiceBTaskService serviceBTaskService;
 
   @Override
   public ItemDto createItem(Long todo_id, String name) {
@@ -232,6 +238,8 @@ public class ItemServiceImpl implements ItemService {
     Todo todo = todoRepo.getOne(id);
     return modelMapper.map(todo, TodoDto.class);
   }
+
+
 
 //  private void setNewStringId() {
 //    List<NotifyUsers> notifyUsersList = notifyUsersRepo.findAll();

@@ -1,10 +1,10 @@
-package org.service.b.todo.dto;
+package org.service.b.common.dto;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class ItemDto {
+public class TimelineItemDto {
 
   @NotNull
   private Long id;
@@ -21,7 +21,12 @@ public class ItemDto {
 
   private LocalDateTime createdAt;
 
-  public ItemDto() {}
+  private String taskId;
+
+  private String todoTitle;
+
+  public TimelineItemDto() {
+  }
 
   public Long getId() {
     return id;
@@ -79,16 +84,19 @@ public class ItemDto {
     this.createdAt = createdAt;
   }
 
-  @Override
-  public String toString() {
-    return "ItemDto{" +
-            "id=" + id +
-            ", name='" + name + '\'' +
-            ", done=" + done +
-            ", todoId=" + todoId +
-            ", dueDate=" + dueDate +
-            ", createdBy=" + createdBy +
-            ", createdAt=" + createdAt +
-            '}';
+  public String getTaskId() {
+    return taskId;
+  }
+
+  public void setTaskId(String taskId) {
+    this.taskId = taskId;
+  }
+
+  public String getTodoTitle() {
+    return todoTitle;
+  }
+
+  public void setTodoTitle(String todoTitle) {
+    this.todoTitle = todoTitle;
   }
 }

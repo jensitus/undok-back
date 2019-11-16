@@ -198,7 +198,7 @@ public class TodoServiceImpl implements TodoService {
     if (todoItems.size() > 1) {
       openItems = true;
     } else if (todoItems.size() == 1) {
-      openItems = false;
+      openItems = true;
     } else {
       openItems = false;
     }

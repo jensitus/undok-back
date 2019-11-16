@@ -67,7 +67,6 @@ public class CommonRestApi {
   public ResponseEntity getSingleTask(@PathVariable("task_id") String task_id) {
     logger.info("get the Task");
     TaskDto taskDto = serviceBTaskService.getSingleTask(task_id);
-    logger.info(taskDto.toString());
     return new ResponseEntity(taskDto, HttpStatus.OK);
   }
 
