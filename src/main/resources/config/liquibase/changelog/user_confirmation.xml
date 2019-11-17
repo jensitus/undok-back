@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet id="extend_user_table_with_confirmation_token" author="jensitus">
+        <createTable tableName="users_confirmation">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" unique="true" foreignKeyName="user_id" referencedTableName="users" />
+            </column>
+            <column name="confirmation_token" type="VARCHAR(255)">
+                <constraints unique="true" />
+            </column>
+            <column name="confirmation_expiry" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="confirmed_at" type="DATE" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="users_table_confirmation" author="jensitus">
+        <addColumn tableName="users">
+            <column name="confirmed" type="BOOLEAN" defaultValue="false"></column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
