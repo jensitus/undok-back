@@ -67,7 +67,7 @@ public class AuthRestApi {
       return new ResponseEntity<>(new Message("password does not match the confirmation"), HttpStatus.CONFLICT);
     }
 
-    Message message = new Message("ja hallo"); //authService.createUser(signUpDto);
+    Message message = authService.createUser(signUpDto);
     return new ResponseEntity<>(message, HttpStatus.CREATED);
   }
 
