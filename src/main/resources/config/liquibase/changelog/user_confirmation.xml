@@ -20,8 +20,26 @@
 
     <changeSet id="users_table_confirmation" author="jensitus">
         <addColumn tableName="users">
-            <column name="confirmed" type="BOOLEAN" defaultValue="false"></column>
+            <column name="confirmed" type="BOOLEAN" defaultValue="false"/>
         </addColumn>
+    </changeSet>
+
+    <changeSet id="rename_table" author="jensitus">
+        <renameTable oldTableName="users_confirmation" newTableName="user_confirmation" />
+    </changeSet>
+
+    <changeSet id="add_uuid_id_to_user_confirmation" author="jensitus">
+        <addColumn tableName="user_confirmation">
+            <column name="id" type="VARCHAR2(40)">
+                <constraints primaryKey="true" unique="true" nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add_index_to_id" author="jensitus">
+        <createIndex tableName="user_confirmation" indexName="user_conf_id_index">
+            <column name="id" />
+        </createIndex>
     </changeSet>
 
 </databaseChangeLog>
