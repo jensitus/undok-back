@@ -124,14 +124,17 @@ public class AuthServiceImpl implements AuthService {
     String token = Base64Codec.BASE64.decodeToString(base64Token);
     User user = userRepo.findByEmail(email);
     user.setConfirmed(Boolean.TRUE);
+    userRepo.save(user);
     UserConfirmation uc = userConfRepo.findByConfirmationTokenAndUserId(token, user.getId());
     uc.setConfirmedAt(LocalDateTime.now());
-    try {
-      userRepo.save(user);
-      userConfRepo.save(uc);
-      return new Message("User successfully confirmed");
-    } catch (Exception e) {
-      return new Message(e.toString());
-    }
+    userConfRepo.save(uc);
+    return new Message("User successfully confirmed");
+//    try {
+//      userRepo.save(user);
+//      userConfRepo.save(uc);
+//      return new Message("User successfully confirmed");
+//    } catch (Exception e) {
+//      return new Message(e.toString());
+//    }
   }
 }

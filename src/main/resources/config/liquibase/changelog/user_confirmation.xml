@@ -42,4 +42,25 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="change_uuid_field_to_uuid" author="jensitus">
+        <addColumn tableName="user_confirmation">
+            <column name="uc_id" type="UUID"></column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="drop_and_renew_id" author="jensitus">
+        <dropColumn tableName="user_confirmation" columnName="id" />
+        <dropColumn tableName="user_confirmation" columnName="uc_id" />
+        <addColumn tableName="user_confirmation">
+            <column name="id" type="UUID">
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add_constraints_to_id" author="jensitus">
+        <addPrimaryKey tableName="user_confirmation" columnNames="id" />
+        <addUniqueConstraint tableName="user_confirmation" columnNames="id" />
+        <addNotNullConstraint tableName="user_confirmation" columnName="id" />
+    </changeSet>
+
 </databaseChangeLog>

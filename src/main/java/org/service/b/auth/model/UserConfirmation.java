@@ -1,7 +1,7 @@
 package org.service.b.auth.model;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.service.b.auth.dto.UserDto;
+import org.service.b.common.util.UUIDConverter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,7 +14,7 @@ public class UserConfirmation {
   @Id
   @GeneratedValue(generator = "UUID")
   @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-  @Column(name = "id", length = 16, unique = true, nullable = false)
+  @Column(name = "id", unique = true, nullable = false)
   private UUID id;
 
   @OneToOne(cascade = CascadeType.ALL)
@@ -72,4 +72,5 @@ public class UserConfirmation {
   public void setConfirmedAt(LocalDateTime confirmedAt) {
     this.confirmedAt = confirmedAt;
   }
+
 }
