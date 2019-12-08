@@ -1,7 +1,6 @@
 package org.service.b.auth.controller;
 
 import org.service.b.auth.dto.UserDto;
-import org.service.b.auth.model.User;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.security.JwtProvider;
 import org.service.b.auth.service.UserService;
@@ -48,20 +47,19 @@ public class UserRestApi {
   }
 
   @PostMapping("/auth/check_auth_token")
-  public ResponseEntity checkTheAuthToken(@RequestBody String token) {
+  public ResponseEntity<Message> checkTheAuthToken(@RequestBody String token) {
     Message message = jwtProvider.validateJwtToken(token);
-    if (jwtProvider.validateJwtToken(token).getTrueOrFalse() == true) {
-      return new ResponseEntity(message, HttpStatus.OK);
+    if (jwtProvider.validateJwtToken(token).getRedirect()) {
+      return new ResponseEntity<>(message, HttpStatus.OK);
     } else {
-      logger.info(message.toString());
-      return new ResponseEntity(message, HttpStatus.FORBIDDEN);
+      return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
     }
   }
 
   @PostMapping("/auth/password_resets")
-  public ResponseEntity password_resets(@RequestBody String email) {
+  public ResponseEntity<Message> password_resets(@RequestBody String email) {
     userService.createPasswordResetTokenForUser(email);
-    return new ResponseEntity(new Message("jess god damn"), HttpStatus.OK);
+    return new ResponseEntity<>(new Message("jess god damn"), HttpStatus.OK);
   }
 
 }

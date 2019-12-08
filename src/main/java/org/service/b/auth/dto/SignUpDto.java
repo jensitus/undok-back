@@ -1,11 +1,15 @@
-package org.service.b.auth.message;
+package org.service.b.auth.dto;
 
-import javax.validation.constraints.Email;
+import org.service.b.auth.validation.annotation.PasswordMatches;
+import org.service.b.auth.validation.annotation.ValidEmail;
+
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
-public class SignUpForm {
+@PasswordMatches
+public class SignUpDto {
 
   @NotBlank
   @Size(min = 3, max = 50)
@@ -13,7 +17,8 @@ public class SignUpForm {
 
   @NotBlank
   @Size(max = 60)
-  @Email
+  @NotNull
+  @ValidEmail
   private String email;
 
   private Set<String> role;
@@ -22,7 +27,7 @@ public class SignUpForm {
   @Size(min = 6, max = 70)
   private String password;
 
-  private String password_confirmation;
+  private String passwordConfirmation;
 
   public String getUsername() {
     return username;
@@ -56,12 +61,12 @@ public class SignUpForm {
     this.role = role;
   }
 
-  public String getPassword_confirmation() {
-    return password_confirmation;
+  public String getPasswordConfirmation() {
+    return passwordConfirmation;
   }
 
-  public void setPassword_confirmation(String password_confirmation) {
-    this.password_confirmation = password_confirmation;
+  public void setPasswordConfirmation(String passwordConfirmation) {
+    this.passwordConfirmation = passwordConfirmation;
   }
 
 }

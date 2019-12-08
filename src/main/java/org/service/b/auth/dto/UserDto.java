@@ -1,5 +1,6 @@
 package org.service.b.auth.dto;
 
+
 public class UserDto {
 
   private Long id;
@@ -9,6 +10,8 @@ public class UserDto {
   private String email;
 
   private String accessToken;
+
+  private Boolean confirmed;
 
   public UserDto() {
   }
@@ -43,6 +46,14 @@ public class UserDto {
 
   public void setAccessToken(String accessToken) {
     this.accessToken = accessToken;
+  }
+
+  public Boolean getConfirmed() {
+    return confirmed;
+  }
+
+  public void setConfirmed(Boolean confirmed) {
+    this.confirmed = confirmed;
   }
 
   @Override
