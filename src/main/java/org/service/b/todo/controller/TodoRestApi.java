@@ -69,7 +69,7 @@ public class TodoRestApi {
   public ResponseEntity deleteTodo(@PathVariable("todo_id") Long todo_id) {
     Message message = todoService.todoFinished(todo_id);
     logger.info("delete Todo message: {}", message.toString());
-    if (message.getTrueOrFalse()) {
+    if (message.getRedirect()) {
       return new ResponseEntity(message, HttpStatus.OK);
     } else {
       return new ResponseEntity(message, HttpStatus.OK);

@@ -49,7 +49,7 @@ public class UserRestApi {
   @PostMapping("/auth/check_auth_token")
   public ResponseEntity<Message> checkTheAuthToken(@RequestBody String token) {
     Message message = jwtProvider.validateJwtToken(token);
-    if (jwtProvider.validateJwtToken(token).getTrueOrFalse()) {
+    if (jwtProvider.validateJwtToken(token).getRedirect()) {
       return new ResponseEntity<>(message, HttpStatus.OK);
     } else {
       return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);

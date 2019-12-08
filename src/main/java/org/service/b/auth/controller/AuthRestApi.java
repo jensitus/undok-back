@@ -47,9 +47,13 @@ public class AuthRestApi {
   private AuthService authService;
 
   @PostMapping("/login")
-  public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginDto loginDto) {
+  public ResponseEntity authenticateUser(@Valid @RequestBody LoginDto loginDto) {
     UserDto userDto = authService.getUserDtoWithJwt(loginDto);
-    return new ResponseEntity<>(new JwtResponse(userDto), HttpStatus.OK);
+    if (Boolean.TRUE.equals(userDto.getConfirmed())) {
+      return new ResponseEntity<>(new JwtResponse(userDto), HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(new Message("Account is not confirmed"), HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);
+    }
   }
 
   @PostMapping(value = "/signup", consumes = {})
@@ -79,7 +83,7 @@ public class AuthRestApi {
   @PostMapping("/reset_password")
   public ResponseEntity<Message> resetPassword(@RequestBody PasswordResetForm passwordResetForm) {
     Message message = userService.createPasswordResetTokenForUser(passwordResetForm.getEmail());
-    if (!message.getTrueOrFalse()) {
+    if (!message.getRedirect()) {
       return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
     } else {
       return new ResponseEntity<>(message, HttpStatus.OK);
@@ -106,7 +110,7 @@ public class AuthRestApi {
   public ResponseEntity<Message> resetPassword(@Valid @RequestBody PasswordResetForm passwordResetForm, @PathVariable("token") String base64Token, @RequestParam("email") String email) {
     Message message = userService.resetPassword(passwordResetForm, base64Token, email);
     HttpStatus status;
-    if (message.getTrueOrFalse()) {
+    if (message.getRedirect()) {
       status = HttpStatus.OK;
     } else {
       status = HttpStatus.BAD_REQUEST;
@@ -122,7 +126,7 @@ public class AuthRestApi {
       message = authService.confirmAccount(base64Token, email);
       return new ResponseEntity<>(message, HttpStatus.OK);
     } else {
-      return new ResponseEntity<>(new Message("expired"), HttpStatus.UNPROCESSABLE_ENTITY);
+      return new ResponseEntity<>(new Message("expired", false), HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
