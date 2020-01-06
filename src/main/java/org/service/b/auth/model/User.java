@@ -44,6 +44,9 @@ public class User {
   @ManyToMany(mappedBy = "users")
   private Set<Todo> todos = new HashSet<>();
 
+  @Column(name = "confirmed")
+  private Boolean confirmed;
+
   protected User() {
   }
 
@@ -99,5 +102,13 @@ public class User {
 
   public void setTodos(Set<Todo> todos) {
     this.todos = todos;
+  }
+
+  public Boolean getConfirmed() {
+    return confirmed;
+  }
+
+  public void setConfirmed(Boolean confirmed) {
+    this.confirmed = confirmed;
   }
 }

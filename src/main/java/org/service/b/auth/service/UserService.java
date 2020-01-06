@@ -11,7 +11,7 @@ public interface UserService {
 
   Message createPasswordResetTokenForUser(String email);
 
-  boolean checkResetToken(String base64Token, String email);
+  boolean checkIfTokenExpired(String base64Token, String email, String confirm);
 
   Message resetPassword(PasswordResetForm passwordResetForm, String base64Token, String email);
 

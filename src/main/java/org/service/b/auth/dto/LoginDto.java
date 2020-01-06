@@ -1,9 +1,9 @@
-package org.service.b.auth.message;
+package org.service.b.auth.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-public class LoginForm {
+public class LoginDto {
 
   @NotBlank
   @Size(min=3, max = 60)

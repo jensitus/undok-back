@@ -4,7 +4,7 @@ public class Message {
 
   private String text;
 
-  private Boolean trueOrFalse;
+  private Boolean redirect;
 
   public Message() {
   }
@@ -13,13 +13,13 @@ public class Message {
     this.text = text;
   }
 
-  public Message(Boolean trueOrFalse) {
-    this.trueOrFalse = trueOrFalse;
+  public Message(Boolean redirect) {
+    this.redirect = redirect;
   }
 
-  public Message(String text, Boolean trueOrFalse) {
+  public Message(String text, Boolean redirect) {
     this.text = text;
-    this.trueOrFalse = trueOrFalse;
+    this.redirect = redirect;
   }
 
   public String getText() {
@@ -30,19 +30,19 @@ public class Message {
     this.text = text;
   }
 
-  public Boolean getTrueOrFalse() {
-    return trueOrFalse;
+  public Boolean getRedirect() {
+    return redirect;
   }
 
-  public void setTrueOrFalse(Boolean trueOrFalse) {
-    this.trueOrFalse = trueOrFalse;
+  public void setRedirect(Boolean redirect) {
+    this.redirect = redirect;
   }
 
   @Override
   public String toString() {
     return "Message{" +
             "text='" + text + '\'' +
-            ", trueOrFalse=" + trueOrFalse +
+            ", trueOrFalse=" + redirect +
             '}';
   }
 }
