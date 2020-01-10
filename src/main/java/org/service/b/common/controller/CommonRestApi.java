@@ -7,7 +7,7 @@ import org.service.b.common.message.Message;
 import org.service.b.common.message.service.MigrationService;
 import org.service.b.common.message.service.ServiceBProcessService;
 import org.service.b.common.message.service.ServiceBTaskService;
-import org.service.b.common.processservice.CleaningUpService;
+import org.service.b.common.message.impl.CleaningUpServiceImpl;
 import org.service.b.todo.service.TodoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class CommonRestApi {
   private TodoService todoService;
 
   @Autowired
-  private CleaningUpService cleaningUpService;
+  private CleaningUpServiceImpl cleaningUpService;
 
   @PostMapping("/migrate")
   public ResponseEntity migrateProcessInstances(@RequestBody MigrationForm migrationForm) {

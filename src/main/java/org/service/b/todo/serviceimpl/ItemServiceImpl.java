@@ -2,8 +2,7 @@ package org.service.b.todo.serviceimpl;
 
 import org.modelmapper.ModelMapper;
 import org.service.b.auth.service.UserService;
-import org.service.b.common.config.ServiceBProcessEnums;
-import org.service.b.common.dto.TimelineItemDto;
+import org.service.b.common.config.ServiceBProcessEnum;
 import org.service.b.common.mailer.service.ServiceBOrgMailer;
 import org.service.b.common.message.service.MessageService;
 import org.service.b.common.message.service.ServiceBTaskService;
@@ -12,7 +11,6 @@ import org.service.b.common.model.NotifyUsers;
 import org.service.b.common.model.WhatIsReported;
 import org.service.b.common.processservice.TodoProcessService;
 import org.service.b.common.repository.NotifyUsersRepo;
-import org.service.b.todo.dto.DescriptionDto;
 import org.service.b.todo.dto.ItemDto;
 import org.service.b.todo.dto.TodoDto;
 import org.service.b.todo.model.Description;
@@ -170,10 +168,10 @@ public class ItemServiceImpl implements ItemService {
       NotifyUsers notifyUsers = notifyUsersRepo.findByStringId(string_id);
       if (notifyUsers != null && !notifyUsers.isNotified()) {
         TodoDto todoDto = getTodoDto(item.getTodoId());
-        String subject = ServiceBProcessEnums.SERVICE_B_EMAIL_SUBJECT_PREFIX.getValue() + "Due Date of " + item.getName();
+        String subject = ServiceBProcessEnum.SERVICE_B_EMAIL_SUBJECT_PREFIX.getValue() + "Due Date of " + item.getName();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String text = "Due Date of " + item.getName() + " in " + todoDto.getTitle() + ":" + LINE_BREAK_AND_NBSP + item.getDueDate().format(formatter);
-        String url = ServiceBProcessEnums.SERVICE_B_BASE_URL.getValue();
+        String url = ServiceBProcessEnum.SERVICE_B_BASE_URL.getValue();
         sendTheMail(todoDto, subject, text, url);
         notifyUsers.setNotified(true);
       }
@@ -200,9 +198,9 @@ public class ItemServiceImpl implements ItemService {
       itemMap = notifyList.stream().map(n -> getItemDto(n.getModelId())).collect(Collectors.groupingBy(ItemDto::getTodoId));
       Map<TodoDto, List<ItemDto>> todoItemMap = itemMap.entrySet().stream().collect(Collectors.toMap(e -> getTodoDto(e.getKey()), e -> e.getValue()));
       for (TodoDto todoDto : todoItemMap.keySet()) {
-        String subject = ServiceBProcessEnums.SERVICE_B_EMAIL_SUBJECT_PREFIX.getValue() + NEW_ITEMS_EMAIL_SUBJECT + todoDto.getTitle();
+        String subject = ServiceBProcessEnum.SERVICE_B_EMAIL_SUBJECT_PREFIX.getValue() + NEW_ITEMS_EMAIL_SUBJECT + todoDto.getTitle();
         String text = "the following items are new in<br><b>" + todoDto.getTitle() + ":</b>";
-        String url = ServiceBProcessEnums.SERVICE_B_BASE_URL.getValue();
+        String url = ServiceBProcessEnum.SERVICE_B_BASE_URL.getValue();
         for (ItemDto itemDto : todoItemMap.get(todoDto)) {
           text = text + LINE_BREAK_AND_NBSP + itemDto.getName();
           if (itemDto != null) {

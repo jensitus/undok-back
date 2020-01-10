@@ -1,6 +1,6 @@
 package org.service.b.common.config;
 
-public enum ServiceBProcessEnums {
+public enum ServiceBProcessEnum {
 
   TODO_PROCESS_DEFINITION_KEY("service-b-todo"),
   ENTITY_ID("entityId"),
@@ -11,7 +11,7 @@ public enum ServiceBProcessEnums {
 
   public final String value;
 
-  ServiceBProcessEnums(String value) {
+  ServiceBProcessEnum(String value) {
     this.value = value;
   }
 
