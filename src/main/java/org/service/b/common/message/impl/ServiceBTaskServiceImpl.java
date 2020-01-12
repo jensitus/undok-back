@@ -6,7 +6,7 @@ import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.Task;
 import org.modelmapper.ModelMapper;
-import org.service.b.common.config.ServiceBProcessEnums;
+import org.service.b.common.config.ServiceBProcessEnum;
 import org.service.b.common.dto.TaskDto;
 import org.service.b.common.message.service.ServiceBTaskService;
 import org.slf4j.Logger;
@@ -53,7 +53,7 @@ public class ServiceBTaskServiceImpl implements ServiceBTaskService {
 
   @Override
   public String getTaskForTimeLine(Long todo_id) {
-    String businessKey = ServiceBProcessEnums.TODO_PROCESS_DEFINITION_KEY.getValue() + "-" + todo_id.toString();
+    String businessKey = ServiceBProcessEnum.TODO_PROCESS_DEFINITION_KEY.getValue() + "-" + todo_id.toString();
     List<Task> taskList = new ArrayList<>();
     List<ProcessInstance> piList = runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey).active().list();
     for (ProcessInstance pi : piList) {

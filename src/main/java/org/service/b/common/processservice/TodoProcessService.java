@@ -1,6 +1,7 @@
 package org.service.b.common.processservice;
 
 import org.camunda.bpm.engine.FormService;
+import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.identity.Group;
@@ -9,7 +10,7 @@ import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.service.UserService;
-import org.service.b.common.config.ServiceBProcessEnums;
+import org.service.b.common.config.ServiceBProcessEnum;
 import org.service.b.common.message.service.ServiceBCamundaUserService;
 import org.service.b.common.message.service.MessageService;
 import org.service.b.todo.dto.TodoDto;
@@ -58,11 +59,14 @@ public class TodoProcessService {
   @Autowired
   private UserService userService;
 
+  @Autowired
+  private HistoryService historyService;
+
   public ProcessInstance startTodo(Long todo_id, UserDto createUser) {
-    String pdk = ServiceBProcessEnums.TODO_PROCESS_DEFINITION_KEY.value;
+    String pdk = ServiceBProcessEnum.TODO_PROCESS_DEFINITION_KEY.value;
     Map variables = new HashMap();
-    variables.put(ServiceBProcessEnums.ENTITY_ID.value, todo_id);
-    variables.put(ServiceBProcessEnums.TODO_SIMPLE.value, false);
+    variables.put(ServiceBProcessEnum.ENTITY_ID.getValue(), todo_id);
+    variables.put(ServiceBProcessEnum.TODO_SIMPLE.getValue(), false);
     ProcessInstance todoProcessInstance = runtimeService.startProcessInstanceByKey(pdk, pdk + "-" + todo_id.toString(), variables);
     List<String> stringList = new ArrayList<>();
     String theFinalGroupId = serviceBCamundaUserService.getTheCamundaGroupId(TODO_GROUP_PREFIX, todo_id);
@@ -146,6 +150,9 @@ public class TodoProcessService {
 
   public String getGroup(Long todoId) {
     return serviceBCamundaUserService.getTheCamundaGroupId("todo", todoId);
+  }
+
+  public void deleteProcessInstance() {
   }
 
 }

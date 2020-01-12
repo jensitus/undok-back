@@ -1,6 +1,5 @@
 package org.service.b.todo.serviceimpl;
 
-import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.modelmapper.ModelMapper;
@@ -8,7 +7,7 @@ import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.model.User;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.service.UserService;
-import org.service.b.common.config.ServiceBProcessEnums;
+import org.service.b.common.config.ServiceBProcessEnum;
 import org.service.b.common.mailer.service.ServiceBOrgMailer;
 import org.service.b.common.message.Message;
 import org.service.b.common.message.service.MessageService;
@@ -153,11 +152,11 @@ public class TodoServiceImpl implements TodoService {
     userSet.add(user);
     todo.setUsers(userSet);
     todoRepo.save(todo);
-    serviceBCamundaUserService.addUserToCamundaGroup(user_id.toString(), todo_id, ServiceBProcessEnums.TODO_GROUP_PREFIX.value);
-    String subject = ServiceBProcessEnums.SERVICE_B_EMAIL_SUBJECT_PREFIX.value + ADD_USER_EMAIL_SUBJECT + todo.getTitle();
+    serviceBCamundaUserService.addUserToCamundaGroup(user_id.toString(), todo_id, ServiceBProcessEnum.TODO_GROUP_PREFIX.value);
+    String subject = ServiceBProcessEnum.SERVICE_B_EMAIL_SUBJECT_PREFIX.value + ADD_USER_EMAIL_SUBJECT + todo.getTitle();
     String text = ADD_USER_EMAIL_TEXT + todo.getTitle();
     String salutation = user.getUsername();
-    String url = ServiceBProcessEnums.SERVICE_B_BASE_URL.value;
+    String url = ServiceBProcessEnum.SERVICE_B_BASE_URL.value;
     serviceBOrgMailer.getTheMailDetails(user.getEmail(),subject,text, salutation, url);
     return modelMapper.map(todo, TodoDto.class);
   }
@@ -192,7 +191,7 @@ public class TodoServiceImpl implements TodoService {
   @Override
   public boolean checkOpenItems(String task_id) {
     ProcessInstance processInstance = serviceBProcessService.getProcessInstanceByTask(task_id);
-    Long todoId = (Long) runtimeService.getVariable(processInstance.getProcessInstanceId(), ServiceBProcessEnums.ENTITY_ID.getValue());
+    Long todoId = (Long) runtimeService.getVariable(processInstance.getProcessInstanceId(), ServiceBProcessEnum.ENTITY_ID.getValue());
     List todoItems = getTodoItems(todoId);
     boolean openItems = true;
     if (todoItems.size() > 1) {

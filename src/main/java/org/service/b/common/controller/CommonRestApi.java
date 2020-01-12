@@ -7,6 +7,7 @@ import org.service.b.common.message.Message;
 import org.service.b.common.message.service.MigrationService;
 import org.service.b.common.message.service.ServiceBProcessService;
 import org.service.b.common.message.service.ServiceBTaskService;
+import org.service.b.common.message.impl.CleaningUpServiceImpl;
 import org.service.b.todo.service.TodoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,9 @@ public class CommonRestApi {
 
   @Autowired
   private TodoService todoService;
+
+  @Autowired
+  private CleaningUpServiceImpl cleaningUpService;
 
   @PostMapping("/migrate")
   public ResponseEntity migrateProcessInstances(@RequestBody MigrationForm migrationForm) {
@@ -101,6 +105,13 @@ public class CommonRestApi {
   public ResponseEntity setVariable(@PathVariable("execution_id") String executionId, @RequestParam("name") String name, @RequestBody String value) {
     serviceBProcessService.setVariable(executionId, name, Boolean.valueOf(value));
     return new ResponseEntity(new Message("all good"), HttpStatus.OK);
+  }
+
+  @GetMapping("/deleteProcessInstance/{processInstanceId}")
+  public ResponseEntity deleteProcessInstance(@PathVariable("processInstanceId") String processInstanceId) {
+    logger.info("wir sind hier");
+    cleaningUpService.deleteProcessInstance(processInstanceId);
+    return new ResponseEntity(new Message("jepp"), HttpStatus.OK);
   }
 
 }
