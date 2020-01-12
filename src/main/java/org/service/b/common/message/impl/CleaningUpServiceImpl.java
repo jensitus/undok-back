@@ -24,6 +24,8 @@ public class CleaningUpServiceImpl implements CleaningUpService {
 
   private static final String SERVICE_B_TODO = "service-b-todo";
 
+  private static final String CLEANING_UP = "cleaning-up-process";
+
   @Autowired
   private HistoryService historyService;
 
@@ -35,18 +37,16 @@ public class CleaningUpServiceImpl implements CleaningUpService {
    */
 
   @Override
-  @Scheduled(cron = "10 * * * * * ")
   public void collectOldProcesses() {
+    logger.info("we try real hard to find old processes");
     List<HistoricProcessInstance> hbq = historyService.createHistoricProcessInstanceQuery().completed().list();
     for (HistoricProcessInstance hb : hbq) {
       LocalDateTime endTimeLocalDateTime = hb.getEndTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
       Duration duration = Duration.between(endTimeLocalDateTime, LocalDateTime.now());
-      Long h = duration.toDays();
-      logger.info(h.toString());
       if (duration.toDays() > 30) {
-        if (hb.getProcessDefinitionKey().equals(SERVICE_B_TODO)) {
-          // deleteProcessInstance(hb.getRootProcessInstanceId());
-          // logger.info("process deleted: " + hb.getProcessDefinitionKey());
+        if (SERVICE_B_TODO.equals(hb.getProcessDefinitionKey()) || CLEANING_UP.equals(hb.getProcessDefinitionKey())) {
+          deleteProcessInstance(hb.getRootProcessInstanceId());
+          logger.info("process deleted: " + hb.getProcessDefinitionKey());
         }
       }
     }
