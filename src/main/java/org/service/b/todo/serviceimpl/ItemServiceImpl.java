@@ -31,10 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -214,6 +211,7 @@ public class ItemServiceImpl implements ItemService {
   }
 
   private void sendTheMail(TodoDto todoDto, String subject, String text, String url) {
+    Set receivers = todoDto.getUsers();
     todoDto.getUsers().forEach(u -> serviceBOrgMailer.getTheMailDetails(u.getEmail(), subject, text, u.getUsername(), url));
   }
 
