@@ -3,11 +3,12 @@ package org.service.b.common.message.impl;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.service.b.common.message.service.CleaningUpService;
+import org.service.b.common.model.CleaningUp;
+import org.service.b.common.repository.CleaningUpRepo;
 import org.service.b.todo.repository.TodoRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -32,8 +33,12 @@ public class CleaningUpServiceImpl implements CleaningUpService {
   @Autowired
   private TodoRepo todoRepo;
 
+  @Autowired
+  private CleaningUpRepo cleaningUpRepo;
+
   /**
    * this is for deleting old processInstances to avoid data garbage
+   * @author jensitus
    */
 
   @Override
@@ -43,9 +48,23 @@ public class CleaningUpServiceImpl implements CleaningUpService {
     for (HistoricProcessInstance hb : hbq) {
       LocalDateTime endTimeLocalDateTime = hb.getEndTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
       Duration duration = Duration.between(endTimeLocalDateTime, LocalDateTime.now());
-      if (duration.toDays() > 30) {
-        if (SERVICE_B_TODO.equals(hb.getProcessDefinitionKey()) || CLEANING_UP.equals(hb.getProcessDefinitionKey())) {
+      if (CLEANING_UP.equals(hb.getProcessDefinitionKey())) {
+        if (duration.toDays() >= 0) {
           deleteProcessInstance(hb.getRootProcessInstanceId());
+          CleaningUp cleaningUp = cleaningUpRepo.findByProcessDefinitionKey(CLEANING_UP);
+          cleaningUp.setCount(cleaningUp.getCount() + 1);
+          cleaningUp.setUpdatedAt(LocalDateTime.now());
+          cleaningUpRepo.save(cleaningUp);
+          logger.info("process deleted: " + hb.getProcessDefinitionKey());
+        }
+      }
+      if (SERVICE_B_TODO.equals(hb.getProcessDefinitionKey())) {
+        if (duration.toDays() > 0) {
+          deleteProcessInstance(hb.getRootProcessInstanceId());
+          CleaningUp cleaningUp = cleaningUpRepo.findByProcessDefinitionKey(SERVICE_B_TODO);
+          cleaningUp.setCount(cleaningUp.getCount() + 1);
+          cleaningUp.setUpdatedAt(LocalDateTime.now());
+          cleaningUpRepo.save(cleaningUp);
           logger.info("process deleted: " + hb.getProcessDefinitionKey());
         }
       }
