@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet id="we-log-how-often-the-cleaning-up-is-running" author="jensitus">
+        <createTable tableName="cleaning_up">
+            <column name="process_definition_key" type="VARCHAR2(255)">
+                <constraints unique="true" />
+            </column>
+            <column name="updated_at" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="count" type="BIGINT" />
+        </createTable>
+    </changeSet>
+    <changeSet id="insert_process_definitions" author="jensitus">
+        <insert tableName="cleaning_up">
+            <column name="process_definition_key" value="service-b-todo" />
+            <column name="count" value="0" />
+        </insert>
+    </changeSet>
+    <changeSet id="insert_cleaning_up_1" author="jensitus">
+        <insert tableName="cleaning_up">
+            <column name="process_definition_key" value="cleaning-up-process" />
+            <column name="count" value="0" />
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
