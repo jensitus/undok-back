@@ -1,6 +1,7 @@
 package org.service.b.todo.serviceimpl;
 
 import org.modelmapper.ModelMapper;
+import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.service.UserService;
 import org.service.b.common.config.ServiceBProcessEnum;
 import org.service.b.common.mailer.service.ServiceBOrgMailer;
@@ -211,8 +212,15 @@ public class ItemServiceImpl implements ItemService {
   }
 
   private void sendTheMail(TodoDto todoDto, String subject, String text, String url) {
-    Set receivers = todoDto.getUsers();
-    todoDto.getUsers().forEach(u -> serviceBOrgMailer.getTheMailDetails(u.getEmail(), subject, text, u.getUsername(), url));
+    Set<UserDto> receivers = todoDto.getUsers();
+    for (UserDto u : receivers) {
+      if (u.getId().equals(todoDto.getCreatedBy())) {
+        receivers.remove(u);
+      }
+    }
+    if (!receivers.isEmpty()) {
+      todoDto.getUsers().forEach(u -> serviceBOrgMailer.getTheMailDetails(u.getEmail(), subject, text, u.getUsername(), url));
+    }
   }
 
   private void setNotifiedTrue(List<ItemDto> itemToSetNotified) {
