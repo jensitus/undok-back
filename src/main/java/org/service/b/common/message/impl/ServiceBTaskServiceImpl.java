@@ -44,9 +44,11 @@ public class ServiceBTaskServiceImpl implements ServiceBTaskService {
   @Override
   public TaskDto getSingleTask(String task_id) {
     Task task = taskService.createTaskQuery().initializeFormKeys().taskId(task_id).singleResult();
+
     if (task == null) {
       return null;
     } else {
+      logger.info("get task: " + task.getId());
       return mapTaskToDto(task);
     }
   }

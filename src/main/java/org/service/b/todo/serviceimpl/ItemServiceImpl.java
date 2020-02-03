@@ -1,6 +1,7 @@
 package org.service.b.todo.serviceimpl;
 
 import org.modelmapper.ModelMapper;
+import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.service.UserService;
 import org.service.b.common.config.ServiceBProcessEnum;
 import org.service.b.common.mailer.service.ServiceBOrgMailer;
@@ -31,10 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -214,7 +212,15 @@ public class ItemServiceImpl implements ItemService {
   }
 
   private void sendTheMail(TodoDto todoDto, String subject, String text, String url) {
-    todoDto.getUsers().forEach(u -> serviceBOrgMailer.getTheMailDetails(u.getEmail(), subject, text, u.getUsername(), url));
+    Set<UserDto> receivers = todoDto.getUsers();
+    for (UserDto u : receivers) {
+      if (u.getId().equals(todoDto.getCreatedBy())) {
+        receivers.remove(u);
+      }
+    }
+    if (!receivers.isEmpty()) {
+      todoDto.getUsers().forEach(u -> serviceBOrgMailer.getTheMailDetails(u.getEmail(), subject, text, u.getUsername(), url));
+    }
   }
 
   private void setNotifiedTrue(List<ItemDto> itemToSetNotified) {

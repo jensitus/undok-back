@@ -41,7 +41,7 @@ public class CommonRestApi {
   private CleaningUpServiceImpl cleaningUpService;
 
   @PostMapping("/migrate")
-  public ResponseEntity migrateProcessInstances(@RequestBody MigrationForm migrationForm) {
+  public ResponseEntity<Message> migrateProcessInstances(@RequestBody MigrationForm migrationForm) {
     String sourceVersion = migrationForm.getSourceVersion();
     String targetVersion = migrationForm.getTargetVersion();
     String sourceAct = migrationForm.getSourceAct();
@@ -53,7 +53,7 @@ public class CommonRestApi {
     logger.info(migrationForm.getTargetAct());
     logger.info(migrationForm.getProcessInstanceId());
     migrationService.migrateProcessInstance(sourceVersion, targetVersion, sourceAct, targetAct, processInstanceId);
-    return new ResponseEntity(new Message("ois in urdnung"), HttpStatus.OK);
+    return new ResponseEntity<>(new Message("ois in urdnung"), HttpStatus.OK);
   }
 
   @GetMapping("/formkey/{processDefinitionId}/{taskDefinitionKey}")
@@ -64,54 +64,53 @@ public class CommonRestApi {
   }
 
   @GetMapping("/task/{task_id}")
-  public ResponseEntity getSingleTask(@PathVariable("task_id") String task_id) {
-    logger.info("get the Task");
+  public ResponseEntity<TaskDto> getSingleTask(@PathVariable("task_id") String task_id) {
     TaskDto taskDto = serviceBTaskService.getSingleTask(task_id);
-    return new ResponseEntity(taskDto, HttpStatus.OK);
+    return new ResponseEntity<>(taskDto, HttpStatus.OK);
   }
 
   @GetMapping("/task/list/{user_id}")
-  public ResponseEntity getTaskList(@PathVariable("user_id") String user_id) {
+  public ResponseEntity<List<TaskDto>> getTaskList(@PathVariable("user_id") String user_id) {
     List<TaskDto> taskList = serviceBTaskService.taskList(user_id);
-    return new ResponseEntity(taskList, HttpStatus.OK);
+    return new ResponseEntity<>(taskList, HttpStatus.OK);
   }
 
   @PostMapping("/task/complete")
-  public ResponseEntity completeTask(@RequestBody String task_id) {
+  public ResponseEntity<Message> completeTask(@RequestBody String task_id) {
     logger.info("completeTask " + task_id);
     serviceBTaskService.completeTask(task_id);
     Message message = new Message("Task successfully completed, congrats, @lter");
-    return new ResponseEntity(message, HttpStatus.OK);
+    return new ResponseEntity<>(message, HttpStatus.OK);
   }
 
   @GetMapping("/{execution_id}/variable")
-  public ResponseEntity getVariable(@PathVariable("execution_id") String execution_id, @RequestParam("name") String variable_name) {
-    return new ResponseEntity(serviceBTaskService.getVariable(execution_id, variable_name), HttpStatus.OK);
+  public ResponseEntity<String> getVariable(@PathVariable("execution_id") String execution_id, @RequestParam("name") String variable_name) {
+    return new ResponseEntity<>(serviceBTaskService.getVariable(execution_id, variable_name), HttpStatus.OK);
   }
 
   @GetMapping("/check/subprocesses/{business_key}")
-  public ResponseEntity checkSubprocesses(@PathVariable("business_key") String businessKey) {
+  public ResponseEntity<List<ProcessInstance>> checkSubprocesses(@PathVariable("business_key") String businessKey) {
     List<ProcessInstance> pis = serviceBProcessService.getProcessInstancesByBusinessKey(businessKey);
-    return new ResponseEntity(pis, HttpStatus.OK);
+    return new ResponseEntity<>(pis, HttpStatus.OK);
   }
 
   @GetMapping("/check/items/{task_id}")
-  public ResponseEntity checkItems(@PathVariable("task_id") String task_id) {
+  public ResponseEntity<Boolean> checkItems(@PathVariable("task_id") String task_id) {
     boolean itemsOpen = todoService.checkOpenItems(task_id);
-    return new ResponseEntity(itemsOpen, HttpStatus.OK);
+    return new ResponseEntity<>(itemsOpen, HttpStatus.OK);
   }
 
   @PostMapping("/setvariable/{execution_id}")
-  public ResponseEntity setVariable(@PathVariable("execution_id") String executionId, @RequestParam("name") String name, @RequestBody String value) {
+  public ResponseEntity<Message> setVariable(@PathVariable("execution_id") String executionId, @RequestParam("name") String name, @RequestBody String value) {
     serviceBProcessService.setVariable(executionId, name, Boolean.valueOf(value));
-    return new ResponseEntity(new Message("all good"), HttpStatus.OK);
+    return new ResponseEntity<>(new Message("all good"), HttpStatus.OK);
   }
 
   @GetMapping("/deleteProcessInstance/{processInstanceId}")
-  public ResponseEntity deleteProcessInstance(@PathVariable("processInstanceId") String processInstanceId) {
+  public ResponseEntity<Message> deleteProcessInstance(@PathVariable("processInstanceId") String processInstanceId) {
     logger.info("wir sind hier");
     cleaningUpService.deleteProcessInstance(processInstanceId);
-    return new ResponseEntity(new Message("jepp"), HttpStatus.OK);
+    return new ResponseEntity<>(new Message("jepp"), HttpStatus.OK);
   }
 
 }
