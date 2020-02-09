@@ -213,11 +213,6 @@ public class ItemServiceImpl implements ItemService {
 
   private void sendTheMail(TodoDto todoDto, String subject, String text, String url) {
     Set<UserDto> receivers = todoDto.getUsers();
-    for (UserDto u : receivers) {
-      if (u.getId().equals(todoDto.getCreatedBy())) {
-        receivers.remove(u);
-      }
-    }
     if (!receivers.isEmpty()) {
       todoDto.getUsers().forEach(u -> serviceBOrgMailer.getTheMailDetails(u.getEmail(), subject, text, u.getUsername(), url));
     }
