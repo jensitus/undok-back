@@ -1,5 +1,6 @@
 package org.service.b.auth.controller;
 
+import org.service.b.auth.dto.ChangePwDto;
 import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.security.JwtProvider;
@@ -60,6 +61,12 @@ public class UserRestApi {
   public ResponseEntity<Message> password_resets(@RequestBody String email) {
     userService.createPasswordResetTokenForUser(email);
     return new ResponseEntity<>(new Message("jess god damn"), HttpStatus.OK);
+  }
+
+  @PostMapping("/changepw")
+  public ResponseEntity changePw(@RequestBody ChangePwDto changePwDto) {
+    logger.info("changePwDto " + changePwDto.toString());
+    return new ResponseEntity<>(new Message("we do our best"), HttpStatus.OK);
   }
 
 }

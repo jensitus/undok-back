@@ -2,6 +2,7 @@ package org.service.b.auth.serviceimpl;
 
 import io.jsonwebtoken.impl.Base64Codec;
 import org.modelmapper.ModelMapper;
+import org.service.b.auth.dto.ChangePwDto;
 import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.message.PasswordResetForm;
 import org.service.b.auth.model.PasswordResetToken;
@@ -143,5 +144,10 @@ public class UserServiceImpl implements UserService {
   public UserDto getById(Long user_id) {
     User user = userRepo.getOne(user_id);
     return modelMapper.map(user, UserDto.class);
+  }
+
+  @Override
+  public void changePw(ChangePwDto changePwDto) {
+
   }
 }
