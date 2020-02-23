@@ -38,13 +38,4 @@ public class ChangePwDto {
     this.oldPassword = oldPassword;
   }
 
-  @Override
-  public String toString() {
-    return "ChangePwDto{" +
-            "userId=" + userId +
-            ", newPassword='" + newPassword + '\'' +
-            ", confirmPassword='" + confirmPassword + '\'' +
-            ", oldPassword='" + oldPassword + '\'' +
-            '}';
-  }
 }

@@ -22,6 +22,6 @@ public interface UserService {
 
   UserDto getById(Long user_id);
 
-  void changePw(ChangePwDto changePwDto);
+  Message changePw(ChangePwDto changePwDto);
 
 }

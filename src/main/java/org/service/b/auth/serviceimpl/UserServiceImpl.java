@@ -18,6 +18,9 @@ import org.service.b.common.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -53,6 +56,9 @@ public class UserServiceImpl implements UserService {
 
   @Autowired
   private UserConfirmationRepo userConfirmationRepo;
+
+  @Autowired
+  private AuthenticationManager authenticationManager;
 
   @Override
   public Message createPasswordResetTokenForUser(String email) {
@@ -147,7 +153,24 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void changePw(ChangePwDto changePwDto) {
+  public Message changePw(ChangePwDto changePwDto) {
+    if (changePwDto.getNewPassword().equals(changePwDto.getConfirmPassword())) {
+      UserDto userDto = getById(changePwDto.getUserId());
+      try {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getUsername(), changePwDto.getOldPassword()));
+        User user = userRepo.getOne(changePwDto.getUserId());
+        user.setPassword(encoder.encode(changePwDto.getNewPassword()));
+        userRepo.save(user);
+        return new Message("Yess", true);
+      } catch (Exception e) {
+        return new Message(e.getLocalizedMessage(), false);
+      }
+    } else {
+      return new Message("Password do not match", false);
+    }
+  }
+
+  private void changePw (UserDto userDto, String newPassword) {
 
   }
 }

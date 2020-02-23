@@ -65,8 +65,12 @@ public class UserRestApi {
 
   @PostMapping("/changepw")
   public ResponseEntity changePw(@RequestBody ChangePwDto changePwDto) {
-    logger.info("changePwDto " + changePwDto.toString());
-    return new ResponseEntity<>(new Message("we do our best"), HttpStatus.OK);
+    Message m = userService.changePw(changePwDto);
+    if (m.getRedirect()) {
+      return new ResponseEntity<>(new Message(m.getText()), HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(m, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
 }
