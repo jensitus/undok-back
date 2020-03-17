@@ -165,7 +165,4 @@ public class UserServiceImpl implements UserService {
     }
   }
 
-  private void changePw(UserDto userDto, String newPassword) {
-
-  }
 }
