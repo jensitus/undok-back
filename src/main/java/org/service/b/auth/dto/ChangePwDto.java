@@ -1,10 +1,32 @@
 package org.service.b.auth.dto;
 
-public class ChangePwDto {
+import org.service.b.auth.validation.NewPasswordMatch;
+import org.service.b.auth.validation.annotation.PasswordMatches;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
+@PasswordMatches
+public class ChangePwDto implements NewPasswordMatch {
   private Long userId;
-  private String newPassword;
-  private String confirmPassword;
+
+  @NotBlank
+  @Size(min = 6, max = 70)
+  private String password;
+
+  private String passwordConfirmation;
+
   private String oldPassword;
+
+  @Override
+  public String getPassword() {
+    return password;
+  }
+
+  @Override
+  public String getPasswordConfirmation() {
+    return passwordConfirmation;
+  }
 
   public Long getUserId() {
     return userId;
@@ -14,20 +36,12 @@ public class ChangePwDto {
     this.userId = userId;
   }
 
-  public String getNewPassword() {
-    return newPassword;
+  public void setPassword(String password) {
+    this.password = password;
   }
 
-  public void setNewPassword(String newPassword) {
-    this.newPassword = newPassword;
-  }
-
-  public String getConfirmPassword() {
-    return confirmPassword;
-  }
-
-  public void setConfirmPassword(String confirmPassword) {
-    this.confirmPassword = confirmPassword;
+  public void setPasswordConfirmation(String passwordConfirmation) {
+    this.passwordConfirmation = passwordConfirmation;
   }
 
   public String getOldPassword() {
@@ -38,4 +52,13 @@ public class ChangePwDto {
     this.oldPassword = oldPassword;
   }
 
+  @Override
+  public String toString() {
+    return "ChangePwDto{" +
+            "userId=" + userId +
+            ", password='" + password + '\'' +
+            ", passwordConfirmation='" + passwordConfirmation + '\'' +
+            ", oldPassword='" + oldPassword + '\'' +
+            '}';
+  }
 }

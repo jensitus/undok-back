@@ -1,6 +1,5 @@
 package org.service.b.auth.validation;
 
-import org.service.b.auth.dto.SignUpDto;
 import org.service.b.auth.validation.annotation.PasswordMatches;
 
 import javax.validation.ConstraintValidator;
@@ -10,8 +9,8 @@ public class PasswordMatchesValidator implements ConstraintValidator<PasswordMat
 
   @Override
   public boolean isValid(Object obj, ConstraintValidatorContext context) {
-    SignUpDto signUpDto = (SignUpDto) obj;
-    return signUpDto.getPassword().equals(signUpDto.getPasswordConfirmation());
+    NewPasswordMatch newPasswordMatch = (NewPasswordMatch) obj;
+    return newPasswordMatch.getPassword().equals(newPasswordMatch.getPasswordConfirmation());
   }
 
   @Override

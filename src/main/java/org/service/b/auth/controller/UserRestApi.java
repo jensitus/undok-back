@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)
@@ -64,7 +65,7 @@ public class UserRestApi {
   }
 
   @PostMapping("/changepw")
-  public ResponseEntity changePw(@RequestBody ChangePwDto changePwDto) {
+  public ResponseEntity changePw(@Valid @RequestBody ChangePwDto changePwDto) {
     Message m = userService.changePw(changePwDto);
     if (m.getRedirect()) {
       return new ResponseEntity<>(new Message(m.getText()), HttpStatus.OK);
