@@ -159,7 +159,7 @@ public class UserServiceImpl implements UserService {
       User user = userRepo.getOne(changePwDto.getUserId());
       user.setPassword(encoder.encode(changePwDto.getPassword()));
       userRepo.save(user);
-      return new Message("Yess", true);
+      return new Message("Bravo, Password successfully changed!", true);
     } catch (Exception e) {
       return new Message(e.getLocalizedMessage(), false);
     }
