@@ -1,5 +1,6 @@
 package org.service.b.auth.controller;
 
+import org.service.b.auth.dto.ChangePwDto;
 import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.security.JwtProvider;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)
@@ -60,6 +62,16 @@ public class UserRestApi {
   public ResponseEntity<Message> password_resets(@RequestBody String email) {
     userService.createPasswordResetTokenForUser(email);
     return new ResponseEntity<>(new Message("jess god damn"), HttpStatus.OK);
+  }
+
+  @PostMapping("/changepw")
+  public ResponseEntity changePw(@Valid @RequestBody ChangePwDto changePwDto) {
+    Message m = userService.changePw(changePwDto);
+    if (m.getRedirect()) {
+      return new ResponseEntity<>(new Message(m.getText()), HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(m, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
 }

@@ -1,5 +1,6 @@
 package org.service.b.auth.dto;
 
+import org.service.b.auth.validation.NewPasswordMatch;
 import org.service.b.auth.validation.annotation.PasswordMatches;
 import org.service.b.auth.validation.annotation.ValidEmail;
 
@@ -9,7 +10,7 @@ import javax.validation.constraints.Size;
 import java.util.Set;
 
 @PasswordMatches
-public class SignUpDto {
+public class SignUpDto implements NewPasswordMatch {
 
   @NotBlank
   @Size(min = 3, max = 50)
@@ -45,6 +46,7 @@ public class SignUpDto {
     this.email = email;
   }
 
+  @Override
   public String getPassword() {
     return password;
   }
@@ -61,6 +63,7 @@ public class SignUpDto {
     this.role = role;
   }
 
+  @Override
   public String getPasswordConfirmation() {
     return passwordConfirmation;
   }

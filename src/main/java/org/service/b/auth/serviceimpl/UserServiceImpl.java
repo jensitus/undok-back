@@ -2,6 +2,7 @@ package org.service.b.auth.serviceimpl;
 
 import io.jsonwebtoken.impl.Base64Codec;
 import org.modelmapper.ModelMapper;
+import org.service.b.auth.dto.ChangePwDto;
 import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.message.PasswordResetForm;
 import org.service.b.auth.model.PasswordResetToken;
@@ -17,6 +18,8 @@ import org.service.b.common.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -53,6 +56,9 @@ public class UserServiceImpl implements UserService {
   @Autowired
   private UserConfirmationRepo userConfirmationRepo;
 
+  @Autowired
+  private AuthenticationManager authenticationManager;
+
   @Override
   public Message createPasswordResetTokenForUser(String email) {
     User user = userRepo.findByEmail(email.toLowerCase());
@@ -75,7 +81,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public boolean checkIfTokenExpired(String base64Token, String email, String confirm) {
     if (confirm.equals("confirm")) {
-     return checkIfConfirmTokenExpired(base64Token, email);
+      return checkIfConfirmTokenExpired(base64Token, email);
     } else {
       return checkIfResetTokenExpired(base64Token, email);
     }
@@ -144,4 +150,19 @@ public class UserServiceImpl implements UserService {
     User user = userRepo.getOne(user_id);
     return modelMapper.map(user, UserDto.class);
   }
+
+  @Override
+  public Message changePw(ChangePwDto changePwDto) {
+    UserDto userDto = getById(changePwDto.getUserId());
+    try {
+      Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getUsername(), changePwDto.getOldPassword()));
+      User user = userRepo.getOne(changePwDto.getUserId());
+      user.setPassword(encoder.encode(changePwDto.getPassword()));
+      userRepo.save(user);
+      return new Message("Bravo, Password successfully changed!", true);
+    } catch (Exception e) {
+      return new Message(e.getLocalizedMessage(), false);
+    }
+  }
+
 }
