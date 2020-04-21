@@ -15,6 +15,7 @@ import org.service.b.auth.service.UserService;
 import org.service.b.auth.security.JwtProvider;
 import org.service.b.common.mailer.service.ServiceBOrgMailer;
 import org.service.b.common.message.Message;
+import org.service.b.common.util.EmailStuff;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,8 +72,8 @@ public class UserServiceImpl implements UserService {
     LocalDateTime localDateTime = LocalDateTime.now();
     PasswordResetToken passwordResetToken = new PasswordResetToken(user, token, localDateTime);
     passwordResetTokenRepo.save(passwordResetToken);
-    String url = "https://service-b.org/auth/reset_password/" + base64token + "/edit?email=" + user.getEmail();
-    String subject = "[service-b.org] reset instructions";
+    String url = EmailStuff.DOMAIN_FOR_URL + "/auth/reset_password/" + base64token + "/edit?email=" + user.getEmail();
+    String subject = EmailStuff.SUBJECT_PREFIX + " reset instructions";
     String text = "click the link below within the next 2 hours, after this it will expire";
     serviceBOrgMailer.getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), url);
     return new Message("We've sent you a message with reset instructions", true);
