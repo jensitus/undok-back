@@ -1,7 +1,7 @@
 package org.service.b.todo.controller;
 
 import org.service.b.auth.message.UserForm;
-import org.service.b.common.message.Message;
+import org.service.b.auth.message.Message;
 import org.service.b.common.message.service.MessageService;
 import org.service.b.todo.dto.TodoDto;
 import org.service.b.todo.form.TodoForm;

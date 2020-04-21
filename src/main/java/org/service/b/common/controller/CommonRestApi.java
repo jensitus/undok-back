@@ -3,7 +3,7 @@ package org.service.b.common.controller;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.service.b.common.MigrationForm;
 import org.service.b.common.dto.TaskDto;
-import org.service.b.common.message.Message;
+import org.service.b.auth.message.Message;
 import org.service.b.common.message.service.MigrationService;
 import org.service.b.common.message.service.ServiceBProcessService;
 import org.service.b.common.message.service.ServiceBTaskService;

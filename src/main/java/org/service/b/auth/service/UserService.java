@@ -3,8 +3,7 @@ package org.service.b.auth.service;
 import org.service.b.auth.dto.ChangePwDto;
 import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.message.PasswordResetForm;
-import org.service.b.auth.model.User;
-import org.service.b.common.message.Message;
+import org.service.b.auth.message.Message;
 
 import java.util.List;
 

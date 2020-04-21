@@ -1,9 +1,8 @@
 package org.service.b.todo.controller;
 
-import org.service.b.common.message.Message;
+import org.service.b.auth.message.Message;
 import org.service.b.todo.dto.DescriptionDto;
 import org.service.b.todo.form.DescriptionForm;
-import org.service.b.todo.model.Description;
 import org.service.b.todo.service.DescriptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package org.service.b.common.message;
+package org.service.b.auth.message;
 
 public class Message {
 

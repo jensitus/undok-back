@@ -6,7 +6,7 @@ import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.security.JwtProvider;
 import org.service.b.auth.service.UserService;
 import org.service.b.auth.serviceimpl.UserDetailsServiceImpl;
-import org.service.b.common.message.Message;
+import org.service.b.auth.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

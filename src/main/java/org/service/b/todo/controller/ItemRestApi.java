@@ -1,10 +1,9 @@
 package org.service.b.todo.controller;
 
-import org.service.b.common.message.Message;
+import org.service.b.auth.message.Message;
 import org.service.b.common.message.service.MessageService;
 import org.service.b.todo.dto.ItemDto;
 import org.service.b.todo.form.ItemForm;
-import org.service.b.todo.model.Item;
 import org.service.b.todo.service.ItemService;
 import org.service.b.todo.service.TodoService;
 import org.slf4j.Logger;
@@ -13,10 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.ws.rs.Path;
-import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)

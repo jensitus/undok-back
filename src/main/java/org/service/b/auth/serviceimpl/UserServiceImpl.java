@@ -14,7 +14,7 @@ import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.service.UserService;
 import org.service.b.auth.security.JwtProvider;
 import org.service.b.common.mailer.service.ServiceBOrgMailer;
-import org.service.b.common.message.Message;
+import org.service.b.auth.message.Message;
 import org.service.b.common.util.EmailStuff;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
