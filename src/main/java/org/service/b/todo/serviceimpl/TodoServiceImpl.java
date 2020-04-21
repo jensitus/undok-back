@@ -9,7 +9,7 @@ import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.service.UserService;
 import org.service.b.common.config.ServiceBProcessEnum;
 import org.service.b.common.mailer.service.ServiceBOrgMailer;
-import org.service.b.common.message.Message;
+import org.service.b.auth.message.Message;
 import org.service.b.common.message.service.MessageService;
 import org.service.b.common.message.service.ServiceBCamundaUserService;
 import org.service.b.common.message.service.ServiceBProcessService;
