@@ -20,15 +20,17 @@ public class ServiceBOrgMailerImpl implements ServiceBOrgMailer {
 
   private static final String FROM = "info@service-b.org";
 
+  private static final String DIV_CLASS_GENERAL = "<div class='general'>";
+
   @Autowired
   private JavaMailSender mailSender;
 
   @Override
   public void getTheMailDetails(String to, String subject, String text, String salutation, String url) {
 
-    String first_the_salutation = "<div class='general'><h4>Dear " + salutation + "</h4></div>";
-    String second_the_text = "<div class='general'>" + text + "</div>";
-    String third_the_url = "<div class='general'><a href='" + url + "'>" + url + "</a></div>";
+    String first_the_salutation = DIV_CLASS_GENERAL + "<h4>Dear " + salutation + "</h4></div>";
+    String second_the_text = DIV_CLASS_GENERAL + text + "</div>";
+    String third_the_url = DIV_CLASS_GENERAL + "<a href='" + url + "'>" + url + "</a></div>";
     String the_container = "<div class='container'>" + first_the_salutation + second_the_text + third_the_url + "</div>";
     String the_html_head_and_body = "<html><head>" + STYLE + "</head><body>" + the_container + "</body></html>";
 
