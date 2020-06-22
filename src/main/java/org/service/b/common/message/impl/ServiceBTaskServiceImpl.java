@@ -5,6 +5,7 @@ import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.Task;
+import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
 import org.service.b.common.config.ServiceBProcessEnum;
 import org.service.b.common.dto.TaskDto;
@@ -98,6 +99,15 @@ public class ServiceBTaskServiceImpl implements ServiceBTaskService {
     Object entityId = runtimeService.getVariable(execution_id, variableName);
     String classNameDonnerWetter = entityId.getClass().toString();
     return entityId.toString();
+  }
+
+  @Override
+  public String getTaskIdByLongVariable(String variableName, Long longVariable) {
+    ProcessInstance p = runtimeService.createProcessInstanceQuery().variableValueEquals(variableName, longVariable).singleResult();
+    Task t = taskService.createTaskQuery().initializeFormKeys().processInstanceId(p.getId()).singleResult();
+    TaskDto taskDto = mapTaskToDto(t);
+    logger.info(taskDto.toString());
+    return taskDto.getId();
   }
 
   private TaskDto mapTaskToDto(Task t) {

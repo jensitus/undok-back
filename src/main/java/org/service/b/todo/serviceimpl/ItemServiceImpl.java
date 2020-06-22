@@ -185,7 +185,7 @@ public class ItemServiceImpl implements ItemService {
     return id.toString() + "_" + whatIsReported.toString() + "_" + donnerString;
   }
 
-  @Scheduled(cron = "0 0/20 7-21 * * *")
+  @Scheduled(cron = "0 0/5 7-21 * * *")
   @Transactional
   public synchronized void informAboutNewItem() {
     List<ItemDto> itemDtoList = new ArrayList<>();
@@ -196,9 +196,10 @@ public class ItemServiceImpl implements ItemService {
       itemMap = notifyList.stream().map(n -> getItemDto(n.getModelId())).collect(Collectors.groupingBy(ItemDto::getTodoId));
       Map<TodoDto, List<ItemDto>> todoItemMap = itemMap.entrySet().stream().collect(Collectors.toMap(e -> getTodoDto(e.getKey()), e -> e.getValue()));
       for (TodoDto todoDto : todoItemMap.keySet()) {
+        String taskId = serviceBTaskService.getTaskIdByLongVariable(ServiceBProcessEnum.ENTITY_ID.getValue(), todoDto.getId());
         String subject = ServiceBProcessEnum.SERVICE_B_EMAIL_SUBJECT_PREFIX.getValue() + NEW_ITEMS_EMAIL_SUBJECT + todoDto.getTitle();
         String text = "the following items are new in<br><b>" + todoDto.getTitle() + ":</b>";
-        String url = ServiceBProcessEnum.SERVICE_B_BASE_URL.getValue();
+        String url = ServiceBProcessEnum.SERVICE_B_BASE_URL.getValue() + "tasks/todo/" + taskId;
         for (ItemDto itemDto : todoItemMap.get(todoDto)) {
           text = text + LINE_BREAK_AND_NBSP + itemDto.getName();
           if (itemDto != null) {

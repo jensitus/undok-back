@@ -19,4 +19,6 @@ public interface ServiceBTaskService {
 
   String getTaskForTimeLine(Long todo_id);
 
+  String getTaskIdByLongVariable(String variableName, Long longVariable);
+
 }
