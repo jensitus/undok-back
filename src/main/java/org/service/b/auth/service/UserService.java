@@ -6,6 +6,7 @@ import org.service.b.auth.message.PasswordResetForm;
 import org.service.b.auth.message.Message;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface UserService {
 
@@ -19,7 +20,7 @@ public interface UserService {
 
   UserDto getCurrentUser();
 
-  UserDto getById(Long user_id);
+  UserDto getById(UUID user_id);
 
   Message changePw(ChangePwDto changePwDto);
 

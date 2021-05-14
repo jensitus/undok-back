@@ -1,9 +1,11 @@
 package org.service.b.auth.model;
 
+import lombok.Data;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 
+@Data
 @Entity
 @Table(name = "roles")
 public class Role {
@@ -25,19 +27,4 @@ public class Role {
     this.name = name;
   }
 
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-  }
-
-  public RoleName getName() {
-    return name;
-  }
-
-  public void setName(RoleName name) {
-    this.name = name;
-  }
 }

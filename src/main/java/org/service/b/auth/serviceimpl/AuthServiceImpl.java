@@ -1,9 +1,11 @@
 package org.service.b.auth.serviceimpl;
 
 import io.jsonwebtoken.impl.Base64Codec;
-import org.service.b.auth.dto.UserDto;
+import org.modelmapper.ModelMapper;
 import org.service.b.auth.dto.LoginDto;
 import org.service.b.auth.dto.SignUpDto;
+import org.service.b.auth.dto.UserDto;
+import org.service.b.auth.message.Message;
 import org.service.b.auth.model.Role;
 import org.service.b.auth.model.RoleName;
 import org.service.b.auth.model.User;
@@ -13,10 +15,7 @@ import org.service.b.auth.repository.UserConfirmationRepo;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.security.JwtProvider;
 import org.service.b.auth.service.AuthService;
-import org.modelmapper.ModelMapper;
 import org.service.b.common.mailer.service.ServiceBOrgMailer;
-import org.service.b.auth.message.Message;
-import org.service.b.common.message.service.ServiceBCamundaUserService;
 import org.service.b.common.util.EmailStuff;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,9 +55,6 @@ public class AuthServiceImpl implements AuthService {
 
   @Autowired
   RoleRepo roleRepo;
-
-  @Autowired
-  private ServiceBCamundaUserService serviceBCamundaUserService;
 
   @Autowired
   private UserConfirmationRepo userConfRepo;
@@ -101,7 +97,6 @@ public class AuthServiceImpl implements AuthService {
     user.setRoles(roles);
     userRepo.save(user);
     createUserConfirmation(user);
-    serviceBCamundaUserService.addNewUserToCamunda(user.getId().toString(), user.getEmail(), user.getUsername());
     return new Message("user created");
   }
 
@@ -130,12 +125,5 @@ public class AuthServiceImpl implements AuthService {
     uc.setConfirmedAt(LocalDateTime.now());
     userConfRepo.save(uc);
     return new Message("User successfully confirmed");
-//    try {
-//      userRepo.save(user);
-//      userConfRepo.save(uc);
-//      return new Message("User successfully confirmed");
-//    } catch (Exception e) {
-//      return new Message(e.toString());
-//    }
   }
 }

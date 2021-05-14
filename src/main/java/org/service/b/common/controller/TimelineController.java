@@ -2,7 +2,6 @@ package org.service.b.common.controller;
 
 import org.service.b.common.dto.TimelineItemDto;
 import org.service.b.common.message.service.TimelineService;
-import org.service.b.todo.service.ItemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +16,6 @@ import java.util.List;
 @RequestMapping("/timeline")
 public class TimelineController {
   private static final Logger logger = LoggerFactory.getLogger(TimelineController.class);
-
-  @Autowired
-  private ItemService itemService;
 
   @Autowired
   private TimelineService timelineService;

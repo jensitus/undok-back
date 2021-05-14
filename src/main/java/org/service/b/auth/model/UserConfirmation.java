@@ -1,5 +1,6 @@
 package org.service.b.auth.model;
 
+import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.service.b.common.util.UUIDConverter;
 
@@ -7,6 +8,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Data
 @Entity
 @Table(name = "user_confirmation")
 public class UserConfirmation {
@@ -31,46 +33,6 @@ public class UserConfirmation {
   private LocalDateTime confirmedAt;
 
   public UserConfirmation() {
-  }
-
-  public UUID getId() {
-    return id;
-  }
-
-  public void setId(UUID id) {
-    this.id = id;
-  }
-
-  public User getUser() {
-    return user;
-  }
-
-  public void setUser(User user) {
-    this.user = user;
-  }
-
-  public String getConfirmationToken() {
-    return confirmationToken;
-  }
-
-  public void setConfirmationToken(String confirmationToken) {
-    this.confirmationToken = confirmationToken;
-  }
-
-  public LocalDateTime getConfirmationExpiry() {
-    return confirmationExpiry;
-  }
-
-  public void setConfirmationExpiry(LocalDateTime confirmationExpiry) {
-    this.confirmationExpiry = confirmationExpiry;
-  }
-
-  public LocalDateTime getConfirmedAt() {
-    return confirmedAt;
-  }
-
-  public void setConfirmedAt(LocalDateTime confirmedAt) {
-    this.confirmedAt = confirmedAt;
   }
 
 }

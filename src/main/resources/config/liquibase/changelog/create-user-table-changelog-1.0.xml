@@ -7,7 +7,7 @@
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
     <changeSet author="jensitus" id="1">
         <createTable tableName="users">
-            <column autoIncrement="true" name="id" type="BIGINT">
+            <column name="id" type="UUID">
                 <constraints primaryKey="true"/>
             </column>
             <column name="username" type="VARCHAR(255)">
@@ -46,17 +46,17 @@
 
     <changeSet id="insert_roles" author="jensitus">
         <insert tableName="roles">
-            <column name="name" value="ROLE_ADMIN"></column>
+            <column name="name" value="ROLE_ADMIN"/>
         </insert>
         <insert tableName="roles">
-            <column name="name" value="ROLE_USER"></column>
+            <column name="name" value="ROLE_USER"/>
         </insert>
     </changeSet>
     
     <changeSet id="create_join_table" author="jensitus">
         <createTable tableName="user_roles">
-            <column name="user_id" type="BIGINT"></column>
-            <column name="role_id" type="INT"></column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="role_id" type="INT"/>
         </createTable>
         <addUniqueConstraint tableName="user_roles" columnNames="user_id, role_id" />
     </changeSet>
@@ -64,16 +64,16 @@
     <changeSet id="create_password_reset_token" author="jensitus">
         <createTable tableName="password_reset_token">
             <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true"></constraints>
+                <constraints primaryKey="true"/>
             </column>
-            <column name="token" type="VARCHAR(255)"></column>
-            <column name="user_id" type="BIGINT"></column>
+            <column name="token" type="VARCHAR(255)"/>
+            <column name="user_id" type="BIGINT"/>
         </createTable>
     </changeSet>
 
     <changeSet id="add_expiry_date_to_password_reset_token" author="jensitus">
         <addColumn tableName="password_reset_token">
-            <column name="expiryDate" type="DATE"></column>
+            <column name="expiryDate" type="DATE"/>
         </addColumn>
     </changeSet>
 
@@ -84,7 +84,7 @@
     <changeSet id="change_expiry_date_to_timestamp" author="jensitus">
         <dropColumn tableName="password_reset_token" columnName="expiry_date" />
         <addColumn tableName="password_reset_token">
-            <column name="expiry_date" type="TIMESTAMP WITHOUT TIME ZONE"></column>
+            <column name="expiry_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
         </addColumn>
     </changeSet>
     
