@@ -1,5 +1,6 @@
 package org.service.b.auth.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.message.JwtResponse;
 import org.service.b.auth.dto.LoginDto;
@@ -29,8 +30,6 @@ import javax.validation.constraints.Email;
 @Validated
 public class AuthRestApi {
 
-  private static final Logger logger = LoggerFactory.getLogger(AuthRestApi.class);
-
   @Autowired
   AuthenticationManager authenticationManager;
 
@@ -58,7 +57,6 @@ public class AuthRestApi {
 
   @PostMapping(value = "/signup", consumes = {})
   public ResponseEntity<Message> registerUser(@Valid @RequestBody SignUpDto signUpDto) {
-
     // check if user or email already present
     if (userRepo.existsByUsername(signUpDto.getUsername())) {
       return new ResponseEntity<>(new Message("Too Bad -> Username is already taken"), HttpStatus.BAD_REQUEST);
@@ -67,12 +65,11 @@ public class AuthRestApi {
       return new ResponseEntity<>(new Message("It's a pity -> but this Email is already in use!"), HttpStatus.BAD_REQUEST);
     }
     if (!signUpDto.getPasswordConfirmation().equals(signUpDto.getPassword())) {
-      logger.info("Tja, war wohl nix");
       return new ResponseEntity<>(new Message("password does not match the confirmation"), HttpStatus.CONFLICT);
     }
 
-    Message message = authService.createUser(signUpDto);
-    return new ResponseEntity<>(message, HttpStatus.CREATED);
+    authService.createUser(signUpDto);
+    return new ResponseEntity<>(new Message("user created"), HttpStatus.CREATED);
   }
 
   @GetMapping("/mist")

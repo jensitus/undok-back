@@ -74,30 +74,32 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public Message createUser(SignUpDto signUpDto) {
+  public UserDto createUser(SignUpDto signUpDto) {
     // create the new user:
+    // User user = new User(signUpDto.getUsername(), signUpDto.getEmail().toLowerCase(), encoder.encode(signUpDto.getPassword()));
+    Role uRole;
+    if (signUpDto.isAdmin()) {
+      uRole = roleRepo.findByName(RoleName.ADMIN).orElseThrow(() -> new RuntimeException("The Fucking Role couldn't be found, sorry"));
+    } else {
+      uRole = roleRepo.findByName(RoleName.USER).orElseThrow(() -> new RuntimeException("No Role Today my Love is gone away"));
+    }
+
+    // User user = modelMapper.map(signUpDto, User.class);
     User user = new User(signUpDto.getUsername(), signUpDto.getEmail().toLowerCase(), encoder.encode(signUpDto.getPassword()));
-    Role uRole = new Role(RoleName.ROLE_USER);
-    Set<String> roleSet = new HashSet<>();
-    roleSet.add(uRole.getName().toString());
-    signUpDto.setRole(roleSet);
-    Set<String> strRoles = signUpDto.getRole();
-    Set<Role> roles = new HashSet<>();
-    strRoles.forEach(role -> {
-      switch (role) {
-        case "admin":
-          Role adminRole = roleRepo.findByName(RoleName.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("The Fucking Role couldn't be found, sorry"));
-          roles.add(adminRole);
-          break;
-        default:
-          Role userRole = roleRepo.findByName(RoleName.ROLE_USER).orElseThrow(() -> new RuntimeException("No Role Today my Love is gone away"));
-          roles.add(userRole);
-      }
-    });
-    user.setRoles(roles);
+    Set<Role> roleSet = new HashSet<>();
+    roleSet.add(uRole);
+    user.setRoles(roleSet);
     userRepo.save(user);
-    createUserConfirmation(user);
-    return new Message("user created");
+
+
+    // signUpDto.setRole(roleSet);
+    // Set<String> strRoles = signUpDto.getRole();
+    // Set<Role> roles = new HashSet<>();
+
+    // user.setRoles(roles);
+
+//    createUserConfirmation(user);
+    return modelMapper.map(user, UserDto.class);
   }
 
   private Message createUserConfirmation(User user) {
@@ -111,7 +113,7 @@ public class AuthServiceImpl implements AuthService {
     String url = EmailStuff.DOMAIN_FOR_URL + "auth/" + base64token + "/confirm?email=" + user.getEmail();
     String subject = EmailStuff.SUBJECT_PREFIX + "confirm account";
     String text = "click the link below within the next 2 hours, after this it will expire";
-    serviceBOrgMailer.getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), url);
+    // serviceBOrgMailer.getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), url);
     return new Message("We've sent you a message confirming your", true);
   }
 

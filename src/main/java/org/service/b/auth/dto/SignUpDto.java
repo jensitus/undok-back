@@ -1,5 +1,7 @@
 package org.service.b.auth.dto;
 
+import lombok.Data;
+import lombok.ToString;
 import org.service.b.auth.validation.NewPasswordMatch;
 import org.service.b.auth.validation.annotation.PasswordMatches;
 import org.service.b.auth.validation.annotation.ValidEmail;
@@ -9,6 +11,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
+@Data
+@ToString
 @PasswordMatches
 public class SignUpDto implements NewPasswordMatch {
 
@@ -30,46 +34,18 @@ public class SignUpDto implements NewPasswordMatch {
 
   private String passwordConfirmation;
 
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
+  private boolean admin;
 
   @Override
   public String getPassword() {
     return password;
   }
 
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public Set<String> getRole() {
-    return this.role;
-  }
-
-  public void setRole(Set<String> role) {
-    this.role = role;
-  }
 
   @Override
   public String getPasswordConfirmation() {
     return passwordConfirmation;
   }
 
-  public void setPasswordConfirmation(String passwordConfirmation) {
-    this.passwordConfirmation = passwordConfirmation;
-  }
 
 }

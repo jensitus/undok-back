@@ -9,7 +9,7 @@ public interface AuthService {
 
   UserDto getUserDtoWithJwt(LoginDto loginDto);
 
-  Message createUser(SignUpDto signUpDto);
+  UserDto createUser(SignUpDto signUpDto);
 
   Message confirmAccount(String token, String email);
 
