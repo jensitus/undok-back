@@ -5,7 +5,7 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-    <changeSet id="extend_user_table_with_confirmation_token" author="jensitus">
+    <!--<changeSet id="extend_user_table_with_confirmation_token" author="jensitus">
         <createTable tableName="users_confirmation">
             <column name="user_id" type="BIGINT">
                 <constraints nullable="false" unique="true" foreignKeyName="user_id" referencedTableName="users" />
@@ -16,7 +16,7 @@
             <column name="confirmation_expiry" type="TIMESTAMP WITHOUT TIME ZONE" />
             <column name="confirmed_at" type="DATE" />
         </createTable>
-    </changeSet>
+    </changeSet>-->
 
     <changeSet id="users_table_confirmation" author="jensitus">
         <addColumn tableName="users">
@@ -24,43 +24,57 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="rename_table" author="jensitus">
-        <renameTable oldTableName="users_confirmation" newTableName="user_confirmation" />
+    <changeSet id="move_confirmation_token_to_users_table" author="jensitus">
+        <addColumn tableName="users">
+            <column name="confirmation_token" type="VARCHAR(255)">
+                <constraints unique="true" />
+            </column>
+        </addColumn>
     </changeSet>
 
-    <changeSet id="add_uuid_id_to_user_confirmation" author="jensitus">
+    <changeSet id="confirmation_token_created_at" author="jensitus">
+        <addColumn tableName="users">
+            <column name="confirmation_token_created_at" type="TIMESTAMP WITHOUT TIME ZONE" />
+        </addColumn>
+    </changeSet>
+
+    <!--<changeSet id="rename_table" author="jensitus">
+        <renameTable oldTableName="users_confirmation" newTableName="user_confirmation" />
+    </changeSet>-->
+
+    <!--<changeSet id="add_uuid_id_to_user_confirmation" author="jensitus">
         <addColumn tableName="user_confirmation">
             <column name="id" type="VARCHAR2(40)">
                 <constraints primaryKey="true" unique="true" nullable="false" />
             </column>
         </addColumn>
-    </changeSet>
+    </changeSet>-->
 
-    <changeSet id="add_index_to_id" author="jensitus">
+    <!--<changeSet id="add_index_to_id" author="jensitus">
         <createIndex tableName="user_confirmation" indexName="user_conf_id_index">
             <column name="id" />
         </createIndex>
-    </changeSet>
+    </changeSet>-->
 
-    <changeSet id="change_uuid_field_to_uuid" author="jensitus">
+    <!--<changeSet id="change_uuid_field_to_uuid" author="jensitus">
         <addColumn tableName="user_confirmation">
             <column name="uc_id" type="UUID"></column>
         </addColumn>
-    </changeSet>
+    </changeSet>-->
 
-    <changeSet id="drop_and_renew_id" author="jensitus">
+    <!--<changeSet id="drop_and_renew_id" author="jensitus">
         <dropColumn tableName="user_confirmation" columnName="id" />
         <dropColumn tableName="user_confirmation" columnName="uc_id" />
         <addColumn tableName="user_confirmation">
             <column name="id" type="UUID">
             </column>
         </addColumn>
-    </changeSet>
+    </changeSet>-->
 
-    <changeSet id="add_constraints_to_id" author="jensitus">
+    <!--<changeSet id="add_constraints_to_id" author="jensitus">
         <addPrimaryKey tableName="user_confirmation" columnNames="id" />
         <addUniqueConstraint tableName="user_confirmation" columnNames="id" />
         <addNotNullConstraint tableName="user_confirmation" columnName="id" />
-    </changeSet>
+    </changeSet>-->
 
 </databaseChangeLog>

@@ -13,11 +13,8 @@ import java.util.Set;
 
 @Data
 @ToString
-@PasswordMatches
-public class SignUpDto implements NewPasswordMatch {
+public class SignUpDto {
 
-  @NotBlank
-  @Size(min = 3, max = 50)
   private String username;
 
   @NotBlank
@@ -32,20 +29,6 @@ public class SignUpDto implements NewPasswordMatch {
   @Size(min = 6, max = 70)
   private String password;
 
-  private String passwordConfirmation;
-
   private boolean admin;
-
-  @Override
-  public String getPassword() {
-    return password;
-  }
-
-
-  @Override
-  public String getPasswordConfirmation() {
-    return passwordConfirmation;
-  }
-
 
 }

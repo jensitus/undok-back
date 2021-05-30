@@ -1,5 +1,6 @@
 package org.service.b.auth.service;
 
+import org.service.b.auth.dto.ConfirmAccountDto;
 import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.dto.LoginDto;
 import org.service.b.auth.dto.SignUpDto;
@@ -11,6 +12,6 @@ public interface AuthService {
 
   UserDto createUser(SignUpDto signUpDto);
 
-  Message confirmAccount(String token, String email);
+  Message confirmAccount(ConfirmAccountDto confirmAccountDto);
 
 }

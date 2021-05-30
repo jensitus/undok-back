@@ -1,6 +1,7 @@
 package org.service.b.auth.serviceimpl;
 
 import io.jsonwebtoken.impl.Base64Codec;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.service.b.auth.dto.ChangePwDto;
 import org.service.b.auth.dto.UserDto;
@@ -32,9 +33,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
-
-  private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
   @Autowired
   private PasswordResetTokenRepo passwordResetTokenRepo;
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
   public Message createPasswordResetTokenForUser(String email) {
     User user = userRepo.findByEmail(email.toLowerCase());
     if (user == null) {
-      logger.info("no user with email: " + email + " found");
+      log.info("no user with email: " + email + " found");
       return new Message("Die Emailadresse gibt es nicht", false);
     }
     String token = UUID.randomUUID().toString();
@@ -110,21 +110,18 @@ public class UserServiceImpl implements UserService {
     PasswordResetToken prt = passwordResetTokenRepo.findByTokenAndUserId(token, user.getId());
     LocalDateTime exp = prt.getExpiryDate();
     if (exp.plusHours(2).isBefore(LocalDateTime.now())) {
-      logger.info(exp.toString());
+      log.info(exp.toString());
       return false;
     }
     return true;
   }
 
   private boolean checkIfConfirmTokenExpired(String base64Token, String email) {
-    String token = Base64Codec.BASE64.decodeToString(base64Token);
-    User user = userRepo.findByEmail(email);
-    UserConfirmation uc = userConfirmationRepo.findByConfirmationTokenAndUserId(token, user.getId());
-    LocalDateTime exp = uc.getConfirmationExpiry();
-    if (exp.plusHours(2).isBefore(LocalDateTime.now())) {
-      return false;
-    }
-    return true;
+    String confirmationToken = Base64Codec.BASE64.decodeToString(base64Token);
+    // User user = userRepo.findByEmailAndConfirmationToken(email, confirmationToken);
+    LocalDateTime exp = userRepo.selectConfirmationTokenCreatedAt(email, confirmationToken);
+    log.info("exp " + exp);
+    return !exp.plusHours(2).isBefore(LocalDateTime.now());
   }
 
   @Override
