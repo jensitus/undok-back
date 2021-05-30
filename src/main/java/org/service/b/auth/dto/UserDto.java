@@ -2,7 +2,9 @@ package org.service.b.auth.dto;
 
 import lombok.Data;
 import lombok.ToString;
+import org.service.b.auth.model.Role;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -18,6 +20,12 @@ public class UserDto {
   private String accessToken;
 
   private Boolean confirmed;
+
+  private Set<Role> roles;
+
+  private boolean admin;
+
+  private boolean locked;
 
 
 }

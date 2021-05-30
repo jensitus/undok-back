@@ -12,7 +12,6 @@ import org.service.b.auth.model.Role;
 import org.service.b.auth.model.RoleName;
 import org.service.b.auth.model.User;
 import org.service.b.auth.repository.RoleRepo;
-import org.service.b.auth.repository.UserConfirmationRepo;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.security.JwtProvider;
 import org.service.b.auth.service.AuthService;
@@ -59,9 +58,6 @@ public class AuthServiceImpl implements AuthService {
     private UserService userService;
 
     @Autowired
-    private UserConfirmationRepo userConfRepo;
-
-    @Autowired
     private ServiceBOrgMailer serviceBOrgMailer;
 
     @Override
@@ -90,6 +86,7 @@ public class AuthServiceImpl implements AuthService {
         Set<Role> roleSet = new HashSet<>();
         roleSet.add(uRole);
         user.setRoles(roleSet);
+        user.setAdmin(signUpDto.isAdmin());
         userRepo.save(user);
         createConfirmationMail(user, confirmationToken);
         return modelMapper.map(user, UserDto.class);

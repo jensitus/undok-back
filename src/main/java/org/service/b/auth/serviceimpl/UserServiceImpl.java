@@ -6,19 +6,15 @@ import org.modelmapper.ModelMapper;
 import org.service.b.auth.dto.ChangePwDto;
 import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.message.PasswordResetForm;
-import org.service.b.auth.model.PasswordResetToken;
-import org.service.b.auth.model.User;
-import org.service.b.auth.model.UserConfirmation;
+import org.service.b.auth.model.*;
 import org.service.b.auth.repository.PasswordResetTokenRepo;
-import org.service.b.auth.repository.UserConfirmationRepo;
+import org.service.b.auth.repository.RoleRepo;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.service.UserService;
 import org.service.b.auth.security.JwtProvider;
 import org.service.b.common.mailer.service.ServiceBOrgMailer;
 import org.service.b.auth.message.Message;
 import org.service.b.common.util.EmailStuff;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -55,7 +52,7 @@ public class UserServiceImpl implements UserService {
   PasswordEncoder encoder;
 
   @Autowired
-  private UserConfirmationRepo userConfirmationRepo;
+  private RoleRepo roleRepo;
 
   @Autowired
   private AuthenticationManager authenticationManager;
@@ -163,4 +160,18 @@ public class UserServiceImpl implements UserService {
     }
   }
 
+  @Override
+  public void setAdmin(UUID userId, boolean admin) {
+    User user = userRepo.getOne(userId);
+    Set<Role> userRoles = user.getRoles();
+    Role adminRole = roleRepo.findByName(RoleName.ADMIN).orElseThrow(() -> new RuntimeException("The Fucking Role couldn't be found, sorry"));
+    if (admin == true) {
+      userRoles.add(adminRole);
+    } else {
+      userRoles.remove(adminRole);
+    }
+    user.setAdmin(admin);
+    user.setRoles(userRoles);
+    userRepo.save(user);
+  }
 }

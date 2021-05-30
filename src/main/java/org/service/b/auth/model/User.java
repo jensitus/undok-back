@@ -51,6 +51,12 @@ public class User {
     @JsonIgnore
     private LocalDateTime confirmationTokenCreatedAt;
 
+    @Column(name = "locked")
+    private boolean locked;
+
+    @Column(name = "admin")
+    private boolean admin;
+
     public User() {
     }
 

@@ -1,6 +1,7 @@
 package org.service.b.auth.controller;
 
 import org.service.b.auth.dto.ChangePwDto;
+import org.service.b.auth.dto.SetAdminDto;
 import org.service.b.auth.dto.UserDto;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.security.JwtProvider;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)
 @RestController
@@ -72,6 +74,12 @@ public class UserRestApi {
     } else {
       return new ResponseEntity<>(m, HttpStatus.UNPROCESSABLE_ENTITY);
     }
+  }
+
+  @PostMapping("/set-admin/{user_id}")
+  public Message setAdminFlag(@PathVariable("user_id") UUID userId, @RequestBody SetAdminDto setAdminDto) {
+    userService.setAdmin(userId, setAdminDto.isAdmin());
+    return new Message("successfully changed");
   }
 
 }

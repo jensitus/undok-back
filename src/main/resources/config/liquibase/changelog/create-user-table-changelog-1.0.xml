@@ -113,4 +113,16 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="locked-flag" author="jensitus">
+        <addColumn tableName="users">
+            <column name="locked" type="BOOLEAN" defaultValue="false" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="admin-flag" author="jensitus">
+        <addColumn tableName="users">
+            <column name="admin" type="BOOLEAN" defaultValue="false" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

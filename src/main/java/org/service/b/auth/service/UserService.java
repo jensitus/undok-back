@@ -24,4 +24,6 @@ public interface UserService {
 
   Message changePw(ChangePwDto changePwDto);
 
+  void setAdmin(UUID userId, boolean admin);
+
 }
