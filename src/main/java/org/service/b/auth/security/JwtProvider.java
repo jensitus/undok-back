@@ -1,7 +1,7 @@
 package org.service.b.auth.security;
 
 import io.jsonwebtoken.*;
-import org.service.b.auth.model.User;
+import org.service.b.auth.model.entity.User;
 import org.service.b.auth.serviceimpl.UserPrinciple;
 import org.service.b.auth.message.Message;
 import org.slf4j.Logger;

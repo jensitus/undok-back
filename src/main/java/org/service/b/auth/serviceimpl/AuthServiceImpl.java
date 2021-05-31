@@ -3,14 +3,15 @@ package org.service.b.auth.serviceimpl;
 import io.jsonwebtoken.impl.Base64Codec;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.service.b.auth.dto.ConfirmAccountDto;
-import org.service.b.auth.dto.LoginDto;
-import org.service.b.auth.dto.SignUpDto;
-import org.service.b.auth.dto.UserDto;
+import org.service.b.auth.model.dto.ConfirmAccountDto;
+import org.service.b.auth.model.dto.LoginDto;
+import org.service.b.auth.model.dto.SignUpDto;
+import org.service.b.auth.model.dto.UserDto;
 import org.service.b.auth.message.Message;
-import org.service.b.auth.model.Role;
-import org.service.b.auth.model.RoleName;
-import org.service.b.auth.model.User;
+import org.service.b.auth.model.entity.Role;
+import org.service.b.auth.model.entity.RoleName;
+import org.service.b.auth.model.entity.User;
+import org.service.b.auth.model.form.CreateUserForm;
 import org.service.b.auth.repository.RoleRepo;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.security.JwtProvider;
@@ -72,19 +73,16 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserDto createUser(SignUpDto signUpDto) {
-        Role uRole;
-        if (signUpDto.isAdmin()) {
-            uRole = roleRepo.findByName(RoleName.ADMIN).orElseThrow(() -> new RuntimeException("The Fucking Role couldn't be found, sorry"));
-        } else {
-            uRole = roleRepo.findByName(RoleName.USER).orElseThrow(() -> new RuntimeException("No Role Today my Love is gone away"));
-        }
+    public UserDto createUserAfterSignUp(SignUpDto signUpDto) {
         String confirmationToken = UUID.randomUUID().toString();
         User user = new User(signUpDto.getUsername(), signUpDto.getEmail().toLowerCase(), encoder.encode(signUpDto.getPassword()), confirmationToken, LocalDateTime.now());
         log.info("The Confirmation Token: ");
         log.info(confirmationToken);
         Set<Role> roleSet = new HashSet<>();
-        roleSet.add(uRole);
+        roleSet.add(getUserRole());
+        if (signUpDto.isAdmin()) {
+            roleSet.add(getAdminRole());
+        }
         user.setRoles(roleSet);
         user.setAdmin(signUpDto.isAdmin());
         userRepo.save(user);
@@ -116,5 +114,28 @@ public class AuthServiceImpl implements AuthService {
         user.setConfirmed(Boolean.TRUE);
         userRepo.save(user);
         return new Message("User successfully confirmed");
+    }
+
+    @Override
+    public void createUserViaAdmin(CreateUserForm createUserForm) {
+        String confirmationToken = UUID.randomUUID().toString();
+        User user = new User(createUserForm.getUsername(), createUserForm.getEmail(), confirmationToken, LocalDateTime.now());
+        user.setAdmin(createUserForm.isAdmin());
+        Set<Role> roleSet = new HashSet<>();
+        roleSet.add(getUserRole());
+        if (createUserForm.isAdmin()) {
+            roleSet.add(getAdminRole());
+        }
+        user.setRoles(roleSet);
+        createConfirmationMail(user, confirmationToken);
+        userRepo.save(user);
+    }
+
+    private Role getAdminRole() {
+        return roleRepo.findByName(RoleName.ADMIN).orElseThrow(() -> new RuntimeException("The Fucking Role couldn't be found, sorry"));
+    }
+
+    private Role getUserRole() {
+        return roleRepo.findByName(RoleName.USER).orElseThrow(() -> new RuntimeException("No Role Today my Love is gone away"));
     }
 }

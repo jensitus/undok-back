@@ -1,8 +1,8 @@
 package org.service.b.auth.controller;
 
-import org.service.b.auth.dto.ChangePwDto;
-import org.service.b.auth.dto.SetAdminDto;
-import org.service.b.auth.dto.UserDto;
+import org.service.b.auth.model.dto.ChangePwDto;
+import org.service.b.auth.model.dto.SetAdminDto;
+import org.service.b.auth.model.dto.UserDto;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.security.JwtProvider;
 import org.service.b.auth.service.UserService;

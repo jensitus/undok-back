@@ -1,4 +1,4 @@
-package org.service.b.auth.model;
+package org.service.b.auth.model.entity;
 
 import lombok.Data;
 

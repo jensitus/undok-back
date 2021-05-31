@@ -1,6 +1,6 @@
 package org.service.b.auth.repository;
 
-import org.service.b.auth.model.User;
+import org.service.b.auth.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

@@ -1,9 +1,7 @@
-package org.service.b.auth.dto;
+package org.service.b.auth.model.dto;
 
 import lombok.Data;
 import lombok.ToString;
-import org.service.b.auth.validation.NewPasswordMatch;
-import org.service.b.auth.validation.annotation.PasswordMatches;
 import org.service.b.auth.validation.annotation.ValidEmail;
 
 import javax.validation.constraints.NotBlank;

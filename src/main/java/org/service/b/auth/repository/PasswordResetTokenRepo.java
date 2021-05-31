@@ -1,6 +1,6 @@
 package org.service.b.auth.repository;
 
-import org.service.b.auth.model.PasswordResetToken;
+import org.service.b.auth.model.entity.PasswordResetToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

@@ -1,7 +1,8 @@
-package org.service.b.auth.model;
+package org.service.b.auth.model.entity;
 
 import lombok.Data;
 import org.hibernate.annotations.NaturalId;
+import org.service.b.auth.model.entity.RoleName;
 
 import javax.persistence.*;
 

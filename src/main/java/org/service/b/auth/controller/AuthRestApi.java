@@ -1,24 +1,21 @@
 package org.service.b.auth.controller;
 
-import lombok.extern.slf4j.Slf4j;
-import org.service.b.auth.dto.ConfirmAccountDto;
-import org.service.b.auth.dto.UserDto;
+import org.service.b.auth.model.dto.ConfirmAccountDto;
+import org.service.b.auth.model.dto.UserDto;
 import org.service.b.auth.message.JwtResponse;
-import org.service.b.auth.dto.LoginDto;
+import org.service.b.auth.model.dto.LoginDto;
 import org.service.b.auth.message.PasswordResetForm;
-import org.service.b.auth.dto.SignUpDto;
+import org.service.b.auth.model.dto.SignUpDto;
+import org.service.b.auth.model.form.CreateUserForm;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.service.AuthService;
 import org.service.b.auth.service.UserService;
 import org.service.b.auth.security.JwtProvider;
 import org.service.b.auth.message.Message;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -65,7 +62,7 @@ public class AuthRestApi {
 //    if (!signUpDto.getPasswordConfirmation().equals(signUpDto.getPassword())) {
 //      return new ResponseEntity<>(new Message("password does not match the confirmation"), HttpStatus.CONFLICT);
 //    }
-        authService.createUser(signUpDto);
+        authService.createUserAfterSignUp(signUpDto);
         return new ResponseEntity<>(new Message("user created"), HttpStatus.CREATED);
     }
 
@@ -126,6 +123,12 @@ public class AuthRestApi {
     @PostMapping("/{token}/set_new_password")
     public ResponseEntity<Message> setNewPW(@RequestBody ConfirmAccountDto confirmAccountDto) {
         return new ResponseEntity<>(authService.confirmAccount(confirmAccountDto), HttpStatus.OK);
+    }
+
+    @PostMapping("/create-user-via-admin")
+    public ResponseEntity createUserViaAdmin(@RequestBody CreateUserForm createUserForm) {
+        authService.createUserViaAdmin(createUserForm);
+        return new ResponseEntity(new Message("cool"), HttpStatus.OK);
     }
 
 }

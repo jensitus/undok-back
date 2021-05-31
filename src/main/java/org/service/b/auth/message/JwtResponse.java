@@ -1,6 +1,6 @@
 package org.service.b.auth.message;
 
-import org.service.b.auth.dto.UserDto;
+import org.service.b.auth.model.dto.UserDto;
 
 public class JwtResponse {
 

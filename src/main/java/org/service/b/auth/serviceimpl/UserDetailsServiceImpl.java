@@ -1,6 +1,6 @@
 package org.service.b.auth.serviceimpl;
 
-import org.service.b.auth.model.User;
+import org.service.b.auth.model.entity.User;
 import org.service.b.auth.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

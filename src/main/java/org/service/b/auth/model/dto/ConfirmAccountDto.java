@@ -1,4 +1,4 @@
-package org.service.b.auth.dto;
+package org.service.b.auth.model.dto;
 
 import lombok.ToString;
 import org.service.b.auth.validation.NewPasswordMatch;

@@ -1,4 +1,4 @@
-package org.service.b.auth.model;
+package org.service.b.auth.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -51,6 +51,9 @@ public class User {
     @JsonIgnore
     private LocalDateTime confirmationTokenCreatedAt;
 
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
     @Column(name = "locked")
     private boolean locked;
 
@@ -68,4 +71,10 @@ public class User {
         this.confirmationTokenCreatedAt = confirmationTokenCreatedAt;
     }
 
+    public User(String username, String email, String confirmationToken, LocalDateTime createdAt) {
+        this.username = username;
+        this.email = email;
+        this.confirmationToken = confirmationToken;
+        this.createdAt = createdAt;
+    }
 }

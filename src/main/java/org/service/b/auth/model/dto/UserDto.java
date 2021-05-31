@@ -1,9 +1,10 @@
-package org.service.b.auth.dto;
+package org.service.b.auth.model.dto;
 
 import lombok.Data;
 import lombok.ToString;
-import org.service.b.auth.model.Role;
+import org.service.b.auth.model.entity.Role;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -22,6 +23,8 @@ public class UserDto {
   private Boolean confirmed;
 
   private Set<Role> roles;
+
+  private LocalDateTime createdAt;
 
   private boolean admin;
 
