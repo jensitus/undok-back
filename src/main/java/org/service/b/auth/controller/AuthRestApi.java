@@ -1,6 +1,6 @@
 package org.service.b.auth.controller;
 
-import org.service.b.auth.model.dto.ConfirmAccountDto;
+import org.service.b.auth.model.form.ConfirmAccountForm;
 import org.service.b.auth.model.dto.UserDto;
 import org.service.b.auth.message.JwtResponse;
 import org.service.b.auth.model.dto.LoginDto;
@@ -121,8 +121,8 @@ public class AuthRestApi {
     }
 
     @PostMapping("/{token}/set_new_password")
-    public ResponseEntity<Message> setNewPW(@RequestBody ConfirmAccountDto confirmAccountDto) {
-        return new ResponseEntity<>(authService.confirmAccount(confirmAccountDto), HttpStatus.OK);
+    public ResponseEntity<Message> setNewPW(@RequestBody ConfirmAccountForm confirmAccountForm) {
+        return new ResponseEntity<>(authService.confirmAccount(confirmAccountForm), HttpStatus.OK);
     }
 
     @PostMapping("/create-user-via-admin")

@@ -43,15 +43,6 @@
         </addColumn>
         <addUniqueConstraint tableName="users" columnNames="username" />
     </changeSet>
-
-    <changeSet id="insert_roles" author="jensitus">
-        <insert tableName="roles">
-            <column name="name" value="ROLE_ADMIN"/>
-        </insert>
-        <insert tableName="roles">
-            <column name="name" value="ROLE_USER"/>
-        </insert>
-    </changeSet>
     
     <changeSet id="create_join_table" author="jensitus">
         <createTable tableName="user_roles">
@@ -123,6 +114,18 @@
         <addColumn tableName="users">
             <column name="admin" type="BOOLEAN" defaultValue="false" />
         </addColumn>
+    </changeSet>
+
+    <changeSet id="insert_roles_without_role_prefix" author="jensitus">
+        <insert tableName="roles">
+            <column name="name" value="ADMIN"/>
+        </insert>
+        <insert tableName="roles">
+            <column name="name" value="USER"/>
+        </insert>
+        <insert tableName="roles">
+            <column name="name" value="CONFIRMED"/>
+        </insert>
     </changeSet>
 
 </databaseChangeLog>

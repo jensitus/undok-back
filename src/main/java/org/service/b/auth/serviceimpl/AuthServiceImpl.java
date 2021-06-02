@@ -3,7 +3,7 @@ package org.service.b.auth.serviceimpl;
 import io.jsonwebtoken.impl.Base64Codec;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.service.b.auth.model.dto.ConfirmAccountDto;
+import org.service.b.auth.model.form.ConfirmAccountForm;
 import org.service.b.auth.model.dto.LoginDto;
 import org.service.b.auth.model.dto.SignUpDto;
 import org.service.b.auth.model.dto.UserDto;
@@ -61,6 +61,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private ServiceBOrgMailer serviceBOrgMailer;
 
+    @Autowired
+    private RoleService roleService;
+
     @Override
     public UserDto getUserDtoWithJwt(LoginDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
@@ -76,15 +79,7 @@ public class AuthServiceImpl implements AuthService {
     public UserDto createUserAfterSignUp(SignUpDto signUpDto) {
         String confirmationToken = UUID.randomUUID().toString();
         User user = new User(signUpDto.getUsername(), signUpDto.getEmail().toLowerCase(), encoder.encode(signUpDto.getPassword()), confirmationToken, LocalDateTime.now());
-        log.info("The Confirmation Token: ");
         log.info(confirmationToken);
-        Set<Role> roleSet = new HashSet<>();
-        roleSet.add(getUserRole());
-        if (signUpDto.isAdmin()) {
-            roleSet.add(getAdminRole());
-        }
-        user.setRoles(roleSet);
-        user.setAdmin(signUpDto.isAdmin());
         userRepo.save(user);
         createConfirmationMail(user, confirmationToken);
         return modelMapper.map(user, UserDto.class);
@@ -101,17 +96,18 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Message confirmAccount(ConfirmAccountDto confirmAccountDto) {
-        if (!confirmAccountDto.getPassword().equals(confirmAccountDto.getPasswordConfirmation())) {
-            return new Message("Password and confirmation do not match");
-        }
-        log.info(confirmAccountDto.toString());
-        if (!userService.checkIfTokenExpired(confirmAccountDto.getConfirmationToken(), confirmAccountDto.getEmail(), "confirm")) {
+    public Message confirmAccount(ConfirmAccountForm confirmAccountForm) {
+        if (!userService.checkIfTokenExpired(confirmAccountForm.getConfirmationToken(), confirmAccountForm.getEmail(), "confirm")) {
             throw new RuntimeException("Sorry, token expired");
         }
-        User user = userRepo.findByEmail(confirmAccountDto.getEmail());
-        user.setPassword(encoder.encode(confirmAccountDto.getPassword()));
-        user.setConfirmed(Boolean.TRUE);
+        if (!confirmAccountForm.getPassword().equals(confirmAccountForm.getPasswordConfirmation())) {
+            return new Message("Password and confirmation do not match");
+        }
+        log.info(confirmAccountForm.toString());
+        User user = userRepo.findByEmail(confirmAccountForm.getEmail());
+        user.setPassword(encoder.encode(confirmAccountForm.getPassword()));
+        Set<Role> roleSet = new HashSet<>();
+        roleSet.add(roleService.getConfirmedRole());
         userRepo.save(user);
         return new Message("User successfully confirmed");
     }
@@ -121,21 +117,13 @@ public class AuthServiceImpl implements AuthService {
         String confirmationToken = UUID.randomUUID().toString();
         User user = new User(createUserForm.getUsername(), createUserForm.getEmail(), confirmationToken, LocalDateTime.now());
         user.setAdmin(createUserForm.isAdmin());
-        Set<Role> roleSet = new HashSet<>();
-        roleSet.add(getUserRole());
-        if (createUserForm.isAdmin()) {
-            roleSet.add(getAdminRole());
-        }
-        user.setRoles(roleSet);
+        user.setConfirmationTokenCreatedAt(LocalDateTime.now());
         createConfirmationMail(user, confirmationToken);
         userRepo.save(user);
     }
 
-    private Role getAdminRole() {
-        return roleRepo.findByName(RoleName.ADMIN).orElseThrow(() -> new RuntimeException("The Fucking Role couldn't be found, sorry"));
+    private void notifyAdminAboutNewUser() {
+
     }
 
-    private Role getUserRole() {
-        return roleRepo.findByName(RoleName.USER).orElseThrow(() -> new RuntimeException("No Role Today my Love is gone away"));
-    }
 }

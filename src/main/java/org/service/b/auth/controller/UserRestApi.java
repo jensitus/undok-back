@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.websocket.server.ServerEndpoint;
 import java.util.List;
 import java.util.UUID;
 
@@ -81,5 +82,7 @@ public class UserRestApi {
     userService.setAdmin(userId, setAdminDto.isAdmin());
     return new Message("successfully changed");
   }
+
+
 
 }

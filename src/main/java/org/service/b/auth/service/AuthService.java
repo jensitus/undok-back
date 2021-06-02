@@ -1,6 +1,6 @@
 package org.service.b.auth.service;
 
-import org.service.b.auth.model.dto.ConfirmAccountDto;
+import org.service.b.auth.model.form.ConfirmAccountForm;
 import org.service.b.auth.model.dto.UserDto;
 import org.service.b.auth.model.dto.LoginDto;
 import org.service.b.auth.model.dto.SignUpDto;
@@ -13,7 +13,7 @@ public interface AuthService {
 
   UserDto createUserAfterSignUp(SignUpDto signUpDto);
 
-  Message confirmAccount(ConfirmAccountDto confirmAccountDto);
+  Message confirmAccount(ConfirmAccountForm confirmAccountForm);
 
   void createUserViaAdmin(CreateUserForm createUserForm);
 

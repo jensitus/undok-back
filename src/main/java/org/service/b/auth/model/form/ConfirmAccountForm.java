@@ -1,4 +1,4 @@
-package org.service.b.auth.model.dto;
+package org.service.b.auth.model.form;
 
 import lombok.ToString;
 import org.service.b.auth.validation.NewPasswordMatch;
@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 
 @ToString
 @PasswordMatches
-public class ConfirmAccountDto implements NewPasswordMatch {
+public class ConfirmAccountForm implements NewPasswordMatch {
 
     private String confirmationToken;
 
@@ -25,18 +25,6 @@ public class ConfirmAccountDto implements NewPasswordMatch {
     private String password;
 
     private String passwordConfirmation;
-
-    private String oldPassword;
-
-//    @Override
-//    public String getPassword() {
-//        return this.password;
-//    }
-//
-//    @Override
-//    public String getPasswordConfirmation() {
-//        return this.passwordConfirmation;
-//    }
 
 
     public String getConfirmationToken() {
@@ -81,11 +69,4 @@ public class ConfirmAccountDto implements NewPasswordMatch {
         this.passwordConfirmation = passwordConfirmation;
     }
 
-    public String getOldPassword() {
-        return oldPassword;
-    }
-
-    public void setOldPassword(String oldPassword) {
-        this.oldPassword = oldPassword;
-    }
 }
