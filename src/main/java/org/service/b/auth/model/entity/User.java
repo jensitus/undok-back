@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.NaturalId;
+import org.service.b.common.encryption.AttributeEncryptor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;

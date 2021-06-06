@@ -15,6 +15,8 @@ public interface AuthService {
 
   Message confirmAccount(ConfirmAccountForm confirmAccountForm);
 
-  void createUserViaAdmin(CreateUserForm createUserForm);
+  String createUserViaAdmin(CreateUserForm createUserForm);
+
+  String createConfirmationUrl(String email, String confirmationToken);
 
 }

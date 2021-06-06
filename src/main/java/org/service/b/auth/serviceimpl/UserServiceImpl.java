@@ -15,6 +15,7 @@ import org.service.b.auth.repository.RoleRepo;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.service.UserService;
 import org.service.b.auth.security.JwtProvider;
+import org.service.b.common.encryption.AttributeEncryptor;
 import org.service.b.common.mailer.service.ServiceBOrgMailer;
 import org.service.b.auth.message.Message;
 import org.service.b.common.util.EmailStuff;
@@ -27,10 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -58,7 +56,13 @@ public class UserServiceImpl implements UserService {
   private RoleRepo roleRepo;
 
   @Autowired
+  private RoleService roleService;
+
+  @Autowired
   private AuthenticationManager authenticationManager;
+
+  @Autowired
+  private AttributeEncryptor attributeEncryptor;
 
   @Override
   public Message createPasswordResetTokenForUser(String email) {
@@ -80,11 +84,11 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public boolean checkIfTokenExpired(String base64Token, String email, String confirm) {
+  public boolean checkIfTokenExpired(String base64Token, String encodedEmail, String confirm) {
     if (confirm.equals("confirm")) {
-      return checkIfConfirmTokenExpired(base64Token, email);
+      return checkIfConfirmTokenExpired(base64Token, encodedEmail);
     } else {
-      return checkIfResetTokenExpired(base64Token, email);
+      return checkIfResetTokenExpired(base64Token, encodedEmail);
     }
   }
 
@@ -104,9 +108,10 @@ public class UserServiceImpl implements UserService {
     }
   }
 
-  private boolean checkIfResetTokenExpired(String base64Token, String email) {
+  private boolean checkIfResetTokenExpired(String base64Token, String encodedEmail) {
     String token = Base64Codec.BASE64.decodeToString(base64Token);
-    User user = userRepo.findByEmail(email);
+    String decodedEmail = attributeEncryptor.decodeUrlEncoded(encodedEmail);
+    User user = userRepo.findByEmail(decodedEmail);
     PasswordResetToken prt = passwordResetTokenRepo.findByTokenAndUserId(token, user.getId());
     LocalDateTime exp = prt.getExpiryDate();
     if (exp.plusHours(2).isBefore(LocalDateTime.now())) {
@@ -116,8 +121,9 @@ public class UserServiceImpl implements UserService {
     return true;
   }
 
-  private boolean checkIfConfirmTokenExpired(String base64Token, String email) {
-    String confirmationToken = Base64Codec.BASE64.decodeToString(base64Token);
+  private boolean checkIfConfirmTokenExpired(String base64Token, String encodedEmail) {
+    String confirmationToken = attributeEncryptor.decodeUrlEncoded(base64Token);
+    String email = attributeEncryptor.decodeUrlEncoded(encodedEmail);
     // User user = userRepo.findByEmailAndConfirmationToken(email, confirmationToken);
     LocalDateTime exp = userRepo.selectConfirmationTokenCreatedAt(email, confirmationToken);
     log.info("exp " + exp);
@@ -167,7 +173,7 @@ public class UserServiceImpl implements UserService {
   public void setAdmin(UUID userId, boolean admin) {
     User user = userRepo.getOne(userId);
     Set<Role> userRoles = user.getRoles();
-    Role adminRole = roleRepo.findByName(RoleName.ADMIN).orElseThrow(() -> new RuntimeException("The Fucking Role couldn't be found, sorry"));
+    Role adminRole = roleService.getAdminRole();
     if (admin == true) {
       userRoles.add(adminRole);
     } else {
@@ -177,4 +183,11 @@ public class UserServiceImpl implements UserService {
     user.setRoles(userRoles);
     userRepo.save(user);
   }
+
+  @Override
+  public UserDto getByUsername(String username) {
+    Optional<User> byUsername = userRepo.findByUsername(username);
+    return modelMapper.map(byUsername.get(), UserDto.class);
+  }
+
 }

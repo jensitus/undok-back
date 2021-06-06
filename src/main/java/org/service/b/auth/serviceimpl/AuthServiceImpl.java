@@ -9,7 +9,6 @@ import org.service.b.auth.model.dto.SignUpDto;
 import org.service.b.auth.model.dto.UserDto;
 import org.service.b.auth.message.Message;
 import org.service.b.auth.model.entity.Role;
-import org.service.b.auth.model.entity.RoleName;
 import org.service.b.auth.model.entity.User;
 import org.service.b.auth.model.form.CreateUserForm;
 import org.service.b.auth.repository.RoleRepo;
@@ -17,6 +16,7 @@ import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.security.JwtProvider;
 import org.service.b.auth.service.AuthService;
 import org.service.b.auth.service.UserService;
+import org.service.b.common.encryption.AttributeEncryptor;
 import org.service.b.common.mailer.service.ServiceBOrgMailer;
 import org.service.b.common.util.EmailStuff;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +63,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private AttributeEncryptor attributeEncryptor;
 
     @Override
     public UserDto getUserDtoWithJwt(LoginDto loginDto) {
@@ -113,13 +116,21 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void createUserViaAdmin(CreateUserForm createUserForm) {
+    public String createUserViaAdmin(CreateUserForm createUserForm) {
         String confirmationToken = UUID.randomUUID().toString();
         User user = new User(createUserForm.getUsername(), createUserForm.getEmail(), confirmationToken, LocalDateTime.now());
         user.setAdmin(createUserForm.isAdmin());
         user.setConfirmationTokenCreatedAt(LocalDateTime.now());
-        createConfirmationMail(user, confirmationToken);
+        // createConfirmationMail(user, confirmationToken);
         userRepo.save(user);
+        return createConfirmationUrl(user.getEmail(), confirmationToken);
+    }
+
+    @Override
+    public String createConfirmationUrl(String email, String confirmationToken) {
+        String encryptedEmail = attributeEncryptor.encodeWithUrlEncoder(email);
+        String encryptedToken = attributeEncryptor.encodeWithUrlEncoder(confirmationToken);
+        return EmailStuff.DOMAIN_URL_FOR_DEV + "/auth/" + encryptedToken + "/confirm/" + encryptedEmail;
     }
 
     private void notifyAdminAboutNewUser() {

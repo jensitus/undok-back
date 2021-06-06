@@ -12,7 +12,7 @@ public interface UserService {
 
   Message createPasswordResetTokenForUser(String email);
 
-  boolean checkIfTokenExpired(String base64Token, String email, String confirm);
+  boolean checkIfTokenExpired(String base64Token, String encodedEmail, String confirm);
 
   Message resetPassword(PasswordResetForm passwordResetForm, String base64Token, String email);
 
@@ -25,5 +25,7 @@ public interface UserService {
   Message changePw(ChangePwDto changePwDto);
 
   void setAdmin(UUID userId, boolean admin);
+
+  UserDto getByUsername(String username);
 
 }

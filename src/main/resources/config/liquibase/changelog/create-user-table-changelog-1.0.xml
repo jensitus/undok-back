@@ -118,13 +118,13 @@
 
     <changeSet id="insert_roles_without_role_prefix" author="jensitus">
         <insert tableName="roles">
-            <column name="name" value="ADMIN"/>
+            <column name="name" value="ROLE_ADMIN"/>
         </insert>
         <insert tableName="roles">
-            <column name="name" value="USER"/>
+            <column name="name" value="ROLE_USER"/>
         </insert>
         <insert tableName="roles">
-            <column name="name" value="CONFIRMED"/>
+            <column name="name" value="ROLE_CONFIRMED"/>
         </insert>
     </changeSet>
 

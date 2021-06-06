@@ -21,7 +21,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
 
 @CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)
 @RestController
@@ -98,7 +97,7 @@ public class AuthRestApi {
 
     @PutMapping("/reset_password/{token}")
     @ResponseStatus
-    public ResponseEntity<Message> resetPassword(@Valid @RequestBody PasswordResetForm passwordResetForm, @PathVariable("token") String base64Token, @RequestParam("email") String email) {
+    public ResponseEntity<Message> resetPassword(@Valid @RequestBody PasswordResetForm passwordResetForm, @PathVariable("token") String base64Token, @RequestParam("encodedEmail") String email) {
         Message message = userService.resetPassword(passwordResetForm, base64Token, email);
         HttpStatus status;
         if (message.getRedirect()) {
@@ -109,9 +108,9 @@ public class AuthRestApi {
         return new ResponseEntity<>(message, status);
     }
 
-    @GetMapping("/{token}/{confirm}")
-    public ResponseEntity<Message> confirmAccount(@PathVariable("token") String base64Token, @PathVariable("confirm") String confirm, @Email @RequestParam("email") String email) {
-        boolean tokenNotExpired = userService.checkIfTokenExpired(base64Token, email, confirm);
+    @GetMapping("/{token}/{confirm}/{encoded_email}")
+    public ResponseEntity<Message> confirmAccount(@PathVariable("token") String base64Token, @PathVariable("confirm") String confirm, @PathVariable("encoded_email") String encodedEmail) {
+        boolean tokenNotExpired = userService.checkIfTokenExpired(base64Token, encodedEmail, confirm);
         if (tokenNotExpired) {
             // message = authService.confirmAccount(base64Token, email);
             return new ResponseEntity<>(new Message("token valid"), HttpStatus.OK);
@@ -125,10 +124,5 @@ public class AuthRestApi {
         return new ResponseEntity<>(authService.confirmAccount(confirmAccountForm), HttpStatus.OK);
     }
 
-    @PostMapping("/create-user-via-admin")
-    public ResponseEntity createUserViaAdmin(@RequestBody CreateUserForm createUserForm) {
-        authService.createUserViaAdmin(createUserForm);
-        return new ResponseEntity(new Message("cool"), HttpStatus.OK);
-    }
 
 }

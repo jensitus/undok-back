@@ -1,23 +1,25 @@
 package org.service.b.auth.controller;
 
+import org.service.b.auth.message.Message;
 import org.service.b.auth.model.dto.ChangePwDto;
 import org.service.b.auth.model.dto.SetAdminDto;
 import org.service.b.auth.model.dto.UserDto;
+import org.service.b.auth.model.form.CreateUserForm;
 import org.service.b.auth.repository.UserRepo;
 import org.service.b.auth.security.JwtProvider;
+import org.service.b.auth.service.AuthService;
 import org.service.b.auth.service.UserService;
 import org.service.b.auth.serviceimpl.UserDetailsServiceImpl;
-import org.service.b.auth.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.websocket.server.ServerEndpoint;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,6 +42,9 @@ public class UserRestApi {
   @Autowired
   JwtProvider jwtProvider;
 
+  @Autowired
+  private AuthService authService;
+
   @GetMapping("/all")
   public List<UserDto> getAllUsers() {
     List<UserDto> userDtoList = userService.getAll();
@@ -48,7 +53,13 @@ public class UserRestApi {
 
   @GetMapping("/principle/{username}")
   public UserDetails getSpecialUser(@PathVariable String username) {
-    return userDetailsService.loadUserByUsername(username);
+    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+    return userDetails;
+  }
+
+  @GetMapping("/by_username/{username}")
+  public UserDto getUserByUsername(@PathVariable("username") String username) {
+    return userService.getByUsername(username);
   }
 
   @PostMapping("/auth/check_auth_token")
@@ -78,11 +89,16 @@ public class UserRestApi {
   }
 
   @PostMapping("/set-admin/{user_id}")
+  @PreAuthorize("hasRole('ADMIN')")
   public Message setAdminFlag(@PathVariable("user_id") UUID userId, @RequestBody SetAdminDto setAdminDto) {
     userService.setAdmin(userId, setAdminDto.isAdmin());
     return new Message("successfully changed");
   }
 
-
+  @PostMapping("/create-user-via-admin")
+  public ResponseEntity createUserViaAdmin(@RequestBody CreateUserForm createUserForm) {
+    String confirmationUrl = authService.createUserViaAdmin(createUserForm);
+    return new ResponseEntity(new Message(confirmationUrl), HttpStatus.OK);
+  }
 
 }
