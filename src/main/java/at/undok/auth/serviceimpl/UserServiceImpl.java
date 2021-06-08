@@ -91,6 +91,12 @@ public class UserServiceImpl implements UserService {
     }
   }
 
+  public boolean checkIfPasswordHasToBeChanged(String encodedToken, String encodedEmail) {
+    String confirmationToken = attributeEncryptor.decodeUrlEncoded(encodedToken);
+    String email = attributeEncryptor.decodeUrlEncoded(encodedEmail);
+    return userRepo.selectChangePasswordFromUser(email, confirmationToken);
+  }
+
   @Override
   public Message resetPassword(PasswordResetForm passwordResetForm, String base64Token, String email) {
     if (passwordResetForm.getPassword().equals(passwordResetForm.getPassword_confirmation())) {

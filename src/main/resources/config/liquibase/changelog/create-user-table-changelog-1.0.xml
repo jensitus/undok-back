@@ -128,4 +128,10 @@
         </insert>
     </changeSet>
 
+    <changeSet id="add_change_pw_flag_to_user_tbl" author="jensitus">
+        <addColumn tableName="users">
+            <column name="change_password" type="BOOLEAN" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -19,4 +19,6 @@ public interface AuthService {
 
   String createConfirmationUrl(String email, String confirmationToken);
 
+  void confirmAccountWithoutPWChange(String encodedToken, String encodedEmail);
+
 }

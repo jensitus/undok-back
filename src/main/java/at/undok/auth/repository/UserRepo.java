@@ -23,4 +23,7 @@ public interface UserRepo extends JpaRepository<User, UUID> {
   @Query("select u.confirmationTokenCreatedAt from User u where u.email = :email and u.confirmationToken = :confirmationToken")
   LocalDateTime selectConfirmationTokenCreatedAt(String email, String confirmationToken);
 
+  @Query("select u.changePassword from User u where u.email = :email and u.confirmationToken = :confirmationToken")
+  boolean selectChangePasswordFromUser(String email, String confirmationToken);
+
 }

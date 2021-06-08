@@ -4,7 +4,6 @@ import at.undok.auth.model.form.ConfirmAccountForm;
 import at.undok.auth.model.form.CreateUserForm;
 import at.undok.common.mailer.service.ServiceBOrgMailer;
 import at.undok.common.util.EmailStuff;
-import io.jsonwebtoken.impl.Base64Codec;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import at.undok.auth.model.dto.LoginDto;
@@ -82,6 +81,7 @@ public class AuthServiceImpl implements AuthService {
     public UserDto createUserAfterSignUp(SignUpDto signUpDto) {
         String confirmationToken = UUID.randomUUID().toString();
         User user = new User(signUpDto.getUsername(), signUpDto.getEmail().toLowerCase(), encoder.encode(signUpDto.getPassword()), confirmationToken, LocalDateTime.now(), LocalDateTime.now());
+        user.setChangePassword(false);
         log.info(confirmationToken);
         userRepo.save(user);
         createConfirmationMail(user, confirmationToken);
@@ -115,11 +115,21 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public void confirmAccountWithoutPWChange(String encodedToken, String encodedEmail) {
+        String confirmationToken = attributeEncryptor.decodeUrlEncoded(encodedToken);
+        String email = attributeEncryptor.decodeUrlEncoded(encodedEmail);
+        User user = userRepo.findByEmailAndConfirmationToken(email, confirmationToken);
+        user.setConfirmed(true);
+        userRepo.save(user);
+    }
+
+    @Override
     public String createUserViaAdmin(CreateUserForm createUserForm) {
         String confirmationToken = UUID.randomUUID().toString();
         User user = new User(createUserForm.getUsername(), createUserForm.getEmail(), confirmationToken, LocalDateTime.now(), LocalDateTime.now());
         user.setAdmin(createUserForm.isAdmin());
         user.setConfirmationTokenCreatedAt(LocalDateTime.now());
+        user.setChangePassword(true);
         // createConfirmationMail(user, confirmationToken);
         userRepo.save(user);
         return createConfirmationUrl(user.getEmail(), confirmationToken);

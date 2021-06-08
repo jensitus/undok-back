@@ -108,11 +108,15 @@ public class AuthRestApi {
     }
 
     @GetMapping("/{token}/{confirm}/{encoded_email}")
-    public ResponseEntity<Message> confirmAccount(@PathVariable("token") String base64Token, @PathVariable("confirm") String confirm, @PathVariable("encoded_email") String encodedEmail) {
-        boolean tokenNotExpired = userService.checkIfTokenExpired(base64Token, encodedEmail, confirm);
-        if (tokenNotExpired) {
+    public ResponseEntity<Message> checkTheConfirmationData(@PathVariable("token") String encodedToken, @PathVariable("confirm") String confirm, @PathVariable("encoded_email") String encodedEmail) {
+        boolean tokenNotExpired = userService.checkIfTokenExpired(encodedToken, encodedEmail, confirm);
+        boolean changePassword = userService.checkIfPasswordHasToBeChanged(encodedToken, encodedEmail);
+        if (tokenNotExpired && changePassword) {
             // message = authService.confirmAccount(base64Token, email);
             return new ResponseEntity<>(new Message("token valid"), HttpStatus.OK);
+        } else if (tokenNotExpired) {
+            authService.confirmAccountWithoutPWChange(encodedToken, encodedEmail);
+            return new ResponseEntity<>(new Message("token valid and password has not to be changed", true), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new Message("expired", false), HttpStatus.UNPROCESSABLE_ENTITY);
         }
@@ -122,6 +126,5 @@ public class AuthRestApi {
     public ResponseEntity<Message> setNewPW(@RequestBody ConfirmAccountForm confirmAccountForm) {
         return new ResponseEntity<>(authService.confirmAccount(confirmAccountForm), HttpStatus.OK);
     }
-
 
 }

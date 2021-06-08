@@ -60,6 +60,9 @@ public class User {
     @Column(name = "admin")
     private boolean admin;
 
+    @Column(name = "change_password")
+    private boolean changePassword;
+
     public User() {
     }
 
@@ -69,6 +72,7 @@ public class User {
         this.password = password;
         this.confirmationToken = confirmationToken;
         this.confirmationTokenCreatedAt = confirmationTokenCreatedAt;
+        this.createdAt = createdAt;
     }
 
     public User(String username, String email, String confirmationToken, LocalDateTime confirmationTokenCreatedAt, LocalDateTime createdAt) {

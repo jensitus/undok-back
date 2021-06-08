@@ -30,5 +30,6 @@ public class UserDto {
 
   private boolean locked;
 
+  private boolean changePassword;
 
 }
