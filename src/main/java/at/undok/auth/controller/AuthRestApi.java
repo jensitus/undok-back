@@ -10,7 +10,7 @@ import at.undok.auth.model.dto.SignUpDto;
 import at.undok.auth.service.AuthService;
 import at.undok.auth.service.UserService;
 import at.undok.auth.security.JwtProvider;
-import at.undok.auth.message.Message;
+import at.undok.common.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

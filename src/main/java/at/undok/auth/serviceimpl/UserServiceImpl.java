@@ -17,7 +17,7 @@ import at.undok.auth.repository.UserRepo;
 import at.undok.auth.service.UserService;
 import at.undok.auth.security.JwtProvider;
 import at.undok.common.encryption.AttributeEncryptor;
-import at.undok.auth.message.Message;
+import at.undok.common.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

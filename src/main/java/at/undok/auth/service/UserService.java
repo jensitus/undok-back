@@ -3,7 +3,7 @@ package at.undok.auth.service;
 import at.undok.auth.model.dto.ChangePwDto;
 import at.undok.auth.model.dto.UserDto;
 import at.undok.auth.message.PasswordResetForm;
-import at.undok.auth.message.Message;
+import at.undok.common.message.Message;
 
 import java.util.List;
 import java.util.UUID;

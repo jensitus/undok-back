@@ -3,7 +3,7 @@ package at.undok.auth.controller;
 import at.undok.auth.model.form.CreateUserForm;
 import at.undok.auth.repository.UserRepo;
 import at.undok.auth.serviceimpl.UserDetailsServiceImpl;
-import at.undok.auth.message.Message;
+import at.undok.common.message.Message;
 import at.undok.auth.model.dto.ChangePwDto;
 import at.undok.auth.model.dto.SetAdminDto;
 import at.undok.auth.model.dto.UserDto;

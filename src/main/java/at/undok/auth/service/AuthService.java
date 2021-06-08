@@ -5,7 +5,7 @@ import at.undok.auth.model.form.CreateUserForm;
 import at.undok.auth.model.dto.UserDto;
 import at.undok.auth.model.dto.LoginDto;
 import at.undok.auth.model.dto.SignUpDto;
-import at.undok.auth.message.Message;
+import at.undok.common.message.Message;
 
 public interface AuthService {
 

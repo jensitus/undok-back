@@ -9,7 +9,7 @@ import org.modelmapper.ModelMapper;
 import at.undok.auth.model.dto.LoginDto;
 import at.undok.auth.model.dto.SignUpDto;
 import at.undok.auth.model.dto.UserDto;
-import at.undok.auth.message.Message;
+import at.undok.common.message.Message;
 import at.undok.auth.model.entity.Role;
 import at.undok.auth.model.entity.User;
 import at.undok.auth.repository.RoleRepo;

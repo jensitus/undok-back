@@ -3,7 +3,7 @@ package at.undok.auth.security;
 import at.undok.auth.serviceimpl.UserPrinciple;
 import io.jsonwebtoken.*;
 import at.undok.auth.model.entity.User;
-import at.undok.auth.message.Message;
+import at.undok.common.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

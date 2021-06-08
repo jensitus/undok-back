@@ -11,6 +11,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/service/app")
 public class CommonRestApi {
 
-  private static final Logger logger = LoggerFactory.getLogger(CommonRestApi.class);
-
 }
