@@ -27,6 +27,8 @@ public class SignUpDto {
   @Size(min = 6, max = 70)
   private String password;
 
+  private String passwordConfirmation;
+
   private boolean admin;
 
 }

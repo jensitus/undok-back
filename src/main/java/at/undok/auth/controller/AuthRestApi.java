@@ -12,6 +12,7 @@ import at.undok.auth.service.UserService;
 import at.undok.auth.security.JwtProvider;
 import at.undok.common.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,9 +58,9 @@ public class AuthRestApi {
         if (userRepo.existsByEmail(signUpDto.getEmail())) {
             return new ResponseEntity<>(new Message("It's a pity -> but this Email is already in use!"), HttpStatus.BAD_REQUEST);
         }
-//    if (!signUpDto.getPasswordConfirmation().equals(signUpDto.getPassword())) {
-//      return new ResponseEntity<>(new Message("password does not match the confirmation"), HttpStatus.CONFLICT);
-//    }
+        if (!signUpDto.getPasswordConfirmation().equals(signUpDto.getPassword())) {
+            return new ResponseEntity<>(new Message("password does not match the confirmation"), HttpStatus.CONFLICT);
+        }
         authService.createUserAfterSignUp(signUpDto);
         return new ResponseEntity<>(new Message("user created"), HttpStatus.CREATED);
     }

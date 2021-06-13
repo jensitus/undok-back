@@ -14,8 +14,6 @@ import javax.mail.internet.MimeMessage;
 @Service
 public class ServiceBOrgMailerImpl implements ServiceBOrgMailer {
 
-  private static final Logger logger = LoggerFactory.getLogger(ServiceBOrgMailerImpl.class);
-
   private static final String STYLE = "<style>.container{max-width: 500px;border: 0px solid #999;border-radius: 5px;margin: 0px auto;} .general {padding: 11px;text-align:left;line-height:1.3em;font-family:verdana, arial, helvetica, sans-serif;font-size: 0.9em;}a{text-decoration: none;color: #0055ff;}</style>";
 
   private static final String FROM = "info@service-b.org";
@@ -44,7 +42,6 @@ public class ServiceBOrgMailerImpl implements ServiceBOrgMailer {
     } catch (MessagingException e) {
       e.printStackTrace();
     }
-    logger.info(mimeMessage.toString());
     andNowSendTheMail(mimeMessage);
   }
 

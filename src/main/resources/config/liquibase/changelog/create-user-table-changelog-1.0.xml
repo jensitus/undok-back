@@ -97,13 +97,6 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="change_user_id_in_user_confirmation_to_uuid" author="jensitus">
-        <dropColumn tableName="user_confirmation" columnName="user_id" />
-        <addColumn tableName="user_confirmation">
-            <column name="user_id" type="UUID"/>
-        </addColumn>
-    </changeSet>
-
     <changeSet id="locked-flag" author="jensitus">
         <addColumn tableName="users">
             <column name="locked" type="BOOLEAN" defaultValue="false" />

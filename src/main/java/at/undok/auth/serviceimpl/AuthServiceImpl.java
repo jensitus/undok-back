@@ -106,10 +106,11 @@ public class AuthServiceImpl implements AuthService {
             return new Message("Password and confirmation do not match");
         }
         log.info(confirmAccountForm.toString());
-        User user = userRepo.findByEmail(confirmAccountForm.getEmail());
+        User user = userRepo.findByEmail(attributeEncryptor.decodeUrlEncoded(confirmAccountForm.getEmail()));
         user.setPassword(encoder.encode(confirmAccountForm.getPassword()));
         Set<Role> roleSet = new HashSet<>();
-        roleSet.add(roleService.getConfirmedRole());
+        roleSet.add(roleService.getUserRole());
+        user.setConfirmed(true);
         userRepo.save(user);
         return new Message("User successfully confirmed");
     }
@@ -139,7 +140,9 @@ public class AuthServiceImpl implements AuthService {
     public String createConfirmationUrl(String email, String confirmationToken) {
         String encryptedEmail = attributeEncryptor.encodeWithUrlEncoder(email);
         String encryptedToken = attributeEncryptor.encodeWithUrlEncoder(confirmationToken);
-        return EmailStuff.DOMAIN_URL_FOR_DEV + "/auth/" + encryptedToken + "/confirm/" + encryptedEmail;
+        String confUrl = EmailStuff.DOMAIN_URL_FOR_DEV + "/auth/" + encryptedToken + "/confirm/" + encryptedEmail;
+        // log.info(confUrl);
+        return confUrl;
     }
 
     private void notifyAdminAboutNewUser() {
