@@ -1,31 +1,43 @@
 package at.undok.undok.client.model.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
-@MappedSuperclass
-public class Person {
+@Entity
+@Table(name = "persons")
+public class Person implements Serializable {
 
     @Id
-    private UUID personId;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "id", unique = true, nullable = false)
+    private UUID id;
 
-    private String type;
+    /* here we have to clear if it sex or gender */
+//    private String sex;
 
-    private String sex;
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
-    private String dateOfBirth;
-
+    @Column(name = "last_name")
     private String lastName;
 
+    @Column(name = "first_name")
     private String firstName;
 
-    @OneToOne
-    private Address address;
+    @OneToOne(mappedBy = "person", fetch = FetchType.LAZY)
+    private Client client;
 
+//    @OneToMany
+//    private Set<Contact> contacts;
+
+//    @OneToOne
+//    private Address address;
 
 }

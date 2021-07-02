@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
-@Entity
+// @Entity
 public class Counseling {
 
     @Id

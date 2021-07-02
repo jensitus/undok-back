@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create_client_table" author="jensitus">
+
+        <createTable tableName="persons">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="last_name" type="varchar(255)"/>
+            <column name="first_name" type="varchar(255)"/>
+            <column name="date_of_birth" type="date"/>
+        </createTable>
+
+        <createTable tableName="clients">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="keyword" type="varchar(255)"/>
+            <column name="education" type="varchar(255)"/>
+            <column name="interpretation_necessary" type="boolean"/>
+            <column name="how_has_the_person_heard_from_us" type="varchar(255)"/>
+            <column name="vulnerable_when_asserting_rights" type="boolean"/>
+            <column name="marital_status" type="varchar(255)"/>
+        </createTable>
+
+        <createTable tableName="addresses">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="street" type="varchar(255)"/>
+            <column name="zip_code" type="varchar(64)"/>
+            <column name="city" type="varchar(255)"/>
+            <column name="country" type="varchar(255)"/>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="add_person_id_to_clients" author="jensitus">
+        <addColumn tableName="clients">
+            <column name="person_id" type="UUID" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="all_the_others_to_client" author="jensitus">
+        <addColumn tableName="clients">
+            <column name="last_name" type="varchar(255)"/>
+            <column name="first_name" type="varchar(255)"/>
+            <column name="date_of_birth" type="date"/>
+        </addColumn>
+    </changeSet>
+
+
+</databaseChangeLog>

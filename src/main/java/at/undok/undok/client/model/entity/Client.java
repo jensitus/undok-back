@@ -1,60 +1,67 @@
 package at.undok.undok.client.model.entity;
 
-import at.undok.undok.client.model.enumeration.LabourMarketAccess;
 import at.undok.undok.client.model.enumeration.MaritalStatus;
-import at.undok.undok.client.model.enumeration.ResidentStatus;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.Set;
 import java.util.UUID;
 
 @Data
 @Entity
 @Table(name = "clients")
-public class Client extends Person {
+public class Client {
 
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "id", unique = true, nullable = false)
+    @Column(name = "id", unique = true, nullable = false, insertable = false, updatable = false)
     private UUID id;
 
+    @Column(name = "keyword")
     private String keyword;
 
+    @Column(name = "education")
     private String education;
 
-    private MaritalStatus maritalStatus;
+    @Column(name = "marital_status")
+    private String maritalStatus;
 
-    @OneToOne
-    private Nationality nationality;
+    // @OneToOne
+    // private Nationality nationality;
 
-    @OneToMany
-    private Set<Language> language;
+    // @OneToMany
+    // private Set<Language> language;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="person_id", referencedColumnName = "id")
+    private Person person;
+
+    @Column(name = "interpretation_necessary")
     private Boolean interpreterNecessary;
 
+    @Column(name = "how_has_the_person_heard_from_us")
     private String howHasThePersonHeardFromUs;
 
-    private ResidentStatus currentResidentStatus;
+    // private ResidentStatus currentResidentStatus;
 
+    @Column(name = "vulnerable_when_asserting_rights")
     private Boolean vulnerableWhenAssertingRights;
 
-    private ResidentStatus formerResidentStatus;
+    // private ResidentStatus formerResidentStatus;
 
-    private LabourMarketAccess labourMarketAccess;
+    // private LabourMarketAccess labourMarketAccess;
 
-    private String position;
+    // private String position;
 
-    @OneToOne
-    private Industry industry;
+    // @OneToOne
+    // private Industry industry;
 
-    @OneToOne
-    private Union union;
+    // @OneToOne
+    // private Union union;
 
-    private Boolean membership;
+    // private Boolean membership;
 
-    private String organisation;
+    // private String organisation;
 
 }

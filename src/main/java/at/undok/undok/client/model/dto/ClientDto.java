@@ -8,7 +8,7 @@ import javax.persistence.OneToOne;
 import java.util.UUID;
 
 @Data
-public class ClientDto extends PersonDto {
+public class ClientDto {
 
     private UUID id;
 
@@ -16,7 +16,7 @@ public class ClientDto extends PersonDto {
 
     private String education;
 
-    private MaritalStatus maritalStatus;
+    private String maritalStatus;
 
     @OneToOne
     private NationalityDto nationality;
@@ -44,5 +44,7 @@ public class ClientDto extends PersonDto {
     private Boolean membership;
 
     private String organisation;
+
+    private PersonDto personDto;
 
 }

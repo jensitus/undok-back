@@ -1,8 +1,11 @@
 package at.undok.common.util;
 
+import org.springframework.stereotype.Component;
+
 import javax.persistence.AttributeConverter;
 import java.util.UUID;
 
+@Component
 public class UUIDConverter implements AttributeConverter<UUID, String> {
 
   @Override

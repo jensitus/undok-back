@@ -18,13 +18,7 @@ public class ApplicationTests {
 	public void contextLoads() {
 
 		Client client = new Client();
-		client.setCurrentResidentStatus(ResidentStatus.ASYL);
-		client.setFirstName("Jens");
-		client.setMaritalStatus(MaritalStatus.MARRIED);
 		client.setEducation("Basis Wappler");
-		client.setLabourMarketAccess(LabourMarketAccess.FREE_ACCESS);
-
-		String la = client.getLabourMarketAccess().label;
 
 
 	}
