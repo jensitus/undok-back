@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping("/undok/clients")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)
+@RequestMapping("/service/undok/clients")
 public interface ClientApi {
 
+    @CrossOrigin
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
     ClientDto createClient(@RequestBody ClientForm clientForm);

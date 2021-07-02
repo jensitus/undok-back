@@ -1,17 +1,14 @@
 package at.undok.auth.controller;
 
-import at.undok.auth.model.form.CreateUserForm;
-import at.undok.auth.repository.UserRepo;
-import at.undok.auth.serviceimpl.UserDetailsServiceImpl;
-import at.undok.common.message.Message;
 import at.undok.auth.model.dto.ChangePwDto;
 import at.undok.auth.model.dto.SetAdminDto;
 import at.undok.auth.model.dto.UserDto;
+import at.undok.auth.model.form.CreateUserForm;
 import at.undok.auth.security.JwtProvider;
 import at.undok.auth.service.AuthService;
 import at.undok.auth.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import at.undok.auth.serviceimpl.UserDetailsServiceImpl;
+import at.undok.common.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,15 +20,10 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
-@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)
 @RestController
 @RequestMapping("/service/users")
 public class UserRestApi {
-
-  private static final Logger logger = LoggerFactory.getLogger(UserRestApi.class);
-
-  @Autowired
-  private UserRepo userRepo;
 
   @Autowired
   private UserDetailsServiceImpl userDetailsService;

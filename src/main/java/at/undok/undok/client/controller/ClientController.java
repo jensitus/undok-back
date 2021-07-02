@@ -5,13 +5,12 @@ import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.PersonDto;
 import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.service.ClientService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
-@CrossOrigin(origins = {"https://www.service-b.org", "https://service-b.org", "http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)
+
 @RestController
 public class ClientController implements ClientApi {
 
@@ -35,4 +34,5 @@ public class ClientController implements ClientApi {
     public PersonDto getClientById(UUID id) {
         return clientService.getClientById(id);
     }
+
 }
