@@ -1,6 +1,7 @@
 package at.undok.undok.client.model.entity;
 
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -40,4 +41,14 @@ public class Person implements Serializable {
 //    @OneToOne
 //    private Address address;
 
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id=" + id +
+                ", dateOfBirth=" + dateOfBirth +
+                ", lastName='" + lastName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                '}';
+    }
 }

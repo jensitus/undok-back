@@ -2,6 +2,7 @@ package at.undok.undok.client.service;
 
 import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.common.util.ToLocalDateService;
+import at.undok.undok.client.model.dto.ClientCount;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.PersonDto;
 import at.undok.undok.client.model.entity.Client;
@@ -18,9 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -69,11 +68,25 @@ public class ClientService {
         return clientDto;
     }
 
-    public List<PersonDto> getClients(int page, int size){
+    public Map<String, Map> getClients(int page, int size){
         Pageable pageable = PageRequest.of(page, size);
         Page<Person> all = personRepo.findAll(pageable);
+
         List<Person> personList = all.getContent();
-        return entityToDtoMapper.convertPersonListToDtoList(personList);
+        List<PersonDto> personDtoList = entityToDtoMapper.convertPersonListToDtoList(personList);
+
+        Map<String, List<PersonDto>> personMap = new HashMap<>();
+        personMap.put("personList", personDtoList);
+
+        Map<String, Map> countAndClientReturnMap = new HashMap<>();
+
+        Map<String, Long> clientCount = new HashMap<>();
+        clientCount.put("count", all.getTotalElements());
+
+        countAndClientReturnMap.put("countMap", clientCount);
+        countAndClientReturnMap.put("personMap", personMap);
+
+        return countAndClientReturnMap;
     }
 
     public PersonDto getClientById(UUID id) {
