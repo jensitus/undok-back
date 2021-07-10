@@ -1,7 +1,6 @@
 package at.undok.undok.client.controller;
 
 import at.undok.undok.client.api.ClientApi;
-import at.undok.undok.client.model.dto.ClientCount;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.dto.PersonDto;
@@ -9,10 +8,8 @@ import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.model.form.CounselingForm;
 import at.undok.undok.client.service.ClientService;
 import at.undok.undok.client.service.CounselingService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -48,4 +45,8 @@ public class ClientController implements ClientApi {
         return counselingService.createCounseling(clientId, counselingForm);
     }
 
+    @Override
+    public Long getNumberOfClients() {
+        return clientService.getNumberOfClients();
+    }
 }
