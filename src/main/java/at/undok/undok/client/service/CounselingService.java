@@ -45,4 +45,8 @@ public class CounselingService {
         return counselingDto;
     }
 
+    public Long numberOfCounselings() {
+        return counselingRepo.count();
+    }
+
 }

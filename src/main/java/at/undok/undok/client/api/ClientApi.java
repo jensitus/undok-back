@@ -32,5 +32,4 @@ public interface ClientApi {
     CounselingDto createCounseling(@PathVariable("id") UUID clientId, @RequestBody CounselingForm counselingForm);
 
 
-
 }
