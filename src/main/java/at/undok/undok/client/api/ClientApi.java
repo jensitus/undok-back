@@ -2,8 +2,10 @@ package at.undok.undok.client.api;
 
 import at.undok.undok.client.model.dto.ClientCount;
 import at.undok.undok.client.model.dto.ClientDto;
+import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.dto.PersonDto;
 import at.undok.undok.client.model.form.ClientForm;
+import at.undok.undok.client.model.form.CounselingForm;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,5 +27,10 @@ public interface ClientApi {
 
     @GetMapping("/{id}")
     PersonDto getClientById(@PathVariable("id") UUID id);
+
+    @PostMapping("/{id}/counseling")
+    CounselingDto createCounseling(@PathVariable("id") UUID clientId, @RequestBody CounselingForm counselingForm);
+
+
 
 }

@@ -7,6 +7,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -32,14 +33,21 @@ public class Person implements Serializable {
     @Column(name = "first_name")
     private String firstName;
 
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     @OneToOne(mappedBy = "person", fetch = FetchType.LAZY)
     private Client client;
 
 //    @OneToMany
 //    private Set<Contact> contacts;
 
-//    @OneToOne
-//    private Address address;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
+    private Address address;
 
 
     @Override

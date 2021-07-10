@@ -5,6 +5,7 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -43,6 +44,9 @@ public class Client {
     @Column(name = "how_has_the_person_heard_from_us")
     private String howHasThePersonHeardFromUs;
 
+    @OneToMany(mappedBy = "client")
+    private List<Counseling> counselings;
+
     // private ResidentStatus currentResidentStatus;
 
     @Column(name = "vulnerable_when_asserting_rights")
@@ -64,4 +68,17 @@ public class Client {
 
     // private String organisation;
 
+
+    @Override
+    public String toString() {
+        return "Client{" +
+                "id=" + id +
+                ", keyword='" + keyword + '\'' +
+                ", education='" + education + '\'' +
+                ", maritalStatus='" + maritalStatus + '\'' +
+                ", interpreterNecessary=" + interpreterNecessary +
+                ", howHasThePersonHeardFromUs='" + howHasThePersonHeardFromUs + '\'' +
+                ", vulnerableWhenAssertingRights=" + vulnerableWhenAssertingRights +
+                '}';
+    }
 }

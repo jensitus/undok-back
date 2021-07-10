@@ -2,9 +2,9 @@ package at.undok.undok.client.service;
 
 import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.common.util.ToLocalDateService;
-import at.undok.undok.client.model.dto.ClientCount;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.PersonDto;
+import at.undok.undok.client.model.entity.Address;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.entity.Person;
 import at.undok.undok.client.model.form.ClientForm;
@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -51,15 +52,28 @@ public class ClientService {
 
         Client client = new Client();
         Person person = new Person();
-        person.setDateOfBirth(toLocalDateService.formatStringToLocalDate(clientForm.getDateOfBirth()));
+        try {
+            person.setDateOfBirth(toLocalDateService.formatStringToLocalDate(clientForm.getDateOfBirth()));
+        } catch (Exception e) {
+            person.setDateOfBirth(null);
+        }
         person.setFirstName(attributeEncryptor.convertToDatabaseColumn(clientForm.getFirstName()));
         person.setLastName(attributeEncryptor.convertToDatabaseColumn(clientForm.getLastName()));
+        person.setCreatedAt(LocalDateTime.now());
         client.setEducation(clientForm.getEducation());
         client.setKeyword(clientForm.getKeyword());
         client.setHowHasThePersonHeardFromUs(clientForm.getHowHasThePersonHeardFromUs());
         client.setInterpreterNecessary(clientForm.getInterpreterNecessary());
         client.setVulnerableWhenAssertingRights(clientForm.getVulnerableWhenAssertingRights());
         client.setMaritalStatus(clientForm.getMaritalStatus());
+
+        Address address = new Address();
+        address.setStreet(clientForm.getStreet());
+        address.setZipCode(clientForm.getZipCode());
+        address.setCity(clientForm.getCity());
+        address.setCountry(clientForm.getCountry());
+
+        person.setAddress(address);
 
         client.setPerson(person);
 
@@ -91,8 +105,7 @@ public class ClientService {
 
     public PersonDto getClientById(UUID id) {
         Optional<Person> personOptional = personRepo.findById(id);
-        PersonDto personDto = entityToDtoMapper.convertPersonToDto(personOptional.get());
-        return personDto;
+        return entityToDtoMapper.convertPersonToDto(personOptional.get());
     }
 
 }

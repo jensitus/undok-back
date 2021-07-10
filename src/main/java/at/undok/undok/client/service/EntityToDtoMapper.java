@@ -2,8 +2,10 @@ package at.undok.undok.client.service;
 
 import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.undok.client.model.dto.ClientDto;
+import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.dto.PersonDto;
 import at.undok.undok.client.model.entity.Client;
+import at.undok.undok.client.model.entity.Counseling;
 import at.undok.undok.client.model.entity.Person;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,18 @@ public class EntityToDtoMapper {
     private AttributeEncryptor attributeEncryptor;
 
     public ClientDto convertClientToDto(Client client) {
-        return modelMapper.map(client, ClientDto.class);
+        ClientDto clientDto = modelMapper.map(client, ClientDto.class);
+        List<CounselingDto> counselingDtos = new ArrayList<>();
+        for (Counseling counseling : client.getCounselings()) {
+            CounselingDto counselingDto = convertCounselingToDto(counseling);
+            counselingDtos.add(counselingDto);
+        }
+        clientDto.setCounselings(counselingDtos);
+        return clientDto;
+    }
+
+    private CounselingDto convertCounselingToDto(Counseling counseling) {
+        return modelMapper.map(counseling, CounselingDto.class);
     }
 
     public List<ClientDto> convertClientListToDtoList(List<Client> clients) {

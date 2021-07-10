@@ -6,19 +6,27 @@
 
     <changeSet id="create_counseling_table" author="jensitus">
 
-        <createTable tableName="counseling">
+        <createTable tableName="counselings">
             <column name="id" type="UUID">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="counselingStatus" type="varchar(255)"/>
-            <column name="entryDate" type="date"/>
+            <column name="counseling_status" type="varchar(255)"/>
+            <column name="entry_date" type="date"/>
             <column name="concern" type="varchar(255)" />
-            <column name="concernCategory" type="varchar(255)" />
+            <column name="concern_category" type="varchar(255)" />
             <column name="activity" type="varchar(255)" />
-            <column name="activityCategory" type="varchar(255)" />
-            <column name="registeredBy" type="varchar(255)" />
+            <column name="activity_category" type="varchar(255)" />
+            <column name="registered_by" type="varchar(255)" />
+            <column name="counseling_id" type="UUID" />
         </createTable>
 
+    </changeSet>
+
+    <changeSet id="client_id_instead_of_counseling_id" author="jensitus">
+        <addColumn tableName="counselings">
+            <column name="client_id" type="UUID" />
+        </addColumn>
+        <dropColumn tableName="counselings" columnName="counseling_id" />
     </changeSet>
 
 

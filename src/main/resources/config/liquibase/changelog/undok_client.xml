@@ -45,11 +45,19 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="all_the_others_to_client" author="jensitus">
-        <addColumn tableName="clients">
-            <column name="last_name" type="varchar(255)"/>
-            <column name="first_name" type="varchar(255)"/>
-            <column name="date_of_birth" type="date"/>
+<!--    <changeSet id="all_the_others_to_client" author="jensitus">-->
+<!--        <addColumn tableName="clients">-->
+<!--            <column name="last_name" type="varchar(255)"/>-->
+<!--            <column name="first_name" type="varchar(255)"/>-->
+<!--            <column name="date_of_birth" type="date"/>-->
+<!--        </addColumn>-->
+<!--    </changeSet>-->
+
+    <changeSet id="add_created_and_updated_date_to_persons" author="jensitus">
+        <addColumn tableName="persons">
+            <column name="created_at" type="timestamp" />
+            <column name="updated_at" type="timestamp" />
+            <column name="address_id" type="UUID" />
         </addColumn>
     </changeSet>
 

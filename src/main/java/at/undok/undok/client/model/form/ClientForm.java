@@ -3,6 +3,7 @@ package at.undok.undok.client.model.form;
 import lombok.Data;
 import lombok.ToString;
 
+import javax.persistence.Column;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -12,6 +13,11 @@ public class ClientForm {
     private String firstName;
     private String lastName;
     private String dateOfBirth;
+
+    private String street;
+    private String zipCode;
+    private String city;
+    private String country;
 
     private String keyword;
 
