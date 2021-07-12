@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,9 +36,10 @@ public class CounselingService {
         c.setActivity(counselingForm.getActivity());
         c.setConcern(counselingForm.getConcern());
         c.setConcernCategory(counselingForm.getConcernCategory());
-        c.setEntryDate(toLocalDateService.formatStringToLocalDate(counselingForm.getEntryDate()));
+        c.setCounselingDate(toLocalDateService.formatStringToLocalDateTime(counselingForm.getCounselingDate()));
         c.setActivityCategory(counselingForm.getActivityCategory());
         c.setRegisteredBy(counselingForm.getRegisteredBy());
+        c.setCreatedAt(LocalDateTime.now());
         Optional<Client> clientOptional = clientRepo.findById(counselingForm.getClientId());
         c.setClient(clientOptional.get());
         Counseling counsel = counselingRepo.save(c);

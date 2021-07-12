@@ -3,6 +3,7 @@ package at.undok.undok.client.model.dto;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -23,5 +24,9 @@ public class CounselingDto {
     private String activityCategory;
 
     private String registeredBy;
+
+    private LocalDateTime counselingDate;
+
+    private LocalDateTime createdAt;
 
 }

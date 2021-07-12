@@ -108,4 +108,8 @@ public class ClientService {
         return entityToDtoMapper.convertPersonToDto(personOptional.get());
     }
 
+    public Long getNumberOfClients() {
+        return clientRepo.count();
+    }
+
 }

@@ -29,6 +29,16 @@
         <dropColumn tableName="counselings" columnName="counseling_id" />
     </changeSet>
 
+    <changeSet id="add_counselingDate" author="jensitus">
+        <addColumn tableName="counselings">
+            <column name="counseling_date" type="timestamp"></column>
+        </addColumn>
+    </changeSet>
 
+    <changeSet id="add_created_at" author="jensitus">
+        <addColumn tableName="counselings">
+            <column name="created_at" type="timestamp" />
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -42,6 +43,12 @@ public class Counseling {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
+
+    @Column(name = "counseling_date")
+    private LocalDateTime counselingDate;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     @Override
     public String toString() {

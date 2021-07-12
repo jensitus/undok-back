@@ -2,6 +2,7 @@ package at.undok.undok.client.model.form;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -22,5 +23,7 @@ public class CounselingForm {
     private String registeredBy;
 
     private UUID clientId;
+
+    private String counselingDate;
 
 }

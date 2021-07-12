@@ -1,6 +1,5 @@
 package at.undok.undok.client.api;
 
-import at.undok.undok.client.model.dto.ClientCount;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.dto.PersonDto;
@@ -9,7 +8,6 @@ import at.undok.undok.client.model.form.CounselingForm;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -31,5 +29,7 @@ public interface ClientApi {
     @PostMapping("/{id}/counseling")
     CounselingDto createCounseling(@PathVariable("id") UUID clientId, @RequestBody CounselingForm counselingForm);
 
+    @GetMapping("/count")
+    Long getNumberOfClients();
 
 }

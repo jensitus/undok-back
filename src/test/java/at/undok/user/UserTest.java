@@ -24,6 +24,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -141,6 +143,14 @@ public class UserTest {
         Client client = new Client();
         client.setMaritalStatus("Verheiratet");
         Assert.assertEquals(client.getMaritalStatus(), MaritalStatus.MARRIED);
+    }
+
+    @Test
+    public void testTimeParse() {
+        LocalDateTime ldt = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.parse("16-07-2021 13:30:11", dateTimeFormatter);
+        Assert.assertEquals("yes", "no");
     }
 
 }
