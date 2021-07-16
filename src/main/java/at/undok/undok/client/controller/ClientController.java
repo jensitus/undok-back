@@ -49,4 +49,10 @@ public class ClientController implements ClientApi {
     public Long getNumberOfClients() {
         return clientService.getNumberOfClients();
     }
+
+    @Override
+    public ClientDto updateClient(UUID clientId, PersonDto personDto) {
+        return clientService.updateClient(clientId, personDto);
+    }
+
 }

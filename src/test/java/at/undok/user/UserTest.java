@@ -5,6 +5,7 @@ import at.undok.auth.service.AuthService;
 import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.common.util.UUIDConverter;
 import at.undok.undok.client.model.dto.ClientDto;
+import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.entity.Address;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.entity.Person;
@@ -14,6 +15,7 @@ import at.undok.undok.client.repository.AddressRepo;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.PersonRepo;
 import at.undok.undok.client.service.ClientService;
+import at.undok.undok.client.service.CounselingService;
 import io.jsonwebtoken.impl.Base64Codec;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -57,6 +59,9 @@ public class UserTest {
 
     @Autowired
     private UUIDConverter uuidConverter;
+
+    @Autowired
+    private CounselingService counselingService;
 
     @Test
     public void generateToken() {
@@ -150,6 +155,18 @@ public class UserTest {
         LocalDateTime ldt = LocalDateTime.now();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         LocalDateTime localDateTime = LocalDateTime.parse("16-07-2021 13:30:11", dateTimeFormatter);
+        Assert.assertEquals("yes", "no");
+    }
+
+    @Test
+    public void testGetFutureCounselings() {
+        List<CounselingDto> futureCounselings = counselingService.getFutureCounselings();
+        Assert.assertEquals("yes", "no");
+    }
+
+    @Test
+    public void testGetPastCounselings() {
+        List<CounselingDto> futureCounselings = counselingService.getPastCounselings();
         Assert.assertEquals("yes", "no");
     }
 

@@ -11,11 +11,9 @@ public class AddressDto {
 
     private String street;
 
-    private String plz;
+    private String zipCode;
 
     private String city;
-
-    private String county;
 
     private String country;
 

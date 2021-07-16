@@ -52,34 +52,8 @@ public class ClientService {
 
         Client client = new Client();
         Person person = new Person();
-        try {
-            person.setDateOfBirth(toLocalDateService.formatStringToLocalDate(clientForm.getDateOfBirth()));
-        } catch (Exception e) {
-            person.setDateOfBirth(null);
-        }
-        person.setFirstName(attributeEncryptor.convertToDatabaseColumn(clientForm.getFirstName()));
-        person.setLastName(attributeEncryptor.convertToDatabaseColumn(clientForm.getLastName()));
-        person.setCreatedAt(LocalDateTime.now());
-        client.setEducation(clientForm.getEducation());
-        client.setKeyword(clientForm.getKeyword());
-        client.setHowHasThePersonHeardFromUs(clientForm.getHowHasThePersonHeardFromUs());
-        client.setInterpreterNecessary(clientForm.getInterpreterNecessary());
-        client.setVulnerableWhenAssertingRights(clientForm.getVulnerableWhenAssertingRights());
-        client.setMaritalStatus(clientForm.getMaritalStatus());
-
         Address address = new Address();
-        address.setStreet(clientForm.getStreet());
-        address.setZipCode(clientForm.getZipCode());
-        address.setCity(clientForm.getCity());
-        address.setCountry(clientForm.getCountry());
-
-        person.setAddress(address);
-
-        client.setPerson(person);
-
-        Client c = clientRepo.save(client);
-        ClientDto clientDto = entityToDtoMapper.convertClientToDto(c);
-        return clientDto;
+        return createClient(person, client, address, clientForm);
     }
 
     public Map<String, Map> getClients(int page, int size){
@@ -110,6 +84,80 @@ public class ClientService {
 
     public Long getNumberOfClients() {
         return clientRepo.count();
+    }
+
+    public ClientDto updateClient(UUID clientId, PersonDto personDto) {
+
+        Client client = clientRepo.getOne(clientId);
+        Person person = client.getPerson();
+        Address address = person.getAddress();
+
+        return updateClient(person, client, address, personDto);
+    }
+
+    private ClientDto createClient(Person person, Client client, Address address, ClientForm clientForm) {
+
+        try {
+            person.setDateOfBirth(toLocalDateService.formatStringToLocalDate(clientForm.getDateOfBirth()));
+        } catch (Exception e) {
+            person.setDateOfBirth(null);
+        }
+
+        person.setFirstName(attributeEncryptor.convertToDatabaseColumn(clientForm.getFirstName()));
+        person.setLastName(attributeEncryptor.convertToDatabaseColumn(clientForm.getLastName()));
+        person.setCreatedAt(LocalDateTime.now());
+
+        client.setEducation(clientForm.getEducation());
+        client.setKeyword(clientForm.getKeyword());
+        client.setHowHasThePersonHeardFromUs(clientForm.getHowHasThePersonHeardFromUs());
+        client.setInterpreterNecessary(clientForm.getInterpreterNecessary());
+        client.setVulnerableWhenAssertingRights(clientForm.getVulnerableWhenAssertingRights());
+        client.setMaritalStatus(clientForm.getMaritalStatus());
+
+        address.setStreet(clientForm.getStreet());
+        address.setZipCode(clientForm.getZipCode());
+        address.setCity(clientForm.getCity());
+        address.setCountry(clientForm.getCountry());
+
+        person.setAddress(address);
+
+        client.setPerson(person);
+
+        Client c = clientRepo.save(client);
+        ClientDto clientDto = entityToDtoMapper.convertClientToDto(c);
+        return clientDto;
+    }
+
+    private ClientDto updateClient(Person person, Client client, Address address, PersonDto personDto) {
+        try {
+            person.setDateOfBirth(person.getDateOfBirth());
+        } catch (Exception e) {
+            person.setDateOfBirth(null);
+        }
+
+        person.setFirstName(attributeEncryptor.convertToDatabaseColumn(personDto.getFirstName()));
+        person.setLastName(attributeEncryptor.convertToDatabaseColumn(personDto.getLastName()));
+        person.setUpdatedAt(LocalDateTime.now());
+
+        client.setEducation(personDto.getClient().getEducation());
+        client.setKeyword(personDto.getClient().getKeyword());
+        client.setHowHasThePersonHeardFromUs(personDto.getClient().getHowHasThePersonHeardFromUs());
+        client.setInterpreterNecessary(personDto.getClient().getInterpreterNecessary());
+        client.setVulnerableWhenAssertingRights(personDto.getClient().getVulnerableWhenAssertingRights());
+        client.setMaritalStatus(personDto.getClient().getMaritalStatus());
+
+        address.setStreet(personDto.getAddress().getStreet());
+        address.setZipCode(personDto.getAddress().getZipCode());
+        address.setCity(personDto.getAddress().getCity());
+        address.setCountry(personDto.getAddress().getCountry());
+
+        person.setAddress(address);
+
+        client.setPerson(person);
+
+        Client c = clientRepo.save(client);
+        ClientDto clientDto = entityToDtoMapper.convertClientToDto(c);
+        return clientDto;
     }
 
 }

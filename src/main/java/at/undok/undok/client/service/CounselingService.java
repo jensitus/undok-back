@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,6 +30,9 @@ public class CounselingService {
 
     @Autowired
     private ToLocalDateService toLocalDateService;
+
+    @Autowired
+    private EntityToDtoMapper entityToDtoMapper;
 
     public CounselingDto createCounseling(UUID clientId, CounselingForm counselingForm) {
         Counseling c = new Counseling();
@@ -49,6 +53,16 @@ public class CounselingService {
 
     public Long numberOfCounselings() {
         return counselingRepo.count();
+    }
+
+    public List<CounselingDto> getFutureCounselings() {
+        List<Counseling> allInFuture = counselingRepo.findAllInFuture(LocalDateTime.now());
+        return entityToDtoMapper.convertCounselingListToDtoList(allInFuture);
+    }
+
+    public List<CounselingDto> getPastCounselings() {
+        List<Counseling> allInPast = counselingRepo.findAllInPast(LocalDateTime.now());
+        return entityToDtoMapper.convertCounselingListToDtoList(allInPast);
     }
 
 }

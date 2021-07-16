@@ -32,4 +32,8 @@ public interface ClientApi {
     @GetMapping("/count")
     Long getNumberOfClients();
 
+    @PutMapping("/{id}/update")
+    ClientDto updateClient(@PathVariable("id") UUID clientId, @RequestBody PersonDto personDto);
+
+
 }
