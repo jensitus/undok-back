@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 public class TimelineItemDto {
@@ -14,18 +15,12 @@ public class TimelineItemDto {
 
   private String name;
 
-  private boolean done;
-
-  private Long todoId;
-
-  private LocalDate dueDate;
-
-  private Long createdBy;
+  private LocalDateTime counselingDate;
 
   private LocalDateTime createdAt;
 
-  private String taskId;
+  private UUID counselingId;
 
-  private String todoTitle;
+  private UUID clientId;
 
 }

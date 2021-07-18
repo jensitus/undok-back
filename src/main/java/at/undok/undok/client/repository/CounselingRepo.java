@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface CounselingRepo extends JpaRepository<Counseling, UUID> {
 
-    @Query("select c from Counseling c where c.counselingDate >= :today")
+    @Query("select c from Counseling c where c.counselingDate >= :today order by c.counselingDate asc")
     List<Counseling> findAllInFuture(LocalDateTime today);
 
     @Query("select c from Counseling c where c.counselingDate <= :today")

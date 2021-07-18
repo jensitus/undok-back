@@ -1,7 +1,8 @@
 package at.undok.common.controller;
 
 import at.undok.common.dto.TimelineItemDto;
-import at.undok.common.message.service.TimelineService;
+import at.undok.common.message.impl.TimelineService;
+import at.undok.common.message.service.TimelineServiceOldInter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +21,9 @@ public class TimelineController {
   @Autowired
   private TimelineService timelineService;
 
-  @GetMapping("/{user_id}/items")
-  public ResponseEntity getItemsByUserId(@PathVariable("user_id") Long user_id) {
-    List<TimelineItemDto> itemsForTimeline = timelineService.getItemsForTimeline(user_id);
-    List itemList = itemsForTimeline;
-    return new ResponseEntity(itemList, HttpStatus.OK);
+  @GetMapping("/items")
+  public List<TimelineItemDto> getItemsByUserId() {
+    return timelineService.getItemsForTimeline();
   }
 
   @GetMapping("/{user_id}/items/month")
