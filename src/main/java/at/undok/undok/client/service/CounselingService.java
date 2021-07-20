@@ -65,4 +65,9 @@ public class CounselingService {
         return entityToDtoMapper.convertCounselingListToDtoList(allInPast);
     }
 
+    public List<CounselingDto> getAllCounselings() {
+        List<Counseling> all = counselingRepo.findAll();
+        return entityToDtoMapper.convertCounselingListToDtoList(all);
+    }
+
 }
