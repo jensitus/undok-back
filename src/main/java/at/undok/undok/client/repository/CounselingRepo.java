@@ -1,5 +1,6 @@
 package at.undok.undok.client.repository;
 
+import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.entity.Counseling;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
