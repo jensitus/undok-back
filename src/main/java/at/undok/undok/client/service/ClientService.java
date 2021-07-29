@@ -6,6 +6,7 @@ import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.PersonDto;
 import at.undok.undok.client.model.entity.Address;
 import at.undok.undok.client.model.entity.Client;
+import at.undok.undok.client.model.entity.Employer;
 import at.undok.undok.client.model.entity.Person;
 import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.repository.ClientRepo;
@@ -95,17 +96,17 @@ public class ClientService {
         return updateClient(person, client, address, personDto);
     }
 
-    private ClientDto createClient(Person person, Client client, Address address, ClientForm clientForm) {
+    private ClientDto createClient(Person clientPerson, Client client, Address clientAddress, ClientForm clientForm) {
 
         try {
-            person.setDateOfBirth(toLocalDateService.formatStringToLocalDate(clientForm.getDateOfBirth()));
+            clientPerson.setDateOfBirth(toLocalDateService.formatStringToLocalDate(clientForm.getDateOfBirth()));
         } catch (Exception e) {
-            person.setDateOfBirth(null);
+            clientPerson.setDateOfBirth(null);
         }
 
-        person.setFirstName(attributeEncryptor.convertToDatabaseColumn(clientForm.getFirstName()));
-        person.setLastName(attributeEncryptor.convertToDatabaseColumn(clientForm.getLastName()));
-        person.setCreatedAt(LocalDateTime.now());
+        clientPerson.setFirstName(attributeEncryptor.convertToDatabaseColumn(clientForm.getFirstName()));
+        clientPerson.setLastName(attributeEncryptor.convertToDatabaseColumn(clientForm.getLastName()));
+        clientPerson.setCreatedAt(LocalDateTime.now());
 
         client.setEducation(clientForm.getEducation());
         client.setKeyword(clientForm.getKeyword());
@@ -114,19 +115,20 @@ public class ClientService {
         client.setVulnerableWhenAssertingRights(clientForm.getVulnerableWhenAssertingRights());
         client.setMaritalStatus(clientForm.getMaritalStatus());
 
-        address.setStreet(clientForm.getStreet());
-        address.setZipCode(clientForm.getZipCode());
-        address.setCity(clientForm.getCity());
-        address.setCountry(clientForm.getCountry());
+        clientAddress.setStreet(clientForm.getStreet());
+        clientAddress.setZipCode(clientForm.getZipCode());
+        clientAddress.setCity(clientForm.getCity());
+        clientAddress.setCountry(clientForm.getCountry());
+        clientPerson.setAddress(clientAddress);
 
-        person.setAddress(address);
-
-        client.setPerson(person);
+        client.setPerson(clientPerson);
 
         Client c = clientRepo.save(client);
         ClientDto clientDto = entityToDtoMapper.convertClientToDto(c);
+
         return clientDto;
     }
+
 
     private ClientDto updateClient(Person person, Client client, Address address, PersonDto personDto) {
         try {

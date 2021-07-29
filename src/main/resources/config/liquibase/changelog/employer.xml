@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create_employers_table" author="jensitus">
+        <createTable tableName="employers">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="company" type="varchar(255)" />
+            <column name="position" type="varchar(255)" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add_created_updated_at" author="jensitus">
+        <addColumn tableName="employers">
+            <column name="created_at" type="timestamp" />
+            <column name="updated_at" type="timestamp" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add_person_id" author="jensitus">
+        <addColumn tableName="employers">
+            <column name="person_id" type="UUID" />
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

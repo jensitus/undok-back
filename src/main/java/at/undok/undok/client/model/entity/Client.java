@@ -38,6 +38,10 @@ public class Client {
     @JoinColumn(name="person_id", referencedColumnName = "id")
     private Person person;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "employer_id", referencedColumnName = "id")
+    private List<Employer> employers;
+
     @Column(name = "interpretation_necessary")
     private Boolean interpreterNecessary;
 

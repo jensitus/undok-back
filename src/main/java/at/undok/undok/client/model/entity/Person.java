@@ -42,6 +42,9 @@ public class Person implements Serializable {
     @OneToOne(mappedBy = "person", fetch = FetchType.LAZY)
     private Client client;
 
+    @OneToOne(mappedBy = "person", fetch = FetchType.LAZY)
+    private Employer employer;
+
 //    @OneToMany
 //    private Set<Contact> contacts;
 
