@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -42,4 +43,9 @@ public class EmployerService {
         return modelMapper.map(employer, EmployerDto.class);
     }
 
+    public List<EmployerDto> getEmployers() {
+        List<Employer> employers = employerRepo.findAll();
+        List<EmployerDto> dtoList = modelMapper.map(employers, List.class);
+        return dtoList;
+    }
 }

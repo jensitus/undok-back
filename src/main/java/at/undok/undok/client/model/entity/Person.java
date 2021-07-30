@@ -39,7 +39,8 @@ public class Person implements Serializable {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "person", fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
 
     @OneToOne(mappedBy = "person", fetch = FetchType.LAZY)
@@ -48,7 +49,7 @@ public class Person implements Serializable {
 //    @OneToMany
 //    private Set<Contact> contacts;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 

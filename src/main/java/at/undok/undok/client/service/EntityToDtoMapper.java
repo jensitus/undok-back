@@ -26,7 +26,9 @@ public class EntityToDtoMapper {
     private AttributeEncryptor attributeEncryptor;
 
     public ClientDto convertClientToDto(Client client) {
-        ClientDto clientDto = modelMapper.map(client, ClientDto.class);
+        ClientDto clientDto = mapClientToDto(client);
+        PersonDto personDto = mapPersonToDto(client.getPerson());
+        clientDto.setPerson(personDto);
         if (client.getCounselings() != null) {
             List<CounselingDto> counselingDtos = new ArrayList<>();
             for (Counseling counseling : client.getCounselings()) {
@@ -42,15 +44,54 @@ public class EntityToDtoMapper {
         return modelMapper.map(counseling, CounselingDto.class);
     }
 
+//    public List<ClientDto> convertClientListToDtoList(List<Client> clients) {
+//        List<ClientDto> clientDtos = new ArrayList<>();
+//        for (Client c : clients) {
+//            clientDtos.add(convertClientToDto(c));
+//        }
+//        return clientDtos;
+//    }
+
+    public PersonDto convertPersonToDto(Person person) {
+        return mapPersonToDto(person);
+    }
+
     public List<ClientDto> convertClientListToDtoList(List<Client> clients) {
         List<ClientDto> clientDtos = new ArrayList<>();
         for (Client c : clients) {
-            clientDtos.add(convertClientToDto(c));
+            Person p = c.getPerson();
+            ClientDto clientDto = convertClientToDto(c);
+            PersonDto personDto = convertPersonToDto(p);
+            clientDto.setPerson(personDto);
+            clientDtos.add(clientDto);
         }
         return clientDtos;
     }
 
-    public PersonDto convertPersonToDto(Person person) {
+    public List<CounselingDto> convertCounselingListToDtoList(List<Counseling> counselings) {
+        List<CounselingDto> dtoList = new ArrayList<>();
+        for (Counseling c : counselings) {
+            CounselingDto counselingDto = modelMapper.map(c, CounselingDto.class);
+            dtoList.add(counselingDto);
+        }
+        return dtoList;
+    }
+
+    private ClientDto mapClientToDto(Client client) {
+        ClientDto clientDto = new ClientDto();
+
+        clientDto.setEducation(client.getEducation());
+        clientDto.setId(client.getId());
+        clientDto.setHowHasThePersonHeardFromUs(client.getHowHasThePersonHeardFromUs());
+        clientDto.setInterpreterNecessary(client.getInterpreterNecessary());
+        clientDto.setKeyword(client.getKeyword());
+        clientDto.setMaritalStatus(client.getMaritalStatus());
+        clientDto.setVulnerableWhenAssertingRights(client.getVulnerableWhenAssertingRights());
+
+        return clientDto;
+    }
+
+    private PersonDto mapPersonToDto(Person person) {
         PersonDto personDto = new PersonDto();
 
         String firstName = attributeEncryptor.convertToEntityAttribute(person.getFirstName());
@@ -61,38 +102,12 @@ public class EntityToDtoMapper {
         personDto.setId(person.getId());
         personDto.setDateOfBirth(person.getDateOfBirth());
 
-        if (person.getClient() != null) {
-            ClientDto clientDto = convertClientToDto(person.getClient());
-            personDto.setClient(clientDto);
-        }
-
         if (person.getAddress() != null) {
             AddressDto addressDto = modelMapper.map(person.getAddress(), AddressDto.class);
             personDto.setAddress(addressDto);
         }
 
         return personDto;
-    }
-
-    public List<PersonDto> convertPersonListToDtoList(List<Person> persons) {
-        List<PersonDto> personDtos = new ArrayList<>();
-        for (Person p : persons) {
-            Client client = p.getClient();
-            ClientDto clientDto = convertClientToDto(client);
-            PersonDto personDto = convertPersonToDto(p);
-            personDto.setClient(clientDto);
-            personDtos.add(personDto);
-        }
-        return personDtos;
-    }
-
-    public List<CounselingDto> convertCounselingListToDtoList(List<Counseling> counselings) {
-        List<CounselingDto> dtoList = new ArrayList<>();
-        for (Counseling c : counselings) {
-            CounselingDto counselingDto = modelMapper.map(c, CounselingDto.class);
-            dtoList.add(counselingDto);
-        }
-        return dtoList;
     }
 
 }

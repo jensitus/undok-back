@@ -6,12 +6,11 @@ import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.PersonDto;
 import at.undok.undok.client.model.entity.Address;
 import at.undok.undok.client.model.entity.Client;
-import at.undok.undok.client.model.entity.Employer;
 import at.undok.undok.client.model.entity.Person;
 import at.undok.undok.client.model.form.ClientForm;
+import at.undok.undok.client.repository.AddressRepo;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.PersonRepo;
-import at.undok.undok.client.util.MaritalStatusConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +39,10 @@ public class ClientService {
     private PersonRepo personRepo;
 
     @Autowired
-    private ToLocalDateService toLocalDateService;
+    private AddressRepo addressRepo;
 
     @Autowired
-    private MaritalStatusConverter maritalStatusConverter;
+    private ToLocalDateService toLocalDateService;
 
     @Autowired
     private AttributeEncryptor attributeEncryptor;
@@ -59,13 +58,14 @@ public class ClientService {
 
     public Map<String, Map> getClients(int page, int size){
         Pageable pageable = PageRequest.of(page, size);
-        Page<Person> all = personRepo.findAll(pageable);
+        Page<Client> all = clientRepo.findAll(pageable);
 
-        List<Person> personList = all.getContent();
-        List<PersonDto> personDtoList = entityToDtoMapper.convertPersonListToDtoList(personList);
+        List<Client> clientList = all.getContent();
+        List<ClientDto> clientDtoList = entityToDtoMapper.convertClientListToDtoList(clientList);
+        // List<ClientDto> clientDtoList = modelMapper.map(clientList, List.class);
 
-        Map<String, List<PersonDto>> personMap = new HashMap<>();
-        personMap.put("personList", personDtoList);
+        Map<String, List<ClientDto>> clientMap = new HashMap<>();
+        clientMap.put("clientList", clientDtoList);
 
         Map<String, Map> countAndClientReturnMap = new HashMap<>();
 
@@ -73,27 +73,27 @@ public class ClientService {
         clientCount.put("count", all.getTotalElements());
 
         countAndClientReturnMap.put("countMap", clientCount);
-        countAndClientReturnMap.put("personMap", personMap);
+        countAndClientReturnMap.put("personMap", clientMap);
 
         return countAndClientReturnMap;
     }
 
-    public PersonDto getClientById(UUID id) {
-        Optional<Person> personOptional = personRepo.findById(id);
-        return entityToDtoMapper.convertPersonToDto(personOptional.get());
+    public ClientDto getClientById(UUID id) {
+        Optional<Client> personOptional = clientRepo.findById(id);
+        return entityToDtoMapper.convertClientToDto(personOptional.get());
     }
 
     public Long getNumberOfClients() {
         return clientRepo.count();
     }
 
-    public ClientDto updateClient(UUID clientId, PersonDto personDto) {
+    public ClientDto updateClient(UUID clientId, ClientDto clientDto) {
 
-        Client client = clientRepo.getOne(clientId);
-        Person person = client.getPerson();
+        Optional<Client> client = clientRepo.findById(clientId);
+        Person person = client.get().getPerson();
         Address address = person.getAddress();
 
-        return updateClient(person, client, address, personDto);
+        return updateClient(person, client.get(), address, clientDto);
     }
 
     private ClientDto createClient(Person clientPerson, Client client, Address clientAddress, ClientForm clientForm) {
@@ -114,44 +114,49 @@ public class ClientService {
         client.setInterpreterNecessary(clientForm.getInterpreterNecessary());
         client.setVulnerableWhenAssertingRights(clientForm.getVulnerableWhenAssertingRights());
         client.setMaritalStatus(clientForm.getMaritalStatus());
+        Client savedClient = clientRepo.save(client);
 
         clientAddress.setStreet(clientForm.getStreet());
         clientAddress.setZipCode(clientForm.getZipCode());
         clientAddress.setCity(clientForm.getCity());
         clientAddress.setCountry(clientForm.getCountry());
-        clientPerson.setAddress(clientAddress);
+        Address address = addressRepo.save(clientAddress);
 
-        client.setPerson(clientPerson);
+        clientPerson.setAddress(address);
+        clientPerson.setClient(savedClient);
+        Person savedPerson = personRepo.save(clientPerson);
 
-        Client c = clientRepo.save(client);
+        savedClient.setPerson(savedPerson);
+
+        Client c = clientRepo.save(savedClient);
         ClientDto clientDto = entityToDtoMapper.convertClientToDto(c);
 
         return clientDto;
     }
 
 
-    private ClientDto updateClient(Person person, Client client, Address address, PersonDto personDto) {
+    private ClientDto updateClient(Person person, Client client, Address address, ClientDto cDto) {
         try {
             person.setDateOfBirth(person.getDateOfBirth());
         } catch (Exception e) {
             person.setDateOfBirth(null);
         }
 
-        person.setFirstName(attributeEncryptor.convertToDatabaseColumn(personDto.getFirstName()));
-        person.setLastName(attributeEncryptor.convertToDatabaseColumn(personDto.getLastName()));
+        person.setFirstName(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getFirstName()));
+        person.setLastName(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getLastName()));
         person.setUpdatedAt(LocalDateTime.now());
 
-        client.setEducation(personDto.getClient().getEducation());
-        client.setKeyword(personDto.getClient().getKeyword());
-        client.setHowHasThePersonHeardFromUs(personDto.getClient().getHowHasThePersonHeardFromUs());
-        client.setInterpreterNecessary(personDto.getClient().getInterpreterNecessary());
-        client.setVulnerableWhenAssertingRights(personDto.getClient().getVulnerableWhenAssertingRights());
-        client.setMaritalStatus(personDto.getClient().getMaritalStatus());
+        client.setEducation(cDto.getEducation());
+        client.setKeyword(cDto.getKeyword());
+        client.setHowHasThePersonHeardFromUs(cDto.getHowHasThePersonHeardFromUs());
+        client.setInterpreterNecessary(cDto.getInterpreterNecessary());
+        client.setVulnerableWhenAssertingRights(cDto.getVulnerableWhenAssertingRights());
+        client.setMaritalStatus(cDto.getMaritalStatus());
 
-        address.setStreet(personDto.getAddress().getStreet());
-        address.setZipCode(personDto.getAddress().getZipCode());
-        address.setCity(personDto.getAddress().getCity());
-        address.setCountry(personDto.getAddress().getCountry());
+        address.setStreet(cDto.getPerson().getAddress().getStreet());
+        address.setZipCode(cDto.getPerson().getAddress().getZipCode());
+        address.setCity(cDto.getPerson().getAddress().getCity());
+        address.setCountry(cDto.getPerson().getAddress().getCountry());
 
         person.setAddress(address);
 

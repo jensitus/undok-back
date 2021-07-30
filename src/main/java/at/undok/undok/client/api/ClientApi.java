@@ -24,7 +24,7 @@ public interface ClientApi {
     Map<String, Map> getAllClients(@PathVariable("page") int page, @PathVariable("size") int size);
 
     @GetMapping("/{id}")
-    PersonDto getClientById(@PathVariable("id") UUID id);
+    ClientDto getClientById(@PathVariable("id") UUID id);
 
     @PostMapping("/{id}/counseling")
     CounselingDto createCounseling(@PathVariable("id") UUID clientId, @RequestBody CounselingForm counselingForm);
@@ -33,7 +33,7 @@ public interface ClientApi {
     Long getNumberOfClients();
 
     @PutMapping("/{id}/update")
-    ClientDto updateClient(@PathVariable("id") UUID clientId, @RequestBody PersonDto personDto);
+    ClientDto updateClient(@PathVariable("id") UUID clientId, @RequestBody ClientDto clientDto);
 
 
 }

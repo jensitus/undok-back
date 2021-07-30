@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -24,5 +25,10 @@ public class EmployerController implements EmployerApi {
     @Override
     public EmployerDto getEmployerById(UUID id) {
         return employerService.getEmployerById(id);
+    }
+
+    @Override
+    public List<EmployerDto> getAll() {
+        return employerService.getEmployers();
     }
 }

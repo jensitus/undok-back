@@ -47,7 +47,7 @@ public class ClientDto {
 
     private String organisation;
 
-    private PersonDto personDto;
+    private PersonDto person;
 
     private List<CounselingDto> counselings;
 

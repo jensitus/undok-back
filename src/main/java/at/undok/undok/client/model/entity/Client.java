@@ -34,12 +34,11 @@ public class Client {
     // @OneToMany
     // private Set<Language> language;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="person_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "client", fetch = FetchType.EAGER)
     private Person person;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "employer_id", referencedColumnName = "id")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "client_employer", joinColumns = @JoinColumn(name = "client_id"), inverseJoinColumns = @JoinColumn(name = "employer_id"))
     private List<Employer> employers;
 
     @Column(name = "interpretation_necessary")
@@ -48,7 +47,7 @@ public class Client {
     @Column(name = "how_has_the_person_heard_from_us")
     private String howHasThePersonHeardFromUs;
 
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
     private List<Counseling> counselings;
 
     // private ResidentStatus currentResidentStatus;

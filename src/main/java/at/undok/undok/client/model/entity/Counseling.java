@@ -40,8 +40,8 @@ public class Counseling {
     @Column(name = "registered_by")
     private String registeredBy;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "client_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id")
     private Client client;
 
     @Column(name = "counseling_date")

@@ -4,6 +4,7 @@ import at.undok.undok.client.model.dto.EmployerDto;
 import at.undok.undok.client.model.form.EmployerForm;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)
@@ -15,5 +16,8 @@ public interface EmployerApi {
 
     @GetMapping("/{id}")
     EmployerDto getEmployerById(@PathVariable("id") UUID id);
+
+    @GetMapping("/all")
+    List<EmployerDto> getAll();
 
 }

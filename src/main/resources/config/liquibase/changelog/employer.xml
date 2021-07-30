@@ -27,4 +27,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="create_join_client_employer_table" author="jensitus">
+        <createTable tableName="client_employer">
+            <column name="client_id" type="UUID"/>
+            <column name="employer_id" type="UUID"/>
+        </createTable>
+        <addUniqueConstraint tableName="user_roles" columnNames="user_id, role_id" />
+    </changeSet>
+
 </databaseChangeLog>

@@ -14,7 +14,7 @@ public class Employer extends AbstractCrud {
 
     public static final String TABLE_NAME = "employers";
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name="person_id", referencedColumnName = "id")
     private Person person;
 

@@ -32,11 +32,12 @@ public class ClientController implements ClientApi {
 
     @Override
     public Map<String, Map> getAllClients(int page, int size) {
-        return this.clientService.getClients(page, size);
+        Map<String, Map> clients = this.clientService.getClients(page, size);
+        return clients;
     }
 
     @Override
-    public PersonDto getClientById(UUID id) {
+    public ClientDto getClientById(UUID id) {
         return clientService.getClientById(id);
     }
 
@@ -51,8 +52,8 @@ public class ClientController implements ClientApi {
     }
 
     @Override
-    public ClientDto updateClient(UUID clientId, PersonDto personDto) {
-        return clientService.updateClient(clientId, personDto);
+    public ClientDto updateClient(UUID clientId, ClientDto clientDto) {
+        return clientService.updateClient(clientId, clientDto);
     }
 
 }
