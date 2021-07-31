@@ -23,4 +23,7 @@ public interface EmployerApi {
     @GetMapping("/{client_id}/by-client")
     List<EmployerDto> getByClientId(@PathVariable("client_id") UUID clientId);
 
+    @GetMapping("/count")
+    Long getNumberOfEmployers();
+
 }

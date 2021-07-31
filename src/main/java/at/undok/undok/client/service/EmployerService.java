@@ -63,5 +63,9 @@ public class EmployerService {
         return employerDtos;
     }
 
+    public Long getNumberOfEmployers() {
+        return employerRepo.count();
+    }
+
 
 }
