@@ -1,29 +1,34 @@
 package at.undok.undok.client.service;
 
 import at.undok.common.encryption.AttributeEncryptor;
-import at.undok.undok.client.model.dto.AddressDto;
-import at.undok.undok.client.model.dto.ClientDto;
-import at.undok.undok.client.model.dto.CounselingDto;
-import at.undok.undok.client.model.dto.PersonDto;
-import at.undok.undok.client.model.entity.Address;
+import at.undok.undok.client.model.dto.*;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.entity.Counseling;
+import at.undok.undok.client.model.entity.Employer;
 import at.undok.undok.client.model.entity.Person;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class EntityToDtoMapper {
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    private AttributeEncryptor attributeEncryptor;
+    private final AttributeEncryptor attributeEncryptor;
+
+    public List<EmployerDto> convertEmployerListToDto(List<Employer> employers) {
+        List<EmployerDto> employerDtoList = new ArrayList<>();
+        for (Employer e : employers) {
+            EmployerDto employerDto = mapEmployerToDto(e);
+            employerDtoList.add(employerDto);
+        }
+        return employerDtoList;
+    }
 
     public ClientDto convertClientToDto(Client client) {
         ClientDto clientDto = mapClientToDto(client);
@@ -43,14 +48,6 @@ public class EntityToDtoMapper {
     private CounselingDto convertCounselingToDto(Counseling counseling) {
         return modelMapper.map(counseling, CounselingDto.class);
     }
-
-//    public List<ClientDto> convertClientListToDtoList(List<Client> clients) {
-//        List<ClientDto> clientDtos = new ArrayList<>();
-//        for (Client c : clients) {
-//            clientDtos.add(convertClientToDto(c));
-//        }
-//        return clientDtos;
-//    }
 
     public PersonDto convertPersonToDto(Person person) {
         return mapPersonToDto(person);
@@ -108,6 +105,17 @@ public class EntityToDtoMapper {
         }
 
         return personDto;
+    }
+
+    public EmployerDto mapEmployerToDto(Employer employer) {
+        EmployerDto employerDto = new EmployerDto();
+        employerDto.setCompany(employer.getCompany());
+        employerDto.setPosition(employer.getPosition());
+        employerDto.setId(employer.getId());
+        Person person = employer.getPerson();
+        PersonDto personDto = mapPersonToDto(person);
+        employerDto.setPerson(personDto);
+        return employerDto;
     }
 
 }

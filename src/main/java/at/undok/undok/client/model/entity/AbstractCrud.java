@@ -1,5 +1,6 @@
 package at.undok.undok.client.model.entity;
 
+import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Column;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @MappedSuperclass
+@Data
 public abstract class AbstractCrud {
 
     @Id

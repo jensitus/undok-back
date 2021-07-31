@@ -1,17 +1,18 @@
 package at.undok.undok.client.service;
 
+import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.undok.client.model.dto.EmployerDto;
+import at.undok.undok.client.model.entity.ClientEmployer;
 import at.undok.undok.client.model.entity.Employer;
 import at.undok.undok.client.model.entity.Person;
-import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.model.form.EmployerForm;
 import at.undok.undok.client.repository.EmployerRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,11 +22,14 @@ public class EmployerService {
 
     private final EmployerRepo employerRepo;
     private final ModelMapper modelMapper;
+    private final EntityToDtoMapper entityToDtoMapper;
+    private final AttributeEncryptor attributeEncryptor;
+    private final ClientEmployerService clientEmployerService;
 
     public EmployerDto setEmployer(EmployerForm employerForm) {
         Person employerPerson = new Person();
-        employerPerson.setFirstName(employerForm.getEmployerFirstName());
-        employerPerson.setLastName(employerForm.getEmployerLastName());
+        employerPerson.setFirstName(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerFirstName()));
+        employerPerson.setLastName(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerLastName()));
         employerPerson.setCreatedAt(LocalDateTime.now());
 
         Employer employer = new Employer();
@@ -45,7 +49,19 @@ public class EmployerService {
 
     public List<EmployerDto> getEmployers() {
         List<Employer> employers = employerRepo.findAll();
-        List<EmployerDto> dtoList = modelMapper.map(employers, List.class);
-        return dtoList;
+        return entityToDtoMapper.convertEmployerListToDto(employers);
     }
+
+    public List<EmployerDto> getByClientId(UUID clientId) {
+        List<ClientEmployer> clientEmployers = clientEmployerService.getByClientId(clientId);
+        List<EmployerDto> employerDtos = new ArrayList<>();
+        for (ClientEmployer ce : clientEmployers) {
+            Employer employer = employerRepo.getOne(ce.getEmployerId());
+            EmployerDto employerDto = entityToDtoMapper.mapEmployerToDto(employer);
+            employerDtos.add(employerDto);
+        }
+        return employerDtos;
+    }
+
+
 }

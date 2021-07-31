@@ -1,9 +1,12 @@
 package at.undok.undok.client.model.dto;
 
+import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public abstract class AbstractDto {
+@Data
+public class AbstractDto {
 
     protected UUID id;
     protected LocalDateTime createdAt;

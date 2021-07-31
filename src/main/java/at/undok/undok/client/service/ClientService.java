@@ -3,7 +3,6 @@ package at.undok.undok.client.service;
 import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.common.util.ToLocalDateService;
 import at.undok.undok.client.model.dto.ClientDto;
-import at.undok.undok.client.model.dto.PersonDto;
 import at.undok.undok.client.model.entity.Address;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.entity.Person;
@@ -12,7 +11,6 @@ import at.undok.undok.client.repository.AddressRepo;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.PersonRepo;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,9 +23,6 @@ import java.util.*;
 @Slf4j
 @Service
 public class ClientService {
-
-    @Autowired
-    private ModelMapper modelMapper;
 
     @Autowired
     private EntityToDtoMapper entityToDtoMapper;
@@ -62,7 +57,6 @@ public class ClientService {
 
         List<Client> clientList = all.getContent();
         List<ClientDto> clientDtoList = entityToDtoMapper.convertClientListToDtoList(clientList);
-        // List<ClientDto> clientDtoList = modelMapper.map(clientList, List.class);
 
         Map<String, List<ClientDto>> clientMap = new HashMap<>();
         clientMap.put("clientList", clientDtoList);
@@ -90,10 +84,13 @@ public class ClientService {
     public ClientDto updateClient(UUID clientId, ClientDto clientDto) {
 
         Optional<Client> client = clientRepo.findById(clientId);
-        Person person = client.get().getPerson();
-        Address address = person.getAddress();
-
-        return updateClient(person, client.get(), address, clientDto);
+        if (client.isPresent()) {
+            Person person = client.get().getPerson();
+            Address address = person.getAddress();
+            return updateClient(person, client.get(), address, clientDto);
+        } else {
+            throw new RuntimeException("Sorry");
+        }
     }
 
     private ClientDto createClient(Person clientPerson, Client client, Address clientAddress, ClientForm clientForm) {

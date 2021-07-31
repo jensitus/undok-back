@@ -20,4 +20,7 @@ public interface EmployerApi {
     @GetMapping("/all")
     List<EmployerDto> getAll();
 
+    @GetMapping("/{client_id}/by-client")
+    List<EmployerDto> getByClientId(@PathVariable("client_id") UUID clientId);
+
 }

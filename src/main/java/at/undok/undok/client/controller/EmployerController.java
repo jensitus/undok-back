@@ -5,7 +5,6 @@ import at.undok.undok.client.model.dto.EmployerDto;
 import at.undok.undok.client.model.form.EmployerForm;
 import at.undok.undok.client.service.EmployerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -30,5 +29,10 @@ public class EmployerController implements EmployerApi {
     @Override
     public List<EmployerDto> getAll() {
         return employerService.getEmployers();
+    }
+
+    @Override
+    public List<EmployerDto> getByClientId(UUID clientId) {
+        return employerService.getByClientId(clientId);
     }
 }

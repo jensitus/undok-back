@@ -35,4 +35,15 @@
         <addUniqueConstraint tableName="user_roles" columnNames="user_id, role_id" />
     </changeSet>
 
+    <changeSet id="add_id_to_join_c_e_tabe" author="jensitus">
+        <addColumn tableName="client_employer">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="created_at" type="timestamp" />
+            <column name="updated_at" type="timestamp" />
+        </addColumn>
+        <addUniqueConstraint tableName="client_employer" columnNames="client_id, employer_id" />
+    </changeSet>
+
 </databaseChangeLog>

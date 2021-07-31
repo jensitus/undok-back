@@ -1,8 +1,9 @@
 package at.undok.undok.client.model.dto;
 
-import at.undok.undok.client.model.entity.Person;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class EmployerDto extends AbstractDto {
 
