@@ -55,7 +55,7 @@ public class TimelineService {
       timelineItemDto.setCounselingId(c.getId());
       timelineItemDto.setCreatedAt(c.getCreatedAt());
       timelineItemDto.setName(attributeEncryptor.convertToEntityAttribute(c.getClient().getPerson().getFirstName()) + ' ' + attributeEncryptor.convertToEntityAttribute(c.getClient().getPerson().getLastName()));
-      timelineItemDto.setClientId(c.getClient().getPerson().getId());
+      timelineItemDto.setClientId(c.getClient().getId());
       timelineItemDtos.add(timelineItemDto);
     }
 
