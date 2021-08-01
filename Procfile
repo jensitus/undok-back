@@ -1,1 +1,1 @@
-web: java -jar target/undok-0.0.2.jar
+web: java -jar target/undok-0.0.2.jar --server.port=$PORT
