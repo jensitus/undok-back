@@ -126,6 +126,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String createUserViaAdmin(CreateUserForm createUserForm) {
+        log.info(createUserForm.toString());
         String confirmationToken = UUID.randomUUID().toString();
         User user = new User(createUserForm.getUsername(), createUserForm.getEmail(), confirmationToken, LocalDateTime.now(), LocalDateTime.now());
         user.setAdmin(createUserForm.isAdmin());
