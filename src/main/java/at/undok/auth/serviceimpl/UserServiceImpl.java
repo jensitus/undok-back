@@ -76,9 +76,10 @@ public class UserServiceImpl implements UserService {
     PasswordResetToken passwordResetToken = new PasswordResetToken(user, token, localDateTime);
     passwordResetTokenRepo.save(passwordResetToken);
     String url = EmailStuff.DOMAIN_FOR_URL + "/auth/reset_password/" + base64token + "/edit?email=" + user.getEmail();
+    log.info(url);
     String subject = EmailStuff.SUBJECT_PREFIX + " reset instructions";
     String text = "click the link below within the next 2 hours, after this it will expire";
-    serviceBOrgMailer.getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), url);
+    // serviceBOrgMailer.getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), url);
     return new Message("We've sent you a message with reset instructions", true);
   }
 
