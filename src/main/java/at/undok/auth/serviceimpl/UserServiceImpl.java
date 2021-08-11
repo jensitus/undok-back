@@ -75,7 +75,8 @@ public class UserServiceImpl implements UserService {
     LocalDateTime localDateTime = LocalDateTime.now();
     PasswordResetToken passwordResetToken = new PasswordResetToken(user, token, localDateTime);
     passwordResetTokenRepo.save(passwordResetToken);
-    String url = EmailStuff.DOMAIN_FOR_URL + "/auth/reset_password/" + base64token + "/edit?email=" + user.getEmail();
+    String encryptedEmail = attributeEncryptor.encodeWithUrlEncoder(user.getEmail());
+    String url = EmailStuff.DOMAIN_FOR_URL + "/auth/reset_password/" + base64token + "/edit?email=" + encryptedEmail;
     log.info(url);
     String subject = EmailStuff.SUBJECT_PREFIX + " reset instructions";
     String text = "click the link below within the next 2 hours, after this it will expire";
@@ -85,7 +86,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public boolean checkIfTokenExpired(String base64Token, String encodedEmail, String confirm) {
-    if (confirm.equals("confirm")) {
+    if ("confirm".equals(confirm)) {
       return checkIfConfirmTokenExpired(base64Token, encodedEmail);
     } else {
       return checkIfResetTokenExpired(base64Token, encodedEmail);
@@ -102,7 +103,7 @@ public class UserServiceImpl implements UserService {
   public Message resetPassword(PasswordResetForm passwordResetForm, String base64Token, String email) {
     if (passwordResetForm.getPassword().equals(passwordResetForm.getPassword_confirmation())) {
       if (checkIfResetTokenExpired(base64Token, email)) {
-        User user = userRepo.findByEmail(passwordResetForm.getEmail());
+        User user = userRepo.findByEmail(attributeEncryptor.decodeUrlEncoded(passwordResetForm.getEmail()));
         user.setPassword(encoder.encode(passwordResetForm.getPassword()));
         userRepo.save(user);
         return new Message("toll", true);

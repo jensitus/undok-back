@@ -97,7 +97,7 @@ public class AuthRestApi {
 
     @PutMapping("/reset_password/{token}")
     @ResponseStatus
-    public ResponseEntity<Message> resetPassword(@Valid @RequestBody PasswordResetForm passwordResetForm, @PathVariable("token") String base64Token, @RequestParam("encodedEmail") String email) {
+    public ResponseEntity<Message> resetPassword(@Valid @RequestBody PasswordResetForm passwordResetForm, @PathVariable("token") String base64Token, @RequestParam("email") String email) {
         Message message = userService.resetPassword(passwordResetForm, base64Token, email);
         HttpStatus status;
         if (message.getRedirect()) {
