@@ -17,8 +17,6 @@ public interface AuthService {
 
   String createUserViaAdmin(CreateUserForm createUserForm);
 
-  String createConfirmationUrl(String email, String confirmationToken);
-
   void confirmAccountWithoutPWChange(String encodedToken, String encodedEmail);
 
 }

@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
     PasswordResetToken passwordResetToken = new PasswordResetToken(user, token, localDateTime);
     passwordResetTokenRepo.save(passwordResetToken);
     String encryptedEmail = attributeEncryptor.encodeWithUrlEncoder(user.getEmail());
-    String url = EmailStuff.DOMAIN_FOR_URL + "/auth/reset_password/" + base64token + "/edit?email=" + encryptedEmail;
+    String url = EmailStuff.DOMAIN_URL_FOR_HEROKU + "/auth/reset_password/" + base64token + "/edit?email=" + encryptedEmail;
     log.info(url);
     String subject = EmailStuff.SUBJECT_PREFIX + " reset instructions";
     String text = "click the link below within the next 2 hours, after this it will expire";

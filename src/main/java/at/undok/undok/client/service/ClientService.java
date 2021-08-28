@@ -67,7 +67,7 @@ public class ClientService {
         clientCount.put("count", all.getTotalElements());
 
         countAndClientReturnMap.put("countMap", clientCount);
-        countAndClientReturnMap.put("personMap", clientMap);
+        countAndClientReturnMap.put("clientMap", clientMap);
 
         return countAndClientReturnMap;
     }

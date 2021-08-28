@@ -83,18 +83,11 @@ public class AuthServiceImpl implements AuthService {
         User user = new User(signUpDto.getUsername(), signUpDto.getEmail().toLowerCase(), encoder.encode(signUpDto.getPassword()), confirmationToken, LocalDateTime.now(), LocalDateTime.now());
         user.setChangePassword(false);
         userRepo.save(user);
-        createConfirmationMail(user, confirmationToken);
+        undokMailer.createConfirmationMail(user, confirmationToken);
         return modelMapper.map(user, UserDto.class);
     }
 
-    private Message createConfirmationMail(User user, String confirmationToken) {
-        String url = createConfirmationUrl(user.getEmail(), confirmationToken);
-        String subject = EmailStuff.SUBJECT_PREFIX + "confirm account";
-        String text = "click the link below within the next 2 hours, after this it will expire";
-        log.info(url);
-        undokMailer.getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), url);
-        return new Message("We've sent you a message confirming your", true);
-    }
+
 
     @Override
     public Message confirmAccount(ConfirmAccountForm confirmAccountForm) {
@@ -131,22 +124,9 @@ public class AuthServiceImpl implements AuthService {
         user.setAdmin(createUserForm.isAdmin());
         user.setConfirmationTokenCreatedAt(LocalDateTime.now());
         user.setChangePassword(true);
-        createConfirmationMail(user, confirmationToken);
+        Message m = undokMailer.createConfirmationMail(user, confirmationToken);
         userRepo.save(user);
-        return createConfirmationUrl(user.getEmail(), confirmationToken);
-    }
-
-    @Override
-    public String createConfirmationUrl(String email, String confirmationToken) {
-        String encryptedEmail = attributeEncryptor.encodeWithUrlEncoder(email);
-        String encryptedToken = attributeEncryptor.encodeWithUrlEncoder(confirmationToken);
-        String confUrl = EmailStuff.DOMAIN_URL_FOR_DEV + "/auth/" + encryptedToken + "/confirm/" + encryptedEmail;
-        log.info(confUrl);
-        return confUrl;
-    }
-
-    private void notifyAdminAboutNewUser() {
-
+        return m.getText();
     }
 
 }

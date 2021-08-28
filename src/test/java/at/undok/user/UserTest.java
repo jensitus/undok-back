@@ -85,8 +85,8 @@ public class UserTest {
 
     @Test
     public void createConfUrlTest() {
-        String confirmationUrl = authService.createConfirmationUrl("birgitt@service-b.org", UUID.randomUUID().toString());
-        log.info(confirmationUrl);
+        // String confirmationUrl = authService.createConfirmationUrl("birgitt@service-b.org", UUID.randomUUID().toString());
+        // log.info(confirmationUrl);
     }
 
     @Test

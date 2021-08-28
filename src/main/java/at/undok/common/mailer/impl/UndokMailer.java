@@ -1,6 +1,10 @@
 package at.undok.common.mailer.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import at.undok.auth.model.entity.User;
+import at.undok.common.encryption.AttributeEncryptor;
+import at.undok.common.message.Message;
+import at.undok.common.util.EmailStuff;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -10,6 +14,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 @Service
+@Slf4j
 public class UndokMailer {
 
   private static final String STYLE = "<style>.container{max-width: 500px;border: 0px solid #999;border-radius: 5px;margin: 0px auto;} .general {padding: 11px;text-align:left;line-height:1.3em;font-family:verdana, arial, helvetica, sans-serif;font-size: 0.9em;}a{text-decoration: none;color: #0055ff;}</style>";
@@ -19,8 +24,14 @@ public class UndokMailer {
 
   private static final String DIV_CLASS_GENERAL = "<div class='general'>";
 
-  @Autowired
-  private JavaMailSender mailSender;
+  private final JavaMailSender mailSender;
+
+  private final AttributeEncryptor attributeEncryptor;
+
+  public UndokMailer(JavaMailSender mailSender, AttributeEncryptor attributeEncryptor) {
+    this.mailSender = mailSender;
+    this.attributeEncryptor = attributeEncryptor;
+  }
 
   public void getTheMailDetails(String to, String subject, String text, String salutation, String url) {
 
@@ -45,6 +56,23 @@ public class UndokMailer {
 
   private void andNowSendTheMail(MimeMessage mailMessage){
     mailSender.send(mailMessage);
+  }
+
+  public Message createConfirmationMail(User user, String confirmationToken) {
+    String url = createConfirmationUrl(user.getEmail(), confirmationToken);
+    String subject = EmailStuff.SUBJECT_PREFIX + "confirm account";
+    String text = "click the link below within the next 2 hours, after this it will expire";
+    log.info(url);
+    getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), url);
+    return new Message("We've sent you a message confirming your", true);
+  }
+
+  public String createConfirmationUrl(String email, String confirmationToken) {
+    String encryptedEmail = attributeEncryptor.encodeWithUrlEncoder(email);
+    String encryptedToken = attributeEncryptor.encodeWithUrlEncoder(confirmationToken);
+    String confUrl = EmailStuff.DOMAIN_URL_FOR_HEROKU + "/auth/" + encryptedToken + "/confirm/" + encryptedEmail;
+    log.info(confUrl);
+    return confUrl;
   }
 
 }
