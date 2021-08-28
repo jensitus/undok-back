@@ -1,6 +1,6 @@
 package at.undok.auth.serviceimpl;
 
-import at.undok.common.mailer.service.ServiceBOrgMailer;
+import at.undok.common.mailer.impl.UndokMailer;
 import at.undok.common.util.EmailStuff;
 import io.jsonwebtoken.impl.Base64Codec;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
   private PasswordResetTokenRepo passwordResetTokenRepo;
 
   @Autowired
-  private ServiceBOrgMailer serviceBOrgMailer;
+  private UndokMailer undokMailer;
 
   @Autowired
   private JwtProvider jwtProvider;

@@ -1,9 +1,7 @@
 package at.undok.common.mailer.impl;
 
-import at.undok.common.mailer.service.ServiceBOrgMailer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -12,18 +10,18 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 @Service
-public class ServiceBOrgMailerImpl implements ServiceBOrgMailer {
+public class UndokMailer {
 
   private static final String STYLE = "<style>.container{max-width: 500px;border: 0px solid #999;border-radius: 5px;margin: 0px auto;} .general {padding: 11px;text-align:left;line-height:1.3em;font-family:verdana, arial, helvetica, sans-serif;font-size: 0.9em;}a{text-decoration: none;color: #0055ff;}</style>";
 
-  private static final String FROM = "info@service-b.org";
+  @Value("${at.undok.app.undokFromSender}")
+  private String fromSender;
 
   private static final String DIV_CLASS_GENERAL = "<div class='general'>";
 
   @Autowired
   private JavaMailSender mailSender;
 
-  @Override
   public void getTheMailDetails(String to, String subject, String text, String salutation, String url) {
 
     String first_the_salutation = DIV_CLASS_GENERAL + "<h4>Dear " + salutation + "</h4></div>";
@@ -38,7 +36,7 @@ public class ServiceBOrgMailerImpl implements ServiceBOrgMailer {
       helper.setText(the_html_head_and_body, true);
       helper.setTo(to);
       helper.setSubject(subject);
-      helper.setFrom(FROM);
+      helper.setFrom(fromSender);
     } catch (MessagingException e) {
       e.printStackTrace();
     }

@@ -2,7 +2,7 @@ package at.undok.auth.serviceimpl;
 
 import at.undok.auth.model.form.ConfirmAccountForm;
 import at.undok.auth.model.form.CreateUserForm;
-import at.undok.common.mailer.service.ServiceBOrgMailer;
+import at.undok.common.mailer.impl.UndokMailer;
 import at.undok.common.util.EmailStuff;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -58,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
     private UserService userService;
 
     @Autowired
-    private ServiceBOrgMailer serviceBOrgMailer;
+    private UndokMailer undokMailer;
 
     @Autowired
     private RoleService roleService;
@@ -82,7 +82,6 @@ public class AuthServiceImpl implements AuthService {
         String confirmationToken = UUID.randomUUID().toString();
         User user = new User(signUpDto.getUsername(), signUpDto.getEmail().toLowerCase(), encoder.encode(signUpDto.getPassword()), confirmationToken, LocalDateTime.now(), LocalDateTime.now());
         user.setChangePassword(false);
-        log.info(confirmationToken);
         userRepo.save(user);
         createConfirmationMail(user, confirmationToken);
         return modelMapper.map(user, UserDto.class);
@@ -93,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
         String subject = EmailStuff.SUBJECT_PREFIX + "confirm account";
         String text = "click the link below within the next 2 hours, after this it will expire";
         log.info(url);
-        // serviceBOrgMailer.getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), url);
+        undokMailer.getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), url);
         return new Message("We've sent you a message confirming your", true);
     }
 
@@ -132,7 +131,7 @@ public class AuthServiceImpl implements AuthService {
         user.setAdmin(createUserForm.isAdmin());
         user.setConfirmationTokenCreatedAt(LocalDateTime.now());
         user.setChangePassword(true);
-        // createConfirmationMail(user, confirmationToken);
+        createConfirmationMail(user, confirmationToken);
         userRepo.save(user);
         return createConfirmationUrl(user.getEmail(), confirmationToken);
     }
@@ -142,7 +141,7 @@ public class AuthServiceImpl implements AuthService {
         String encryptedEmail = attributeEncryptor.encodeWithUrlEncoder(email);
         String encryptedToken = attributeEncryptor.encodeWithUrlEncoder(confirmationToken);
         String confUrl = EmailStuff.DOMAIN_URL_FOR_DEV + "/auth/" + encryptedToken + "/confirm/" + encryptedEmail;
-        // log.info(confUrl);
+        log.info(confUrl);
         return confUrl;
     }
 
