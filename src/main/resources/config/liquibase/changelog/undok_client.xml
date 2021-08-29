@@ -65,5 +65,51 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="add_missing_fields_to_client" author="jensitus">
+        <addColumn tableName="clients">
+            <column name="current_resident_status" type="varchar(64)" />
+            <column name="former_resident_status" type="varchar(64)" />
+            <column name="labour_market_access" type="varchar(128)" />
+            <column name="position" type="varchar(255)" />
+            <column name="sector" type="varchar(255)" />
+            <column name="union" type="varchar(255)" />
+            <column name="membership" type="varchar(255)" />
+            <column name="organization" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="add_contact" author="jensitus">
+        <addColumn tableName="persons">
+            <column name="contact_data" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add_language_nationality_to_client" author="jensitus">
+        <addColumn tableName="clients">
+            <column name="language" type="varchar(255)" />
+            <column name="nationality" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="change_membership_to_boolean" author="jensitus">
+        <dropColumn tableName="clients" columnName="membership" />
+        <addColumn tableName="clients">
+            <column name="membership" type="boolean" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="change_union" author="jensitus">
+        <dropColumn tableName="clients" columnName="union" />
+        <addColumn tableName="clients">
+            <column name="union" type="varchar(256)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="change_to_labour_union" author="jensitus">
+        <dropColumn tableName="clients" columnName="union" />
+        <addColumn tableName="clients">
+            <column name="labour_union" type="varchar(256)" />
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

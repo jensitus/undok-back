@@ -53,6 +53,8 @@ public class Person implements Serializable {
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
+    @Column(name = "contact_data")
+    private String contactData;
 
     @Override
     public String toString() {

@@ -111,12 +111,21 @@ public class ClientService {
         client.setInterpreterNecessary(clientForm.getInterpreterNecessary());
         client.setVulnerableWhenAssertingRights(clientForm.getVulnerableWhenAssertingRights());
         client.setMaritalStatus(clientForm.getMaritalStatus());
+        client.setCurrentResidentStatus(clientForm.getCurrentResidentStatus());
+        client.setLabourMarketAccess(clientForm.getLabourMarketAccess());
+        client.setLanguage(clientForm.getLanguage());
+        client.setUnion(clientForm.getUnion());
+        client.setMembership(clientForm.getMembership());
+        client.setNationality(clientForm.getNationality());
+        client.setSector(clientForm.getSector());
+        client.setOrganization(clientForm.getOrganization());
+        client.setPosition(clientForm.getPosition());
         Client savedClient = clientRepo.save(client);
 
-        clientAddress.setStreet(clientForm.getStreet());
-        clientAddress.setZipCode(clientForm.getZipCode());
-        clientAddress.setCity(clientForm.getCity());
-        clientAddress.setCountry(clientForm.getCountry());
+        clientAddress.setStreet(attributeEncryptor.convertToDatabaseColumn(clientForm.getStreet()));
+        clientAddress.setZipCode(attributeEncryptor.convertToDatabaseColumn(clientForm.getZipCode()));
+        clientAddress.setCity(attributeEncryptor.convertToDatabaseColumn(clientForm.getCity()));
+        clientAddress.setCountry(attributeEncryptor.convertToDatabaseColumn(clientForm.getCountry()));
         Address address = addressRepo.save(clientAddress);
 
         clientPerson.setAddress(address);
@@ -150,10 +159,10 @@ public class ClientService {
         client.setVulnerableWhenAssertingRights(cDto.getVulnerableWhenAssertingRights());
         client.setMaritalStatus(cDto.getMaritalStatus());
 
-        address.setStreet(cDto.getPerson().getAddress().getStreet());
-        address.setZipCode(cDto.getPerson().getAddress().getZipCode());
-        address.setCity(cDto.getPerson().getAddress().getCity());
-        address.setCountry(cDto.getPerson().getAddress().getCountry());
+        address.setStreet(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getStreet()));
+        address.setZipCode(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getZipCode()));
+        address.setCity(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getCity()));
+        address.setCountry(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getCountry()));
 
         person.setAddress(address);
 

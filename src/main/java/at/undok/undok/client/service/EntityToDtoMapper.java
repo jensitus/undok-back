@@ -100,7 +100,12 @@ public class EntityToDtoMapper {
         personDto.setDateOfBirth(person.getDateOfBirth());
 
         if (person.getAddress() != null) {
-            AddressDto addressDto = modelMapper.map(person.getAddress(), AddressDto.class);
+            AddressDto addressDto = new AddressDto();
+            addressDto.setId(person.getAddress().getId());
+            addressDto.setCity(attributeEncryptor.convertToEntityAttribute(person.getAddress().getCity()));
+            addressDto.setStreet(attributeEncryptor.convertToEntityAttribute(person.getAddress().getStreet()));
+            addressDto.setZipCode(attributeEncryptor.convertToEntityAttribute(person.getAddress().getZipCode()));
+            addressDto.setCountry(attributeEncryptor.convertToEntityAttribute(person.getAddress().getCountry()));
             personDto.setAddress(addressDto);
         }
 

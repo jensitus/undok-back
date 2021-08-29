@@ -29,23 +29,23 @@ public class ClientDto {
 
     private String howHasThePersonHeardFromUs;
 
-    private ResidentStatus currentResidentStatus;
+    private String currentResidentStatus;
 
     private Boolean vulnerableWhenAssertingRights;
 
-    private ResidentStatus formerResidentStatus;
+    private String formerResidentStatus;
 
     private String labourMarketAccess;
 
     private String position;
 
-    private IndustryDto industry;
+    private String sector;
 
     private String union;
 
     private Boolean membership;
 
-    private String organisation;
+    private String organization;
 
     private PersonDto person;
 

@@ -1,6 +1,7 @@
 package at.undok.undok.client.model.entity;
 
 import at.undok.undok.client.model.enumeration.MaritalStatus;
+import at.undok.undok.client.model.enumeration.ResidentStatus;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -28,11 +29,11 @@ public class Client {
     @Column(name = "marital_status")
     private String maritalStatus;
 
-    // @OneToOne
-    // private Nationality nationality;
+    @Column(name = "nationality")
+    private String nationality;
 
-    // @OneToMany
-    // private Set<Language> language;
+    @Column(name = "language")
+    private String language;
 
     @OneToOne(mappedBy = "client", fetch = FetchType.EAGER)
     private Person person;
@@ -50,26 +51,32 @@ public class Client {
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
     private List<Counseling> counselings;
 
-    // private ResidentStatus currentResidentStatus;
-
     @Column(name = "vulnerable_when_asserting_rights")
     private Boolean vulnerableWhenAssertingRights;
 
-    // private ResidentStatus formerResidentStatus;
+    @Column(name = "current_resident_status")
+    private String currentResidentStatus;
 
-    // private LabourMarketAccess labourMarketAccess;
+    @Column(name = "former_resident_status")
+    private String formerResidentStatus;
 
-    // private String position;
+    @Column(name = "labour_market_access")
+    private String labourMarketAccess;
 
-    // @OneToOne
-    // private Industry industry;
+    @Column(name = "position")
+    private String position;
 
-    // @OneToOne
-    // private Union union;
+    @Column(name = "sector")
+    private String sector;
 
-    // private Boolean membership;
+    @Column(name = "labour_union")
+    private String union;
 
-    // private String organisation;
+    @Column(name = "membership")
+    private Boolean membership;
+
+    @Column(name = "organization")
+    private String organization;
 
 
     @Override

@@ -10,6 +10,7 @@ public class ClientForm {
     private String firstName;
     private String lastName;
     private String dateOfBirth;
+    private String contactData;
 
     // Address
     private String street;
@@ -20,7 +21,6 @@ public class ClientForm {
     // Employer:
 
 
-
     // Client:
     private String keyword;
     private String education;
@@ -29,24 +29,24 @@ public class ClientForm {
     private String howHasThePersonHeardFromUs;
     private Boolean vulnerableWhenAssertingRights;
 
-    // private Nationality nationality;
+    private String nationality;
 
-    // private Set<Language> language;
+    private String language;
 
-    // private ResidentStatus currentResidentStatus;
+    private String currentResidentStatus;
 
-    // private ResidentStatus formerResidentStatus;
+    private String formerResidentStatus;
 
-    // private LabourMarketAccess labourMarketAccess;
+    private String labourMarketAccess;
 
-    // private String position;
+    private String position;
 
-    // private Industry industry;
+    private String sector;
 
-    // private Union union;
+    private String union;
 
-    // private Boolean membership;
+    private Boolean membership;
 
-    // private String organisation;
-    
+    private String organization;
+
 }
