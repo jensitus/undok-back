@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
     log.info(url);
     String subject = EmailStuff.SUBJECT_PREFIX + " reset instructions";
     String text = "click the link below within the next 2 hours, after this it will expire";
-    // serviceBOrgMailer.getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), url);
+    undokMailer.getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), url);
     return new Message("We've sent you a message with reset instructions", true);
   }
 
