@@ -127,4 +127,16 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="create-initial-admin" author="jensitus">
+        <insert tableName="users">
+            <column name="id" valueComputed="${uuid_function}" />
+            <column name="username" value="super-admin" />
+            <column name="created_at" valueComputed="${now}" />
+            <column name="password" value="$2a$10$rFpyygk22hkcxDVPJpE1a.7A.6ajQc6aUTrbJ.rajhCic.mWzggpa" />
+            <column name="email" value="info@service-b.org" />
+            <column name="confirmed" valueBoolean="true" />
+            <column name="admin" valueBoolean="true" />
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
