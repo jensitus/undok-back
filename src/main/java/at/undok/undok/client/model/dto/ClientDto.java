@@ -20,8 +20,7 @@ public class ClientDto {
 
     private String maritalStatus;
 
-    @OneToOne
-    private NationalityDto nationality;
+    private String nationality;
 
     private String language;
 

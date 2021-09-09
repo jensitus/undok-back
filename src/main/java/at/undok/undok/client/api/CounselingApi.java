@@ -4,6 +4,7 @@ import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.entity.Counseling;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -20,5 +21,8 @@ public interface CounselingApi {
 
     @GetMapping("/all")
     List<CounselingDto> getAllCounselings();
+
+    @PostMapping("/create-anonymous/")
+    CounselingDto createAnonymousCounseling();
 
 }

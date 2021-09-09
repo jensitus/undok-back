@@ -29,4 +29,9 @@ public class CounselingController implements CounselingApi {
     public List<CounselingDto> getAllCounselings() {
         return counselingService.getAllCounselings();
     }
+
+    @Override
+    public CounselingDto createAnonymousCounseling() {
+        return null;
+    }
 }

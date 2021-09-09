@@ -58,7 +58,7 @@ public class EntityToDtoMapper {
         for (Client c : clients) {
             Person p = c.getPerson();
             ClientDto clientDto = convertClientToDto(c);
-            PersonDto personDto = convertPersonToDto(p);
+            PersonDto personDto = mapPersonToDto(p);
             clientDto.setPerson(personDto);
             clientDtos.add(clientDto);
         }
@@ -85,27 +85,47 @@ public class EntityToDtoMapper {
         clientDto.setMaritalStatus(client.getMaritalStatus());
         clientDto.setVulnerableWhenAssertingRights(client.getVulnerableWhenAssertingRights());
 
+        clientDto.setLanguage(client.getLanguage());
+        clientDto.setPosition(client.getPosition());
+        clientDto.setMembership(client.getMembership());
+        clientDto.setOrganization(client.getOrganization());
+        clientDto.setNationality(client.getNationality());
+        clientDto.setSector(client.getSector());
+        clientDto.setUnion(client.getUnion());
+        clientDto.setLabourMarketAccess(client.getLabourMarketAccess());
+        clientDto.setCurrentResidentStatus(client.getCurrentResidentStatus());
+
         return clientDto;
     }
 
     private PersonDto mapPersonToDto(Person person) {
         PersonDto personDto = new PersonDto();
 
-        String firstName = attributeEncryptor.convertToEntityAttribute(person.getFirstName());
-        String lastName = attributeEncryptor.convertToEntityAttribute(person.getLastName());
+        if (person.getFirstName() != null) {
+            personDto.setFirstName(attributeEncryptor.convertToEntityAttribute(person.getFirstName()));
+        }
+        if (person.getLastName() != null) {
+            personDto.setLastName(attributeEncryptor.convertToEntityAttribute(person.getLastName()));
+        }
 
-        personDto.setFirstName(firstName);
-        personDto.setLastName(lastName);
         personDto.setId(person.getId());
         personDto.setDateOfBirth(person.getDateOfBirth());
 
         if (person.getAddress() != null) {
             AddressDto addressDto = new AddressDto();
             addressDto.setId(person.getAddress().getId());
-            addressDto.setCity(attributeEncryptor.convertToEntityAttribute(person.getAddress().getCity()));
-            addressDto.setStreet(attributeEncryptor.convertToEntityAttribute(person.getAddress().getStreet()));
-            addressDto.setZipCode(attributeEncryptor.convertToEntityAttribute(person.getAddress().getZipCode()));
-            addressDto.setCountry(attributeEncryptor.convertToEntityAttribute(person.getAddress().getCountry()));
+            if (person.getAddress().getCity() != null) {
+                addressDto.setCity(attributeEncryptor.convertToEntityAttribute(person.getAddress().getCity()));
+            }
+            if (person.getAddress().getStreet() != null) {
+                addressDto.setStreet(attributeEncryptor.convertToEntityAttribute(person.getAddress().getStreet()));
+            }
+            if (person.getAddress().getCountry() != null) {
+                addressDto.setZipCode(attributeEncryptor.convertToEntityAttribute(person.getAddress().getZipCode()));
+            }
+            if (person.getAddress().getCountry() != null) {
+                addressDto.setCountry(attributeEncryptor.convertToEntityAttribute(person.getAddress().getCountry()));
+            }
             personDto.setAddress(addressDto);
         }
 

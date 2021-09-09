@@ -101,8 +101,12 @@ public class ClientService {
             clientPerson.setDateOfBirth(null);
         }
 
-        clientPerson.setFirstName(attributeEncryptor.convertToDatabaseColumn(clientForm.getFirstName()));
-        clientPerson.setLastName(attributeEncryptor.convertToDatabaseColumn(clientForm.getLastName()));
+        if (clientForm.getFirstName() != null) {
+            clientPerson.setFirstName(attributeEncryptor.convertToDatabaseColumn(clientForm.getFirstName()));
+        }
+        if (clientForm.getLastName() != null) {
+            clientPerson.setLastName(attributeEncryptor.convertToDatabaseColumn(clientForm.getLastName()));
+        }
         clientPerson.setCreatedAt(LocalDateTime.now());
 
         client.setEducation(clientForm.getEducation());
@@ -122,11 +126,22 @@ public class ClientService {
         client.setPosition(clientForm.getPosition());
         Client savedClient = clientRepo.save(client);
 
-        clientAddress.setStreet(attributeEncryptor.convertToDatabaseColumn(clientForm.getStreet()));
-        clientAddress.setZipCode(attributeEncryptor.convertToDatabaseColumn(clientForm.getZipCode()));
-        clientAddress.setCity(attributeEncryptor.convertToDatabaseColumn(clientForm.getCity()));
-        clientAddress.setCountry(attributeEncryptor.convertToDatabaseColumn(clientForm.getCountry()));
-        Address address = addressRepo.save(clientAddress);
+        if (clientForm.getStreet() != null) {
+            clientAddress.setStreet(attributeEncryptor.convertToDatabaseColumn(clientForm.getStreet()));
+        }
+        if (clientForm.getZipCode() != null) {
+            clientAddress.setZipCode(attributeEncryptor.convertToDatabaseColumn(clientForm.getZipCode()));
+        }
+        if (clientForm.getCity() != null) {
+            clientAddress.setCity(attributeEncryptor.convertToDatabaseColumn(clientForm.getCity()));
+        }
+        if (clientForm.getCountry() != null) {
+            clientAddress.setCountry(attributeEncryptor.convertToDatabaseColumn(clientForm.getCountry()));
+        }
+        Address address = null;
+        if (clientAddress != null) {
+            address = addressRepo.save(clientAddress);
+        }
 
         clientPerson.setAddress(address);
         clientPerson.setClient(savedClient);
@@ -148,8 +163,12 @@ public class ClientService {
             person.setDateOfBirth(null);
         }
 
-        person.setFirstName(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getFirstName()));
-        person.setLastName(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getLastName()));
+        if (cDto.getPerson().getFirstName() != null) {
+            person.setFirstName(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getFirstName()));
+        }
+        if (cDto.getPerson().getLastName() != null) {
+            person.setLastName(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getLastName()));
+        }
         person.setUpdatedAt(LocalDateTime.now());
 
         client.setEducation(cDto.getEducation());
@@ -158,11 +177,28 @@ public class ClientService {
         client.setInterpreterNecessary(cDto.getInterpreterNecessary());
         client.setVulnerableWhenAssertingRights(cDto.getVulnerableWhenAssertingRights());
         client.setMaritalStatus(cDto.getMaritalStatus());
+        client.setCurrentResidentStatus(cDto.getCurrentResidentStatus());
+        client.setLabourMarketAccess(cDto.getLabourMarketAccess());
+        client.setLanguage(cDto.getLanguage());
+        client.setUnion(cDto.getUnion());
+        client.setMembership(cDto.getMembership());
+        client.setNationality(cDto.getNationality());
+        client.setSector(cDto.getSector());
+        client.setOrganization(cDto.getOrganization());
+        client.setPosition(cDto.getPosition());
 
-        address.setStreet(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getStreet()));
-        address.setZipCode(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getZipCode()));
-        address.setCity(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getCity()));
-        address.setCountry(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getCountry()));
+        if (cDto.getPerson().getAddress().getStreet() != null){
+            address.setStreet(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getStreet()));
+        }
+        if (cDto.getPerson().getAddress().getZipCode() != null) {
+            address.setZipCode(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getZipCode()));
+        }
+        if (cDto.getPerson().getAddress().getCity() != null) {
+            address.setCity(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getCity()));
+        }
+        if (cDto.getPerson().getAddress().getCountry() != null) {
+            address.setCountry(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getCountry()));
+        }
 
         person.setAddress(address);
 
