@@ -29,4 +29,6 @@ public class CounselingDto {
 
     private LocalDateTime createdAt;
 
+    private String comment;
+
 }

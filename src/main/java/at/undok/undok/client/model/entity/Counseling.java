@@ -11,13 +11,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "counselings")
-public class Counseling {
-
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "id", unique = true, nullable = false)
-    private UUID id;
+public class Counseling extends AbstractCrud {
 
     @Column(name = "counseling_status")
     private String counselingStatus;
@@ -47,8 +41,8 @@ public class Counseling {
     @Column(name = "counseling_date")
     private LocalDateTime counselingDate;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @Column(name = "comment")
+    private String comment;
 
     @Override
     public String toString() {

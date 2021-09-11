@@ -41,4 +41,11 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="add_updated_at" author="jensitus">
+        <addColumn tableName="counselings">
+            <column name="updated_at" type="timestamp" />
+            <column name="comment" type="varchar(2048)" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

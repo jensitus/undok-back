@@ -44,6 +44,7 @@ public class CounselingService {
         c.setActivityCategory(counselingForm.getActivityCategory());
         c.setRegisteredBy(counselingForm.getRegisteredBy());
         c.setCreatedAt(LocalDateTime.now());
+        c.setComment(counselingForm.getComment());
         Optional<Client> clientOptional = clientRepo.findById(counselingForm.getClientId());
         c.setClient(clientOptional.get());
         Counseling counsel = counselingRepo.save(c);
@@ -68,6 +69,21 @@ public class CounselingService {
     public List<CounselingDto> getAllCounselings() {
         List<Counseling> all = counselingRepo.findAll();
         return entityToDtoMapper.convertCounselingListToDtoList(all);
+    }
+
+    public CounselingDto updateCounseling(CounselingDto counselingDto) {
+        Counseling counseling = counselingRepo.getOne(counselingDto.getId());
+        counseling.setCounselingDate(counselingDto.getCounselingDate());
+        counseling.setCounselingStatus(counselingDto.getCounselingStatus());
+        counseling.setConcern(counselingDto.getConcern());
+        counseling.setCreatedAt(counselingDto.getCreatedAt());
+        counseling.setActivity(counselingDto.getActivity());
+        counseling.setConcernCategory(counselingDto.getConcernCategory());
+        counseling.setActivityCategory(counselingDto.getActivityCategory());
+        counseling.setComment(counselingDto.getComment());
+
+        Counseling savedCounseling = counselingRepo.save(counseling);
+        return modelMapper.map(savedCounseling, CounselingDto.class);
     }
 
 }

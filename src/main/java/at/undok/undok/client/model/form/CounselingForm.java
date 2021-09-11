@@ -26,4 +26,6 @@ public class CounselingForm {
 
     private String counselingDate;
 
+    private String comment;
+
 }
