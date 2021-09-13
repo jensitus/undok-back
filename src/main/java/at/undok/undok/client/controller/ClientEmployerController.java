@@ -1,6 +1,7 @@
 package at.undok.undok.client.controller;
 
 import at.undok.undok.client.api.ClientEmployerApi;
+import at.undok.undok.client.model.form.ClientEmployerForm;
 import at.undok.undok.client.service.ClientEmployerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,8 +20,8 @@ public class ClientEmployerController implements ClientEmployerApi {
     }
 
     @Override
-    public boolean addEmployerToClient(UUID employerId, UUID clientId) {
-        return clientEmployerService.addEmployerToClient(employerId, clientId);
+    public boolean addEmployerToClient(UUID employerId, UUID clientId, ClientEmployerForm clientEmployerForm) {
+        return clientEmployerService.addEmployerToClient(employerId, clientId, clientEmployerForm);
     }
 
     @Override

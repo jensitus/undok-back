@@ -46,4 +46,16 @@
         <addUniqueConstraint tableName="client_employer" columnNames="client_id, employer_id" />
     </changeSet>
 
+    <changeSet id="add_from_until_to_client_employer" author="jensitus">
+        <addColumn tableName="client_employer">
+            <column name="from" type="date" />
+            <column name="until" type="date" />
+        </addColumn>
+        <dropUniqueConstraint tableName="client_employer" constraintName="client_employer_client_id_employer_id_key" />
+    </changeSet>
+
+    <changeSet id="add_unique_constraint" author="jensitus">
+        <addUniqueConstraint tableName="client_employer" columnNames="client_id, employer_id, from" />
+    </changeSet>
+
 </databaseChangeLog>

@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
@@ -19,5 +20,11 @@ public class ClientEmployer extends AbstractCrud {
 
     @Column(name = "employer_id")
     private UUID employerId;
+
+    @Column(name = "from")
+    private LocalDate from;
+
+    @Column(name = "until")
+    private LocalDate until;
 
 }

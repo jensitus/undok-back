@@ -2,6 +2,7 @@ package at.undok.undok.client.service;
 
 import at.undok.undok.client.model.entity.ClientEmployer;
 import at.undok.undok.client.model.entity.Employer;
+import at.undok.undok.client.model.form.ClientEmployerForm;
 import at.undok.undok.client.repository.ClientEmployerRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,12 +28,14 @@ public class ClientEmployerService {
 
     }
 
-    public boolean addEmployerToClient(UUID employerId, UUID clientId) {
+    public boolean addEmployerToClient(UUID employerId, UUID clientId, ClientEmployerForm clientEmployerForm) {
         ClientEmployer clientEmployer = new ClientEmployer();
         clientEmployer.setEmployerId(employerId);
         clientEmployer.setClientId(clientId);
         clientEmployer.setCreatedAt(LocalDateTime.now());
         clientEmployer.setUpdatedAt(LocalDateTime.now());
+        clientEmployer.setFrom(clientEmployerForm.getFrom());
+        clientEmployer.setUntil(clientEmployerForm.getUntil());
         try {
             clientEmployerRepo.save(clientEmployer);
             return true;
