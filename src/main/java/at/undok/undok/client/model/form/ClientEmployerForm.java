@@ -10,7 +10,7 @@ public class ClientEmployerForm {
 
     private UUID employerId;
     private UUID clientId;
-    private LocalDate from;
-    private LocalDate until;
+//    private LocalDate from;
+//    private LocalDate until;
 
 }

@@ -34,8 +34,8 @@ public class ClientEmployerService {
         clientEmployer.setClientId(clientId);
         clientEmployer.setCreatedAt(LocalDateTime.now());
         clientEmployer.setUpdatedAt(LocalDateTime.now());
-        clientEmployer.setFrom(clientEmployerForm.getFrom());
-        clientEmployer.setUntil(clientEmployerForm.getUntil());
+//        clientEmployer.setFrom(clientEmployerForm.getFrom());
+//        clientEmployer.setUntil(clientEmployerForm.getUntil());
         try {
             clientEmployerRepo.save(clientEmployer);
             return true;
