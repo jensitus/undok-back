@@ -50,12 +50,13 @@ public class EmployerService {
     public List<EmployerDto> getEmployers(UUID clientId) {
         List<Employer> employers = employerRepo.findAll();
         List<EmployerDto> employerDtos = entityToDtoMapper.convertEmployerListToDto(employers);
+        List<EmployerDto> employersWhereClientIsNotEmployed = new ArrayList<>();
         for (EmployerDto e : employerDtos) {
-            if (clientEmployerService.checkClientEmployer(e.getId(), clientId) == true) {
-                employerDtos.remove(e);
+            if (clientEmployerService.checkClientEmployer(e.getId(), clientId) != true) {
+                employersWhereClientIsNotEmployed.add(e);
             }
         }
-        return employerDtos;
+        return employersWhereClientIsNotEmployed;
     }
 
     public List<EmployerDto> getByClientId(UUID clientId) {
