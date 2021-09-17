@@ -69,6 +69,10 @@ public class EntityToDtoMapper {
         List<CounselingDto> dtoList = new ArrayList<>();
         for (Counseling c : counselings) {
             CounselingDto counselingDto = modelMapper.map(c, CounselingDto.class);
+            Client client = c.getClient();
+            counselingDto.setClientId(client.getId());
+            counselingDto.setClientFullName(attributeEncryptor.convertToEntityAttribute(client.getPerson().getFirstName())
+                    + " " + attributeEncryptor.convertToEntityAttribute(client.getPerson().getLastName()));
             dtoList.add(counselingDto);
         }
         return dtoList;
@@ -101,12 +105,16 @@ public class EntityToDtoMapper {
     private PersonDto mapPersonToDto(Person person) {
         PersonDto personDto = new PersonDto();
 
+        if (person == null) {
+            return null;
+        }
         if (person.getFirstName() != null) {
             personDto.setFirstName(attributeEncryptor.convertToEntityAttribute(person.getFirstName()));
         }
         if (person.getLastName() != null) {
             personDto.setLastName(attributeEncryptor.convertToEntityAttribute(person.getLastName()));
         }
+
 
         personDto.setId(person.getId());
         personDto.setDateOfBirth(person.getDateOfBirth());

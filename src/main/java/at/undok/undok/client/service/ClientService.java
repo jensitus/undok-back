@@ -2,6 +2,7 @@ package at.undok.undok.client.service;
 
 import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.common.util.ToLocalDateService;
+import at.undok.undok.client.exception.KeywordNotFoundException;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.entity.Address;
 import at.undok.undok.client.model.entity.Client;
@@ -15,13 +16,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
 @Service
+@Transactional
 public class ClientService {
 
     @Autowired
@@ -48,10 +54,10 @@ public class ClientService {
         Client client = new Client();
         Person person = new Person();
         Address address = new Address();
-        return createClient(person, client, address, clientForm);
+        return createTheCompleteClient(clientForm);
     }
 
-    public Map<String, Map> getClients(int page, int size){
+    public Map<String, Map> getClients(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Client> all = clientRepo.findAll(pageable);
 
@@ -93,7 +99,11 @@ public class ClientService {
         }
     }
 
-    private ClientDto createClient(Person clientPerson, Client client, Address clientAddress, ClientForm clientForm) {
+    private ClientDto createTheCompleteClient(ClientForm clientForm) {
+
+        Person clientPerson = new Person();
+        Client client = new Client();
+        Address clientAddress = new Address();
 
         try {
             clientPerson.setDateOfBirth(toLocalDateService.formatStringToLocalDate(clientForm.getDateOfBirth()));
@@ -124,7 +134,7 @@ public class ClientService {
         client.setSector(clientForm.getSector());
         client.setOrganization(clientForm.getOrganization());
         client.setPosition(clientForm.getPosition());
-        Client savedClient = clientRepo.save(client);
+        Client saveAndFlush = clientRepo.saveAndFlush(client);
 
         if (clientForm.getStreet() != null) {
             clientAddress.setStreet(attributeEncryptor.convertToDatabaseColumn(clientForm.getStreet()));
@@ -138,21 +148,16 @@ public class ClientService {
         if (clientForm.getCountry() != null) {
             clientAddress.setCountry(attributeEncryptor.convertToDatabaseColumn(clientForm.getCountry()));
         }
-        Address address = null;
-        if (clientAddress != null) {
-            address = addressRepo.save(clientAddress);
-        }
+        Address savedAddress = addressRepo.save(clientAddress);
 
-        clientPerson.setAddress(address);
-        clientPerson.setClient(savedClient);
+        clientPerson.setAddress(savedAddress);
+        clientPerson.setClient(saveAndFlush);
         Person savedPerson = personRepo.save(clientPerson);
 
-        savedClient.setPerson(savedPerson);
+        client.setPerson(savedPerson);
 
-        Client c = clientRepo.save(savedClient);
-        ClientDto clientDto = entityToDtoMapper.convertClientToDto(c);
-
-        return clientDto;
+        Client c = clientRepo.save(client);
+        return entityToDtoMapper.convertClientToDto(c);
     }
 
 
@@ -187,7 +192,7 @@ public class ClientService {
         client.setOrganization(cDto.getOrganization());
         client.setPosition(cDto.getPosition());
 
-        if (cDto.getPerson().getAddress().getStreet() != null){
+        if (cDto.getPerson().getAddress().getStreet() != null) {
             address.setStreet(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getStreet()));
         }
         if (cDto.getPerson().getAddress().getZipCode() != null) {

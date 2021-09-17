@@ -31,4 +31,8 @@ public class CounselingDto {
 
     private String comment;
 
+    private UUID clientId;
+
+    private String clientFullName;
+
 }
