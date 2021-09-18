@@ -27,8 +27,8 @@ public class EmployerController implements EmployerApi {
     }
 
     @Override
-    public List<EmployerDto> getAll() {
-        return employerService.getEmployers();
+    public List<EmployerDto> getAll(UUID clientId) {
+        return employerService.getEmployers(clientId);
     }
 
     @Override

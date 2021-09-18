@@ -47,9 +47,16 @@ public class EmployerService {
         return modelMapper.map(employer, EmployerDto.class);
     }
 
-    public List<EmployerDto> getEmployers() {
+    public List<EmployerDto> getEmployers(UUID clientId) {
         List<Employer> employers = employerRepo.findAll();
-        return entityToDtoMapper.convertEmployerListToDto(employers);
+        List<EmployerDto> employerDtos = entityToDtoMapper.convertEmployerListToDto(employers);
+        List<EmployerDto> employersWhereClientIsNotEmployed = new ArrayList<>();
+        for (EmployerDto e : employerDtos) {
+            if (clientEmployerService.checkClientEmployer(e.getId(), clientId) != true) {
+                employersWhereClientIsNotEmployed.add(e);
+            }
+        }
+        return employersWhereClientIsNotEmployed;
     }
 
     public List<EmployerDto> getByClientId(UUID clientId) {

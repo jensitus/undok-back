@@ -4,6 +4,7 @@ import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.model.form.CounselingForm;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -15,7 +16,7 @@ public interface ClientApi {
 
     @CrossOrigin
     @PostMapping("/create")
-    ClientDto createClient(@RequestBody ClientForm clientForm);
+    ResponseEntity<ClientDto> createClient(@RequestBody ClientForm clientForm);
 
     @GetMapping("/all/{page}/{size}")
     Map<String, Map> getAllClients(@PathVariable("page") int page, @PathVariable("size") int size);

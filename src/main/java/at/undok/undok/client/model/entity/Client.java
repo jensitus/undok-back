@@ -6,6 +6,7 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +22,7 @@ public class Client {
     private UUID id;
 
     @Column(name = "keyword")
+    @NotNull
     private String keyword;
 
     @Column(name = "education")

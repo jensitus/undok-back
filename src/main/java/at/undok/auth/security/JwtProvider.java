@@ -31,15 +31,29 @@ public class JwtProvider {
 
   public String generateJwtToken(Authentication authentication) {
     UserPrinciple userPrincipal = (UserPrinciple) authentication.getPrincipal();
-    return Jwts.builder().setSubject((userPrincipal.getUsername())).setIssuedAt(new Date()).setExpiration(new Date((new Date()).getTime() + jwtExpiration)).signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
+    return Jwts.builder()
+               .setSubject((userPrincipal.getUsername()))
+               .setIssuedAt(new Date())
+               .setExpiration(new Date((new Date()).getTime() + jwtExpiration))
+               .signWith(SignatureAlgorithm.HS512, jwtSecret)
+               .compact();
   }
 
   public String generatePasswordResetToken(User user) {
-    return Jwts.builder().setSubject(user.getUsername()).setIssuedAt(new Date()).setExpiration(new Date((new Date()).getTime() + resetExpiration)).signWith(SignatureAlgorithm.HS256, jwtSecret).compact();
+    return Jwts.builder()
+               .setSubject(user.getUsername())
+               .setIssuedAt(new Date())
+               .setExpiration(new Date((new Date()).getTime() + resetExpiration))
+               .signWith(SignatureAlgorithm.HS256, jwtSecret)
+               .compact();
   }
 
   public String getUsernameFromJwtToken(String token) {
-    return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+    return Jwts.parser()
+               .setSigningKey(jwtSecret)
+               .parseClaimsJws(token)
+               .getBody()
+               .getSubject();
   }
 
   public Message validateJwtToken(String authToken) {
