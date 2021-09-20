@@ -48,4 +48,8 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="modify_comment_type" author="jenitus">
+        <modifyDataType tableName="counselings" columnName="comment" newDataType="text" />
+    </changeSet>
+
 </databaseChangeLog>
