@@ -23,4 +23,7 @@ public interface CounselingApi {
     @PutMapping("/{id}/update")
     CounselingDto updateCounseling(@PathVariable("id") UUID counselingId, @RequestBody CounselingDto counselingDto);
 
+    @PutMapping("/{id}/set-or-update-comment/")
+    CounselingDto setCommentOnCounseling(@PathVariable("id") UUID counselingId, @RequestBody String comment);
+
 }

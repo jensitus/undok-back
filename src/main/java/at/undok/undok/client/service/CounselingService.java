@@ -86,4 +86,11 @@ public class CounselingService {
         return modelMapper.map(savedCounseling, CounselingDto.class);
     }
 
+    public CounselingDto setCommentOnCounseling(UUID counselingId, String comment) {
+        Counseling counseling = counselingRepo.findById(counselingId).get();
+        counseling.setComment(comment);
+        Counseling savedCounseling = counselingRepo.save(counseling);
+        return modelMapper.map(savedCounseling, CounselingDto.class);
+    }
+
 }
