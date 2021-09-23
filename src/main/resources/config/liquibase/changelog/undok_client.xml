@@ -112,4 +112,8 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="set_keyword_unique" author="jensitus">
+        <addUniqueConstraint tableName="clients" columnNames="keyword" />
+    </changeSet>
+
 </databaseChangeLog>
