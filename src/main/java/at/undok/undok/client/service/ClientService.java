@@ -48,12 +48,13 @@ public class ClientService {
     @Autowired
     private AttributeEncryptor attributeEncryptor;
 
+    public boolean checkIfKeywordAlreadyExists(String keyword) {
+        return clientRepo.existsByKeyword(keyword);
+    }
+
     public ClientDto createClient(ClientForm clientForm) {
         log.info(clientForm.toString());
 
-        Client client = new Client();
-        Person person = new Person();
-        Address address = new Address();
         return createTheCompleteClient(clientForm);
     }
 

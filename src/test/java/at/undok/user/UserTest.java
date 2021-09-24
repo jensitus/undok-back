@@ -27,6 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -123,6 +124,12 @@ public class UserTest {
         ClientDto expected = clientService.createClient(clientForm);
 
         Assert.assertEquals(expected.getEducation(), clientForm.getEducation());
+    }
+
+    @Test
+    public void findKeywords() {
+        boolean b = clientRepo.existsByKeyword("strohblöd");
+        log.info("b: " + b);
     }
 
     @Test

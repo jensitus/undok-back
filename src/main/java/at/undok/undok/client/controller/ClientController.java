@@ -30,8 +30,11 @@ public class ClientController implements ClientApi {
     public ResponseEntity createClient(ClientForm clientForm) {
         if (clientForm.getKeyword() == null) {
             return ResponseEntity.unprocessableEntity().body("Keyword must not be null");
+        } else if (clientService.checkIfKeywordAlreadyExists(clientForm.getKeyword())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Keyword already exists");
+        } else {
+            return ResponseEntity.ok(this.clientService.createClient(clientForm));
         }
-        return new ResponseEntity<>(this.clientService.createClient(clientForm), HttpStatus.OK);
     }
 
     @Override
