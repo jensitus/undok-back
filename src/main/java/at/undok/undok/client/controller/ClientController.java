@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -63,4 +64,8 @@ public class ClientController implements ClientApi {
         return clientService.updateClient(clientId, clientDto);
     }
 
+    @Override
+    public List<ClientDto> getAll() {
+        return clientService.getAll();
+    }
 }

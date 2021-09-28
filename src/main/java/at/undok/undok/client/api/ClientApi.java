@@ -7,6 +7,7 @@ import at.undok.undok.client.model.form.CounselingForm;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -32,6 +33,9 @@ public interface ClientApi {
 
     @PutMapping("/{id}/update")
     ClientDto updateClient(@PathVariable("id") UUID clientId, @RequestBody ClientDto clientDto);
+
+    @GetMapping("/all")
+    List<ClientDto> getAll();
 
 
 }

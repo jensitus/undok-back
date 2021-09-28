@@ -52,6 +52,10 @@ public class ClientService {
         return clientRepo.existsByKeyword(keyword);
     }
 
+    public List<ClientDto> getAll() {
+        return entityToDtoMapper.convertClientListToDtoList(clientRepo.findAll());
+    }
+
     public ClientDto createClient(ClientForm clientForm) {
         log.info(clientForm.toString());
 

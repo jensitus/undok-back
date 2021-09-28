@@ -128,7 +128,7 @@ public class EntityToDtoMapper {
             if (person.getAddress().getStreet() != null) {
                 addressDto.setStreet(attributeEncryptor.convertToEntityAttribute(person.getAddress().getStreet()));
             }
-            if (person.getAddress().getCountry() != null) {
+            if (person.getAddress().getZipCode() != null) {
                 addressDto.setZipCode(attributeEncryptor.convertToEntityAttribute(person.getAddress().getZipCode()));
             }
             if (person.getAddress().getCountry() != null) {

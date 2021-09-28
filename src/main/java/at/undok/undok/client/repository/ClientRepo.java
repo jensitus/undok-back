@@ -14,7 +14,8 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
 
     List<Client> findByKeyword(String keyword);
 
-    // @Query("select exists(select c.keyword from Client c where c.keyword = :keyword)")
     boolean existsByKeyword(String keyword);
+
+
 
 }

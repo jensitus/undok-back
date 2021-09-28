@@ -128,8 +128,43 @@ public class UserTest {
 
     @Test
     public void findKeywords() {
-        boolean b = clientRepo.existsByKeyword("strohblöd");
-        log.info("b: " + b);
+        List<ClientDto> all = clientService.getAll();
+        List<String> countryNames = new ArrayList<>();
+        List<Person> clientPersons = new ArrayList<>();
+        for (ClientDto clientDto : all) {
+            countryNames.add(clientDto.getPerson().getAddress().getCountry());
+        }
+
+        List<String> countryNamesSorted = new ArrayList<>();
+        for (String countryName : countryNames) {
+            if (!countryNamesSorted.contains(countryName)) {
+                countryNamesSorted.add(countryName);
+            }
+        }
+        List<Integer> countryNumbers = new ArrayList<>();
+        for (String cName : countryNamesSorted) {
+            countryNumbers.add(countCountryNames(cName, countryNames));
+        }
+
+        log.info(countryNamesSorted.toString());
+        log.info(countryNumbers.toString());
+    }
+
+    private int countCountryNames(String countryName, List<String> countryNames) {
+        int countryCounter = 0;
+        List<Integer> countryNumbers = new ArrayList<>();
+        for (String cName : countryNames) {
+            if (cName == null && countryName == null) {
+                countryCounter = countryCounter + 1;
+            } else if (cName != null && countryName != null) {
+                if (cName.equals(countryName)) {
+                    countryCounter = countryCounter + 1;
+                }
+            } else {
+
+            }
+        }
+        return countryCounter;
     }
 
     @Test
