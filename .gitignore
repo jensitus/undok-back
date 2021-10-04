@@ -27,3 +27,8 @@ HELP.md
 
 ### VS Code ###
 .vscode/
+
+### CSV ###
+*.csv
+/csv/
+/csv/clients.csv

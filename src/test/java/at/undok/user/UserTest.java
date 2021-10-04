@@ -16,6 +16,7 @@ import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.PersonRepo;
 import at.undok.undok.client.service.ClientService;
 import at.undok.undok.client.service.CounselingService;
+import at.undok.undok.client.service.CsvService;
 import io.jsonwebtoken.impl.Base64Codec;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -62,6 +64,9 @@ public class UserTest {
 
     @Autowired
     private CounselingService counselingService;
+
+    @Autowired
+    private CsvService csvService;
 
     @Test
     public void generateToken() {
@@ -124,6 +129,11 @@ public class UserTest {
         ClientDto expected = clientService.createClient(clientForm);
 
         Assert.assertEquals(expected.getEducation(), clientForm.getEducation());
+    }
+
+    @Test
+    public void testCsv() throws IOException {
+        csvService.writeClientsToCsv();
     }
 
     @Test
