@@ -1,5 +1,6 @@
 package at.undok.undok.client.service;
 
+import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
@@ -25,9 +26,9 @@ public class CsvService {
     public void writeClientsToCsv() throws IOException {
         FileWriter fileOut = new FileWriter("csv/clients.csv");
         try (CSVPrinter csvPrinter = new CSVPrinter(fileOut, CSVFormat.DEFAULT.withHeader(HEADERS))) {
-            List<ClientDto> all = clientService.getAll();
-            for (ClientDto clientDto : all) {
-                csvPrinter.printRecord(clientDto.getPerson().getFirstName(), clientDto.getPerson().getLastName(), clientDto.getKeyword());
+            List<AllClientDto> all = clientService.getAll();
+            for (AllClientDto clientDto : all) {
+                csvPrinter.printRecord(clientDto.getFirstName(), clientDto.getLastName(), clientDto.getKeyword());
             }
         } catch (IOException e) {
             log.error("error while writing csv {}", e.toString());

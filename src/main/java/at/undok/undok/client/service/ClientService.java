@@ -2,6 +2,7 @@ package at.undok.undok.client.service;
 
 import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.common.util.ToLocalDateService;
+import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.entity.Address;
 import at.undok.undok.client.model.entity.Client;
@@ -48,8 +49,10 @@ public class ClientService {
         return clientRepo.existsByKeyword(keyword);
     }
 
-    public List<ClientDto> getAll() {
-        return entityToDtoMapper.convertClientListToDtoList(clientRepo.findAll());
+    public List<AllClientDto> getAll() {
+        List<ClientDto> clientDtos = entityToDtoMapper.convertClientListToDtoList(clientRepo.findAll());
+        List<AllClientDto> allClientDtoList = turnClientDtoListToAllClientDtoList(clientDtos);
+        return allClientDtoList;
     }
 
     public ClientDto createClient(ClientForm clientForm) {
@@ -213,6 +216,44 @@ public class ClientService {
         Client c = clientRepo.save(client);
         ClientDto clientDto = entityToDtoMapper.convertClientToDto(c);
         return clientDto;
+    }
+
+    private List<AllClientDto> turnClientDtoListToAllClientDtoList(List<ClientDto> clientDtoList) {
+        List<AllClientDto> allClientDtoList = new ArrayList<>();
+
+        for (ClientDto clientDto : clientDtoList) {
+            AllClientDto allClientDto = new AllClientDto();
+            allClientDto.setId(clientDto.getId());
+            // person stuff:
+            allClientDto.setFirstName(clientDto.getPerson().getFirstName());
+            allClientDto.setLastName(clientDto.getPerson().getLastName());
+            allClientDto.setDateOfBirth(clientDto.getPerson().getDateOfBirth());
+            // address stuff:
+            allClientDto.setStreet(clientDto.getPerson().getAddress().getStreet());
+            allClientDto.setZipCode(clientDto.getPerson().getAddress().getZipCode());
+            allClientDto.setCity(clientDto.getPerson().getAddress().getCity());
+            allClientDto.setCountry(clientDto.getPerson().getAddress().getCountry());
+            // client stuff:
+            allClientDto.setKeyword(clientDto.getKeyword());
+            allClientDto.setEducation(clientDto.getEducation());
+            allClientDto.setLanguage(clientDto.getLanguage());
+            allClientDto.setSector(clientDto.getSector());
+            allClientDto.setUnion(clientDto.getUnion());
+            allClientDto.setMembership(clientDto.getMembership());
+            allClientDto.setPosition(clientDto.getPosition());
+            allClientDto.setNationality(clientDto.getNationality());
+            allClientDto.setOrganization(clientDto.getOrganization());
+            allClientDto.setCurrentResidentStatus(clientDto.getCurrentResidentStatus());
+            allClientDto.setHowHasThePersonHeardFromUs(clientDto.getHowHasThePersonHeardFromUs());
+            allClientDto.setVulnerableWhenAssertingRights(clientDto.getVulnerableWhenAssertingRights());
+            allClientDto.setInterpreterNecessary(clientDto.getInterpreterNecessary());
+            allClientDto.setMaritalStatus(clientDto.getMaritalStatus());
+            allClientDto.setLabourMarketAccess(clientDto.getLabourMarketAccess());
+
+            allClientDtoList.add(allClientDto);
+        }
+
+        return allClientDtoList;
     }
 
 }

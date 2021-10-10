@@ -4,6 +4,7 @@ import at.undok.auth.model.entity.User;
 import at.undok.auth.service.AuthService;
 import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.common.util.UUIDConverter;
+import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.entity.Address;
@@ -138,11 +139,11 @@ public class UserTest {
 
     @Test
     public void findKeywords() {
-        List<ClientDto> all = clientService.getAll();
+        List<AllClientDto> all = clientService.getAll();
         List<String> countryNames = new ArrayList<>();
         List<Person> clientPersons = new ArrayList<>();
-        for (ClientDto clientDto : all) {
-            countryNames.add(clientDto.getPerson().getAddress().getCountry());
+        for (AllClientDto clientDto : all) {
+            countryNames.add(clientDto.getCountry());
         }
 
         List<String> countryNamesSorted = new ArrayList<>();
