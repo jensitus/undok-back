@@ -1,5 +1,6 @@
 package at.undok.common.service;
 
+import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.service.ClientService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,14 +20,14 @@ public class ChartService {
     }
 
     public Object[] getCountryChartData() {
-        List<ClientDto> all = clientService.getAll();
+        List<AllClientDto> all = clientService.getAll();
 
         List<String> countryNames = new ArrayList<>();
-        for (ClientDto clientDto : all) {
-            if (clientDto.getPerson().getAddress().getCountry() == null) {
+        for (AllClientDto clientDto : all) {
+            if (clientDto.getCountry() == null) {
                 countryNames.add("unknown");
             } else {
-                countryNames.add(clientDto.getPerson().getAddress().getCountry());
+                countryNames.add(clientDto.getCountry());
             }
         }
 

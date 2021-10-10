@@ -1,5 +1,6 @@
 package at.undok.undok.client.api;
 
+import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.form.ClientForm;
@@ -35,7 +36,7 @@ public interface ClientApi {
     ClientDto updateClient(@PathVariable("id") UUID clientId, @RequestBody ClientDto clientDto);
 
     @GetMapping("/all")
-    List<ClientDto> getAll();
+    List<AllClientDto> getAll();
 
 
 }

@@ -1,6 +1,7 @@
 package at.undok.undok.client.controller;
 
 import at.undok.undok.client.api.ClientApi;
+import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.form.ClientForm;
@@ -65,7 +66,7 @@ public class ClientController implements ClientApi {
     }
 
     @Override
-    public List<ClientDto> getAll() {
+    public List<AllClientDto> getAll() {
         return clientService.getAll();
     }
 }
