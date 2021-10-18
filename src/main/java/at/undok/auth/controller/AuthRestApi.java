@@ -59,7 +59,7 @@ public class AuthRestApi {
             return new ResponseEntity<>(new Message("Damn -> this Username is already taken"), HttpStatus.CONFLICT);
         }
         if (userRepo.existsByEmail(signUpDto.getEmail())) {
-            return new ResponseEntity<>(new Message("It's a pity -> but this Email is already in use!"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message("It's a pity -> but this Email is already in use!"), HttpStatus.CONFLICT);
         }
         if (!signUpDto.getPasswordConfirmation().equals(signUpDto.getPassword())) {
             return new ResponseEntity<>(new Message("password does not match the confirmation"), HttpStatus.CONFLICT);
