@@ -4,6 +4,7 @@ import at.undok.auth.model.dto.ChangePwDto;
 import at.undok.auth.model.dto.SetAdminDto;
 import at.undok.auth.model.dto.UserDto;
 import at.undok.auth.model.form.CreateUserForm;
+import at.undok.auth.repository.UserRepo;
 import at.undok.auth.security.JwtProvider;
 import at.undok.auth.service.AuthService;
 import at.undok.auth.service.UserService;
@@ -25,17 +26,24 @@ import java.util.UUID;
 @RequestMapping("/service/users")
 public class UserRestApi {
 
-  @Autowired
-  private UserDetailsServiceImpl userDetailsService;
+  private final UserDetailsServiceImpl userDetailsService;
 
-  @Autowired
-  private UserService userService;
+  private final UserService userService;
 
-  @Autowired
+  final
   JwtProvider jwtProvider;
 
-  @Autowired
-  private AuthService authService;
+  private final AuthService authService;
+
+  private final UserRepo userRepo;
+
+  public UserRestApi(UserDetailsServiceImpl userDetailsService, UserService userService, JwtProvider jwtProvider, AuthService authService, UserRepo userRepo) {
+    this.userDetailsService = userDetailsService;
+    this.userService = userService;
+    this.jwtProvider = jwtProvider;
+    this.authService = authService;
+    this.userRepo = userRepo;
+  }
 
   @GetMapping("/all")
   public List<UserDto> getAllUsers() {
@@ -89,8 +97,14 @@ public class UserRestApi {
 
   @PostMapping("/create-user-via-admin")
   public ResponseEntity createUserViaAdmin(@RequestBody CreateUserForm createUserForm) {
+    if (userRepo.existsByUsername(createUserForm.getUsername())) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).body(new Message("Damn -> this Username is already taken"));
+    }
+    if (userRepo.existsByEmail(createUserForm.getEmail())) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).body(new Message("It's a pity -> but this Email is already in use!"));
+    }
     String confirmationUrl = authService.createUserViaAdmin(createUserForm);
-    return new ResponseEntity(new Message(confirmationUrl), HttpStatus.OK);
+    return  ResponseEntity.ok(new Message(confirmationUrl));
   }
 
 }

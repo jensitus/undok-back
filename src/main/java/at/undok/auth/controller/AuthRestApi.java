@@ -55,6 +55,9 @@ public class AuthRestApi {
 
     @PostMapping(value = "/signup", consumes = {})
     public ResponseEntity<Message> registerUser(@Valid @RequestBody SignUpDto signUpDto) {
+        if (userRepo.existsByUsername(signUpDto.getUsername())) {
+            return new ResponseEntity<>(new Message("Damn -> this Username is already taken"), HttpStatus.CONFLICT);
+        }
         if (userRepo.existsByEmail(signUpDto.getEmail())) {
             return new ResponseEntity<>(new Message("It's a pity -> but this Email is already in use!"), HttpStatus.BAD_REQUEST);
         }
