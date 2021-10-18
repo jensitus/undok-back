@@ -25,8 +25,8 @@ public class DownloadController implements DownloadApi {
         Resource file = downloadService.download(filename);
         Path path = file.getFile().toPath();
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(path))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
-                .body(file);
+                             .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(path))
+                             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+                             .body(file);
     }
 }

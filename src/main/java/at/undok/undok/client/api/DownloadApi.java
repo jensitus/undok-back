@@ -1,6 +1,5 @@
 package at.undok.undok.client.api;
 
-import at.undok.undok.client.service.DownloadService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
