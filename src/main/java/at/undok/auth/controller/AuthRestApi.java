@@ -21,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.URI;
 
 @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080", "https://undok.herokuapp.com"}, maxAge = 3600)
 @RestController
@@ -44,7 +45,7 @@ public class AuthRestApi {
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity authenticateUser(@Valid @RequestBody LoginDto loginDto) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto) {
         UserDto userDto = authService.getUserDtoWithJwt(loginDto);
         if (Boolean.TRUE.equals(userDto.getConfirmed())) {
             return new ResponseEntity<>(new JwtResponse(userDto), HttpStatus.OK);
@@ -53,7 +54,7 @@ public class AuthRestApi {
         }
     }
 
-    @PostMapping(value = "/signup", consumes = {})
+    @PostMapping(value = "/signup")
     public ResponseEntity<Message> registerUser(@Valid @RequestBody SignUpDto signUpDto) {
         if (userRepo.existsByUsername(signUpDto.getUsername())) {
             return new ResponseEntity<>(new Message("Damn -> this Username is already taken"), HttpStatus.CONFLICT);
@@ -64,8 +65,9 @@ public class AuthRestApi {
         if (!signUpDto.getPasswordConfirmation().equals(signUpDto.getPassword())) {
             return new ResponseEntity<>(new Message("password does not match the confirmation"), HttpStatus.CONFLICT);
         }
-        authService.createUserAfterSignUp(signUpDto);
-        return new ResponseEntity<>(new Message("user created"), HttpStatus.CREATED);
+        var userDto = authService.createUserAfterSignUp(signUpDto);
+
+        return ResponseEntity.created(URI.create("/service/users/by_username/" + userDto.getUsername())).body(new Message("user created"));
     }
 
     @GetMapping("/mist")
