@@ -12,7 +12,7 @@ services:
 
   greenmail:
     container_name: dev-undok-greenmail
-    image: greenmail/standalone
+    image: greenmail/standalone:1.6.5
     ports:
       - "3025:3025" # SMTP
       - "3110:3110" # POP3
