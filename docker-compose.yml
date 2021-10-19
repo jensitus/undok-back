@@ -1,0 +1,23 @@
+version: '3'
+services:
+
+  postgres:
+    container_name: dev-undok-postgres
+    image: postgres:11
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=dev123
+      - POSTGRES_USER=undok
+
+  greenmail:
+    container_name: dev-undok-greenmail
+    image: greenmail/standalone
+    ports:
+      - "3025:3025" # SMTP
+      - "3110:3110" # POP3
+      - "3143:3143" # IMAP
+      - "3465:3465" # SMTPS
+      - "3993:3993" # IMAPS
+      - "3995:3995" # POP3S
+      - "8085:8080" # Greenmail API
