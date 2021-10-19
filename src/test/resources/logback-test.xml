@@ -1,0 +1,25 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- this is us -->
+    <logger name="at.undok" level="debug" />
+
+    <!-- log basic information of request / responses -->
+    <logger name="org.apache.http" level="debug" />
+
+    <!-- log more detailed information of request / responses (only enable in case of problems > produces a lot of data) -->
+    <logger name="org.apache.http.wire" level="info" />
+
+    <!-- log basic information about docker containers we start -->
+    <logger name="org.testcontainers" level="info" />
+
+    <root level="warn">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>
