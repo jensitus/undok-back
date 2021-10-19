@@ -1,0 +1,7 @@
+### GET gets current greenmail users
+GET http://localhost:8085/api/user
+Accept: application/json
+
+### GET gets current current greemail configuration
+GET http://localhost:8085/api/configuration
+Accept: application/json

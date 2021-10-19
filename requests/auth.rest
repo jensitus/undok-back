@@ -1,0 +1,11 @@
+### Create new undok user
+POST http://localhost:8080/service/auth/signup
+Content-Type: application/json
+
+{
+  "username": "Iamcornholio5",
+  "email": "cornholio5@snowflake.com",
+  "password": "xxxxxx",
+  "passwordConfirmation": "xxxxxx",
+  "admin": true
+}
