@@ -20,6 +20,7 @@
         <testcontainers.version>1.15.1</testcontainers.version>
         <javafaker.version>1.0.2</javafaker.version>
         <greenmail-junit5.version>1.6.5</greenmail-junit5.version>
+        <jsoup.version>1.10.2</jsoup.version>
     </properties>
 
     <dependencies>
@@ -150,6 +151,19 @@
             <groupId>com.icegreen</groupId>
             <artifactId>greenmail-junit5</artifactId>
             <version>${greenmail-junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.icegreen</groupId>
+            <artifactId>greenmail-spring</artifactId>
+            <version>${greenmail-junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- html parsing -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
             <scope>test</scope>
         </dependency>
 
