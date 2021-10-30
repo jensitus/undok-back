@@ -11,8 +11,8 @@
     <groupId>at.undok</groupId>
     <artifactId>undok</artifactId>
     <version>0.0.2</version>
-    <name>rest</name>
-    <description>undok</description>
+    <name>undok</name>
+    <description>UNDOK Backend Service</description>
 
     <properties>
         <java.version>11</java.version>
@@ -21,6 +21,11 @@
         <javafaker.version>1.0.2</javafaker.version>
         <greenmail-junit5.version>1.6.5</greenmail-junit5.version>
         <jsoup.version>1.10.2</jsoup.version>
+        <jdeb.version>1.9</jdeb.version>
+
+        <!-- service user / group for deb installation on target server (replace with final information when known) -->
+        <deb.user>undok-service</deb.user>
+        <deb.group>undok-service</deb.group>
     </properties>
 
     <dependencies>
@@ -92,6 +97,7 @@
             <artifactId>httpclient</artifactId>
         </dependency>
 
+        <!-- testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -174,6 +180,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <executable>true</executable>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.liquibase</groupId>
@@ -214,6 +223,58 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>deb</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>jdeb</artifactId>
+                        <groupId>org.vafer</groupId>
+                        <version>${jdeb.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jdeb</goal>
+                                </goals>
+                                <configuration>
+                                    <dataSet>
+                                        <data>
+                                            <src>${project.build.directory}/${project.build.finalName}.jar</src>
+                                            <type>file</type>
+                                            <mapper>
+                                                <type>perm</type>
+                                                <prefix>/var/${build.finalName}</prefix>
+                                                <user>${deb.user}</user>
+                                                <group>${deb.group}</group>
+                                                <filemode>700</filemode>
+                                            </mapper>
+                                        </data>
+                                        <data>
+                                            <type>link</type>
+                                            <symlink>true</symlink>
+                                            <linkName>/etc/init.d/${build.finalName}</linkName>
+                                            <linkTarget>/var/${build.finalName}/${build.finalName}.jar</linkTarget>
+                                        </data>
+                                        <data>
+                                            <src>${project.build.directory}/classes</src>
+                                            <type>directory</type>
+                                            <includes>application*.properties</includes>
+                                            <mapper>
+                                                <type>perm</type>
+                                                <prefix>/etc/${build.finalName}</prefix>
+                                                <user>${deb.user}</user>
+                                                <group>${deb.group}</group>
+                                                <filemode>700</filemode>
+                                            </mapper>
+                                        </data>
+                                    </dataSet>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
-
 </project>
