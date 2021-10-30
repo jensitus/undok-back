@@ -1,8 +1,13 @@
 package at.undok.it;
 
+import at.undok.auth.repository.UserRepo;
 import at.undok.it.cucumber.UndokTestData;
 import at.undok.it.cucumber.auth.AuthRestApiClient;
+import at.undok.it.cucumber.auth.EmailVerifications;
+import at.undok.it.cucumber.auth.HttpVerifications;
+import at.undok.it.cucumber.auth.UserVerifications;
 import com.github.javafaker.Faker;
+import com.icegreen.greenmail.spring.GreenMailBean;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -36,6 +41,26 @@ public class IntegrationTestConfiguration {
     @Bean
     AuthRestApiClient authRestApiClient(TestRestTemplate testRestTemplate) {
         return new AuthRestApiClient(testRestTemplate, DEFAULT_SERVER_PORT);
+    }
+
+    @Bean
+    GreenMailBean greenMailBean() {
+        return new GreenMailBean();
+    }
+
+    @Bean
+    EmailVerifications emailVerifications() {
+        return new EmailVerifications(greenMailBean());
+    }
+
+    @Bean
+    UserVerifications userVerifications(UserRepo userRepo) {
+        return new UserVerifications(userRepo);
+    }
+
+    @Bean
+    HttpVerifications httpVerifications() {
+        return new HttpVerifications();
     }
 
 }

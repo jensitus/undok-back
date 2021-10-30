@@ -22,6 +22,9 @@ public class UndokMailer {
   @Value("${at.undok.app.undokFromSender}")
   private String fromSender;
 
+  @Value("${service.b.org.app.baseUrl}")
+  private String applicationBaseUrl;
+
   private static final String DIV_CLASS_GENERAL = "<div class='general'>";
 
   private final JavaMailSender mailSender;
@@ -37,7 +40,7 @@ public class UndokMailer {
 
     String first_the_salutation = DIV_CLASS_GENERAL + "<h4>Dear " + salutation + "</h4></div>";
     String second_the_text = DIV_CLASS_GENERAL + text + "</div>";
-    String third_the_url = DIV_CLASS_GENERAL + "<a href='" + url + "'>" + url + "</a></div>";
+    String third_the_url = DIV_CLASS_GENERAL + "<a class='confirmation' href='" + url + "'>" + url + "</a></div>";
     String the_container = "<div class='container'>" + first_the_salutation + second_the_text + third_the_url + "</div>";
     String the_html_head_and_body = "<html><head>" + STYLE + "</head><body>" + the_container + "</body></html>";
 
@@ -60,7 +63,7 @@ public class UndokMailer {
 
   public Message createConfirmationMail(User user, String confirmationToken) {
     String url = createConfirmationUrl(user.getEmail(), confirmationToken);
-    String subject = EmailStuff.SUBJECT_PREFIX + "confirm account";
+    String subject = EmailStuff.SUBJECT_PREFIX + " confirm account";
     String text = "click the link below within the next 2 hours, after this it will expire";
     log.info(url);
     getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), url);
@@ -70,7 +73,7 @@ public class UndokMailer {
   public String createConfirmationUrl(String email, String confirmationToken) {
     String encryptedEmail = attributeEncryptor.encodeWithUrlEncoder(email);
     String encryptedToken = attributeEncryptor.encodeWithUrlEncoder(confirmationToken);
-    String confUrl = EmailStuff.DOMAIN_URL_FOR_HEROKU + "/auth/" + encryptedToken + "/confirm/" + encryptedEmail;
+    String confUrl = applicationBaseUrl + "/auth/" + encryptedToken + "/confirm/" + encryptedEmail;
     log.info(confUrl);
     return confUrl;
   }

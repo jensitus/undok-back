@@ -20,6 +20,7 @@ import at.undok.undok.client.service.CounselingService;
 import at.undok.undok.client.service.CsvService;
 import io.jsonwebtoken.impl.Base64Codec;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,6 +35,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 // @TestPropertySource(properties = {"undok.secretKey=abcTestKey"})
+@Disabled
 @Slf4j
 @SpringBootTest
 public class UserTest {

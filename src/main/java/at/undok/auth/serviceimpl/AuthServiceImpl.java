@@ -82,6 +82,7 @@ public class AuthServiceImpl implements AuthService {
         String confirmationToken = UUID.randomUUID().toString();
         User user = new User(signUpDto.getUsername(), signUpDto.getEmail().toLowerCase(), encoder.encode(signUpDto.getPassword()), confirmationToken, LocalDateTime.now(), LocalDateTime.now());
         user.setChangePassword(false);
+        user.setConfirmed(false);
         userRepo.save(user);
         undokMailer.createConfirmationMail(user, confirmationToken);
         return modelMapper.map(user, UserDto.class);
