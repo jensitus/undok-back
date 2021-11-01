@@ -71,8 +71,10 @@ public class EntityToDtoMapper {
             CounselingDto counselingDto = modelMapper.map(c, CounselingDto.class);
             Client client = c.getClient();
             counselingDto.setClientId(client.getId());
-            counselingDto.setClientFullName(attributeEncryptor.convertToEntityAttribute(client.getPerson().getFirstName())
-                    + " " + attributeEncryptor.convertToEntityAttribute(client.getPerson().getLastName()));
+            if (client.getPerson().getFirstName() != null && client.getPerson().getLastName() != null) {
+                counselingDto.setClientFullName(attributeEncryptor.convertToEntityAttribute(client.getPerson().getFirstName())
+                        + " " + attributeEncryptor.convertToEntityAttribute(client.getPerson().getLastName()));
+            }
             dtoList.add(counselingDto);
         }
         return dtoList;
