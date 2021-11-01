@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 public class ToLocalDateService {
 
     public LocalDate formatStringToLocalDate(String date) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate localDate = LocalDate.parse(date, dateTimeFormatter);
         return localDate;
     }
