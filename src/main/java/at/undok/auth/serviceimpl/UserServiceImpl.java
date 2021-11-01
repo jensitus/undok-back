@@ -19,6 +19,7 @@ import at.undok.auth.security.JwtProvider;
 import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.common.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -63,6 +64,9 @@ public class UserServiceImpl implements UserService {
   @Autowired
   private AttributeEncryptor attributeEncryptor;
 
+  @Value("${service.b.org.app.baseUrl}")
+  private String applicationBaseUrl;
+
   @Override
   public Message createPasswordResetTokenForUser(String email) {
     User user = userRepo.findByEmail(email.toLowerCase());
@@ -76,7 +80,7 @@ public class UserServiceImpl implements UserService {
     PasswordResetToken passwordResetToken = new PasswordResetToken(user, token, localDateTime);
     passwordResetTokenRepo.save(passwordResetToken);
     String encryptedEmail = attributeEncryptor.encodeWithUrlEncoder(user.getEmail());
-    String url = EmailStuff.DOMAIN_URL_FOR_HEROKU + "/auth/reset_password/" + base64token + "/edit?email=" + encryptedEmail;
+    String url = applicationBaseUrl + "/auth/reset_password/" + base64token + "/edit?email=" + encryptedEmail;
     log.info(url);
     String subject = EmailStuff.SUBJECT_PREFIX + " reset instructions";
     String text = "click the link below within the next 2 hours, after this it will expire";
@@ -181,7 +185,7 @@ public class UserServiceImpl implements UserService {
     User user = userRepo.getOne(userId);
     Set<Role> userRoles = user.getRoles();
     Role adminRole = roleService.getAdminRole();
-    if (admin == true) {
+    if (admin) {
       userRoles.add(adminRole);
     } else {
       userRoles.remove(adminRole);
