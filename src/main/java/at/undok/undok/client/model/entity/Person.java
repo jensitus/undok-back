@@ -13,13 +13,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "persons")
-public class Person implements Serializable {
-
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "id", unique = true, nullable = false)
-    private UUID id;
+public class Person extends AbstractCrud implements Serializable {
 
     /* here we have to clear if it sex or gender */
 //    private String sex;
@@ -32,12 +26,6 @@ public class Person implements Serializable {
 
     @Column(name = "first_name")
     private String firstName;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "client_id", referencedColumnName = "id")
@@ -55,6 +43,12 @@ public class Person implements Serializable {
 
     @Column(name = "contact_data")
     private String contactData;
+
+    @Column(name ="email")
+    private String email;
+
+    @Column(name = "telephone")
+    private String telephone;
 
     @Override
     public String toString() {

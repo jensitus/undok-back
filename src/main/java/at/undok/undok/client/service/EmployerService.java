@@ -28,8 +28,18 @@ public class EmployerService {
 
     public EmployerDto setEmployer(EmployerForm employerForm) {
         Person employerPerson = new Person();
-        employerPerson.setFirstName(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerFirstName()));
-        employerPerson.setLastName(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerLastName()));
+        if (employerForm.getEmployerFirstName() != null) {
+            employerPerson.setFirstName(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerFirstName()));
+        }
+        if (employerForm.getEmployerLastName() != null) {
+            employerPerson.setLastName(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerLastName()));
+        }
+        if (employerForm.getEmail() != null) {
+            employerPerson.setEmail(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmail()));
+        }
+        if (employerForm.getTelephone() != null) {
+            employerPerson.setTelephone(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmail()));
+        }
         employerPerson.setCreatedAt(LocalDateTime.now());
 
         Employer employer = new Employer();

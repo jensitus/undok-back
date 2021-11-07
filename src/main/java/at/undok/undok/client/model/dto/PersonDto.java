@@ -20,6 +20,9 @@ public class PersonDto {
 
     private String firstName;
 
+    private String email;
+    private String telephone;
+
     private AddressDto address;
 
     private ClientDto client;
