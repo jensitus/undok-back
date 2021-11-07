@@ -16,6 +16,9 @@ public class JwtResponse {
     this.userDto = userDto;
   }
 
+  public JwtResponse() {
+  }
+
   public String getAccessToken() {
     return token;
   }

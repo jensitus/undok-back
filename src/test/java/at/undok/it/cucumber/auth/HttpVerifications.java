@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HttpVerifications {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpVerifications.class);
 
-    public void assertResponseWithBody(ResponseEntity<Message> response) {
+    public void assertResponseWithBody(ResponseEntity<?> response) {
         assertThat(response)
                 .isNotNull()
                 .hasFieldOrProperty("body");

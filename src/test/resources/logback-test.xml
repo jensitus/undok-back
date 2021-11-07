@@ -13,7 +13,7 @@
     <logger name="org.apache.http" level="debug" />
 
     <!-- log more detailed information of request / responses (only enable in case of problems > produces a lot of data) -->
-    <logger name="org.apache.http.wire" level="info" />
+    <logger name="org.apache.http.wire" level="debug" />
 
     <!-- log basic information about docker containers we start -->
     <logger name="org.testcontainers" level="info" />

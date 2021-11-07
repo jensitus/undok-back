@@ -1,5 +1,7 @@
 package at.undok.it.cucumber.auth;
 
+import at.undok.auth.message.JwtResponse;
+import at.undok.auth.model.dto.LoginDto;
 import at.undok.auth.model.dto.SignUpDto;
 import at.undok.common.message.Message;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -22,6 +24,15 @@ public class AuthRestApiClient {
                 "http://localhost:{port}/service/auth/signup",
                 signUpDto,
                 Message.class,
+                Map.of("port", serverPort)
+        );
+    }
+
+    public ResponseEntity<JwtResponse> authenticateUser(LoginDto loginDto) {
+        return testRestTemplate.postForEntity(
+                "http://localhost:{port}/service/auth/login",
+                loginDto,
+                JwtResponse.class,
                 Map.of("port", serverPort)
         );
     }

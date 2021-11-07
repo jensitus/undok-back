@@ -9,3 +9,13 @@ Content-Type: application/json
   "passwordConfirmation": "xxxxxx",
   "admin": true
 }
+
+### Login
+
+POST http://localhost:8080/service/auth/login
+Content-Type: application/json
+
+{
+  "username": "Iamcornholio6",
+  "password": "xxxxxx"
+}

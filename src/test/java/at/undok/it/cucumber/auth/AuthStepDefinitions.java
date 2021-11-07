@@ -1,8 +1,12 @@
 package at.undok.it.cucumber.auth;
 
+import at.undok.auth.model.dto.LoginDto;
 import at.undok.auth.model.dto.SignUpDto;
 import at.undok.common.message.Message;
+import at.undok.it.cucumber.UndokClientTestData;
 import at.undok.it.cucumber.UndokTestData;
+import at.undok.undok.client.model.dto.ClientDto;
+import at.undok.undok.client.model.form.ClientForm;
 import com.icegreen.greenmail.spring.GreenMailBean;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
@@ -16,8 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import javax.mail.MessagingException;
-import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -33,18 +35,25 @@ public class AuthStepDefinitions {
     private final HttpVerifications httpVerifications;
     private final UndokTestData undokTestData;
     private final Map<String, ResponseEntity<Message>> registrationResponses = new TreeMap<>();
+    private final ClientRestApiClient clientRestApiClient;
+    private final UndokClientTestData undokClientTestData;
 
     private SignUpDto validRandomUser;
     private String confirmationLink;
+    private String validRandomUserAccessToken;
+    private ClientForm validClient;
+    private ClientDto validCreatedClientDto;
 
 
-    public AuthStepDefinitions(AuthRestApiClient authRestApiClient, GreenMailBean greenMail, EmailVerifications emailVerifications, UserVerifications userVerifications, HttpVerifications httpVerifications, UndokTestData undokTestData) {
+    public AuthStepDefinitions(AuthRestApiClient authRestApiClient, GreenMailBean greenMail, EmailVerifications emailVerifications, UserVerifications userVerifications, HttpVerifications httpVerifications, UndokTestData undokTestData, ClientRestApiClient clientRestApiClient, UndokClientTestData undokClientTestData) {
         this.authRestApiClient = authRestApiClient;
         this.greenMail = greenMail;
         this.emailVerifications = emailVerifications;
         this.userVerifications = userVerifications;
         this.httpVerifications = httpVerifications;
         this.undokTestData = undokTestData;
+        this.clientRestApiClient = clientRestApiClient;
+        this.undokClientTestData = undokClientTestData;
     }
 
     @Before
@@ -62,6 +71,17 @@ public class AuthStepDefinitions {
     public void newValidRandomUser() {
         validRandomUser = undokTestData.newRegistration();
         LOGGER.debug("Random user has username {} and email {}", validRandomUser.getUsername(), validRandomUser.getEmail());
+    }
+
+    @Given("existing confirmed user")
+    public void existingConfirmedUser() {
+        newValidRandomUser();
+        tryingToRegisterThisUser();
+        expectAResponseWithMessage("201 CREATED", "user created");
+        theUserToHaveConfirmationStatus("unconfirmed");
+        anConfirmationEmailToBeSent();
+        clickingTheConfirmationLink();
+        theUserToHaveConfirmationStatus("confirmed");
     }
 
     @When("trying to register this user")
@@ -122,4 +142,49 @@ public class AuthStepDefinitions {
         httpVerifications.verifyResponseWithMessage(response, expectedHttpStatusCodeWithName, expectedErrorMessage);
     }
 
+    @When("trying to login")
+    public void tryingToLogin() {
+        var loginRequest = new LoginDto();
+        loginRequest.setUsername(validRandomUser.getUsername());
+        loginRequest.setPassword(validRandomUser.getPassword());
+
+        var response = authRestApiClient.authenticateUser(loginRequest);
+
+        httpVerifications.assertResponseWithBody(response);
+
+        var body = response.getBody();
+        validRandomUserAccessToken = body.getUserDto().getAccessToken();
+
+        LOGGER.debug("Received access token {}", validRandomUserAccessToken);
+    }
+
+    @Then("expect api token to be returned")
+    public void expectApiTokenToBeReturned() {
+        assertThat(validRandomUserAccessToken).isNotBlank();
+    }
+
+    /* * * * * * * *
+     * client feature:
+     *
+     */
+
+    @Given("loggedIn User")
+    public void loggedInUser() {
+        existingConfirmedUser();
+        tryingToLogin();
+        expectApiTokenToBeReturned();
+    }
+
+    @When("trying to create a client")
+    public void tryingToCreateAClient() {
+        validClient = undokClientTestData.createClientForm();
+        var response = clientRestApiClient.createClient(validClient);
+        httpVerifications.assertResponseWithBody(response);
+        validCreatedClientDto = response.getBody();
+    }
+
+    @Then("expect this client to be created")
+    public void expectThisClientToBeCreated() {
+        assertThat(validCreatedClientDto.getKeyword()).isNotBlank();
+    }
 }

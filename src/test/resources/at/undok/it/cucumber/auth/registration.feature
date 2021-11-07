@@ -12,7 +12,6 @@ Feature: Testing registration
     When clicking the confirmation link
     Then the user to have confirmation status "confirmed"
 
-
   Scenario: Registration is done with an already taken username
     Given existing user with username "cornholio"
     When another user tries to register with username "cornholio"
