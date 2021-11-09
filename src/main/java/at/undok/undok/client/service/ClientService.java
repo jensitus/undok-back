@@ -121,6 +121,12 @@ public class ClientService {
         if (clientForm.getLastName() != null) {
             clientPerson.setLastName(attributeEncryptor.convertToDatabaseColumn(clientForm.getLastName()));
         }
+        if (clientForm.getEmail() != null) {
+            clientPerson.setEmail(attributeEncryptor.convertToDatabaseColumn(clientForm.getEmail()));
+        }
+        if (clientForm.getTelephone() != null) {
+            clientPerson.setTelephone(attributeEncryptor.convertToDatabaseColumn(clientForm.getTelephone()));
+        }
         clientPerson.setCreatedAt(LocalDateTime.now());
 
         client.setEducation(clientForm.getEducation());
@@ -178,6 +184,12 @@ public class ClientService {
         if (cDto.getPerson().getLastName() != null) {
             person.setLastName(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getLastName()));
         }
+        if (cDto.getPerson().getEmail() != null) {
+            person.setEmail(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getEmail()));
+        }
+        if (cDto.getPerson().getTelephone() != null) {
+            person.setTelephone(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getTelephone()));
+        }
         person.setUpdatedAt(LocalDateTime.now());
 
         client.setEducation(cDto.getEducation());
@@ -214,8 +226,7 @@ public class ClientService {
         client.setPerson(person);
 
         Client c = clientRepo.save(client);
-        ClientDto clientDto = entityToDtoMapper.convertClientToDto(c);
-        return clientDto;
+        return entityToDtoMapper.convertClientToDto(c);
     }
 
     private List<AllClientDto> turnClientDtoListToAllClientDtoList(List<ClientDto> clientDtoList) {

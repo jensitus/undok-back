@@ -34,6 +34,8 @@ public class AllClientDto {
     private LocalDate dateOfBirth;
     private String lastName;
     private String firstName;
+    private String email;
+    private String telephone;
 
     // address:
 

@@ -9,4 +9,6 @@ public class EmployerForm {
     private String employerDateOfBirth;
     private String employerCompany;
     private String employerPosition;
+    private String email;
+    private String telephone;
 }

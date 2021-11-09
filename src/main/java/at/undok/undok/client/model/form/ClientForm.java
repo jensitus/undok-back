@@ -13,6 +13,8 @@ public class ClientForm {
     private String lastName;
     private String dateOfBirth;
     private String contactData;
+    private String email;
+    private String telephone;
 
     // Address
     private String street;
@@ -30,25 +32,15 @@ public class ClientForm {
     private Boolean interpreterNecessary;
     private String howHasThePersonHeardFromUs;
     private Boolean vulnerableWhenAssertingRights;
-
     private String nationality;
-
     private String language;
-
     private String currentResidentStatus;
-
     private String formerResidentStatus;
-
     private String labourMarketAccess;
-
     private String position;
-
     private String sector;
-
     private String union;
-
     private Boolean membership;
-
     private String organization;
 
 }
