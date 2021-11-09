@@ -116,7 +116,12 @@ public class EntityToDtoMapper {
         if (person.getLastName() != null) {
             personDto.setLastName(attributeEncryptor.convertToEntityAttribute(person.getLastName()));
         }
-
+        if (person.getEmail() != null) {
+            personDto.setEmail(attributeEncryptor.convertToEntityAttribute(person.getEmail()));
+        }
+        if (person.getTelephone() != null) {
+            personDto.setTelephone(attributeEncryptor.convertToEntityAttribute(person.getTelephone()));
+        }
 
         personDto.setId(person.getId());
         personDto.setDateOfBirth(person.getDateOfBirth());
