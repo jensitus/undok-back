@@ -34,11 +34,11 @@ public class EmployerService {
         if (employerForm.getEmployerLastName() != null) {
             employerPerson.setLastName(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerLastName()));
         }
-        if (employerForm.getEmail() != null) {
-            employerPerson.setEmail(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmail()));
+        if (employerForm.getEmployerEmail() != null) {
+            employerPerson.setEmail(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerEmail()));
         }
-        if (employerForm.getTelephone() != null) {
-            employerPerson.setTelephone(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmail()));
+        if (employerForm.getEmployerTelephone() != null) {
+            employerPerson.setTelephone(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerTelephone()));
         }
         employerPerson.setCreatedAt(LocalDateTime.now());
 
