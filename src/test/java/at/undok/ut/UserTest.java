@@ -9,11 +9,13 @@ import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.entity.Address;
 import at.undok.undok.client.model.entity.Client;
+import at.undok.undok.client.model.entity.Employer;
 import at.undok.undok.client.model.entity.Person;
 import at.undok.undok.client.model.enumeration.MaritalStatus;
 import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.repository.AddressRepo;
 import at.undok.undok.client.repository.ClientRepo;
+import at.undok.undok.client.repository.EmployerRepo;
 import at.undok.undok.client.repository.PersonRepo;
 import at.undok.undok.client.service.ClientService;
 import at.undok.undok.client.service.CounselingService;
@@ -59,6 +61,9 @@ public class UserTest {
 
     @Autowired
     private PersonRepo personRepo;
+
+    @Autowired
+    private EmployerRepo employerRepo;
 
     @Autowired
     private UUIDConverter uuidConverter;
@@ -221,6 +226,12 @@ public class UserTest {
     public void testGetPastCounselings() {
         List<CounselingDto> futureCounselings = counselingService.getPastCounselings();
         assertThat("yes").isEqualTo("no");
+    }
+
+    @Test
+    public void testGetEmployers() {
+        List<Employer> employerList = employerRepo.findAll();
+        log.info(employerList.toString());
     }
 
 }
