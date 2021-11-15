@@ -21,18 +21,16 @@ jobs:
         id: maven_build
         run: |
           mvn -B --update-snapshots install -DskipTests=true
-          export MAVEN_BUILD_RESULT=$?
-          echo "::set-env name=MAVEN_BUILD_RESULT::$(echo $MAVEN_BUILD_RESULT)"
+          echo "MAVEN_BUILD_RESULT=$(echo $?)" >> $GITHUB_ENV
       - name: Extract git information from build
         id: extract_git_information_from_build
         run: |
-          echo ::set-output name=GIT_COMMIT_ABBREV::$(cat target/classes/git.properties | grep git.commit.id.abbrev | cut -d "=" -f 2)
-          echo ::set-output name=GIT_COMMIT_MESSAGE_SHORT::$(cat target/classes/git.properties | grep git.commit.message.short | cut -d "=" -f 2 | sed 's/\\//g')
-          echo ::set-output name=GIT_BRANCH::$(cat target/classes/git.properties | grep git.branch | cut -d "=" -f 2 | sed 's/\\//g')
+          echo "GIT_COMMIT_ABBREV=$(cat target/classes/git.properties | grep git.commit.id.abbrev | cut -d "=" -f 2)" >> $GITHUB_ENV
+          echo "GIT_COMMIT_MESSAGE_SHORT=$(cat target/classes/git.properties | grep git.commit.message.short | cut -d "=" -f 2 | sed 's/\\//g') >> $GITHUB_ENV
+          echo "GIT_BRANCH=$(cat target/classes/git.properties | grep git.branch | cut -d "=" -f 2 | sed 's/\\//g') >> $GITHUB_ENV
       - name: Run unit and integration tests
         id: maven_unit_and_integration_tests
         run: |
           mvn verify
-          export MAVEN_TEST_RESULT=$?
-          echo "::set-env name=MAVEN_TEST_RESULT::$(echo $MAVEN_TEST_RESULT)"
+          echo "MAVEN_TEST_RESULT=$(echo $?)" >> $GITHUB_ENV
 
