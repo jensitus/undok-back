@@ -31,6 +31,6 @@ jobs:
       - name: Run unit and integration tests
         id: maven_unit_and_integration_tests
         run: |
-          mvn verify
+          mvn verify -Pit
           echo "MAVEN_TEST_RESULT=$(echo $?)" >> $GITHUB_ENV
 
