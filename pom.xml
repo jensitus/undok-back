@@ -10,7 +10,7 @@
     </parent>
     <groupId>at.undok</groupId>
     <artifactId>undok</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.1-SNAPSHOT</version>
     <name>undok</name>
     <description>UNDOK Backend Service</description>
 
@@ -27,6 +27,11 @@
         <!-- service user / group for deb installation on target server (replace with final information when known) -->
         <deb.user>undok-service</deb.user>
         <deb.group>undok-service</deb.group>
+
+        <!-- artifact naming -->
+        <!--suppress UnresolvedMavenProperty -->
+        <version.number>${git.commit.time}.${git.commit.id.describe}</version.number>
+        <build.final.name>${project.artifactId}-${version.number}</build.final.name>
     </properties>
 
     <dependencies>
@@ -177,6 +182,7 @@
     </dependencies>
 
     <build>
+        <finalName>${build.final.name}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -222,6 +228,20 @@
                 <groupId>pl.project13.maven</groupId>
                 <version>${git-commit-id-plugin.version}</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Git-Revision>${git.commit.id.describe-short}</Git-Revision>
+                            <Git-Build-Time>${git.build.time}</Git-Build-Time>
+                            <Git-Commit-Time>${git.commit.time}</Git-Commit-Time>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
