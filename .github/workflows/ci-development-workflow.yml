@@ -33,4 +33,10 @@ jobs:
         run: |
           mvn verify -Pit
           echo "MAVEN_TEST_RESULT=$(echo $?)" >> $GITHUB_ENV
-
+      - run: |
+          mkdir staging && rsync -av --exclude='*.jar.original' target/*.jar staging
+      - name: Upload artifact to staging
+        uses: actions/upload-artifact@v2
+        with:
+          name: Package
+          path: staging
