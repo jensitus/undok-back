@@ -22,6 +22,7 @@
         <greenmail-junit5.version>1.6.5</greenmail-junit5.version>
         <jsoup.version>1.10.2</jsoup.version>
         <jdeb.version>1.9</jdeb.version>
+        <git-commit-id-plugin.version>3.0.1</git-commit-id-plugin.version>
 
         <!-- service user / group for deb installation on target server (replace with final information when known) -->
         <deb.user>undok-service</deb.user>
@@ -199,6 +200,27 @@
                     <source>11</source>
                     <target>11</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <configuration>
+                    <dateFormat>yyyyMMdd-HHmmss</dateFormat>
+                    <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+                    </generateGitPropertiesFilename>
+                    <offline>true</offline>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+                <groupId>pl.project13.maven</groupId>
+                <version>${git-commit-id-plugin.version}</version>
             </plugin>
         </plugins>
     </build>
