@@ -53,12 +53,27 @@ jobs:
       - name: Create presigned url
         run: |
           echo "ARTIFACT_PRESIGNED_URL=$(aws s3 presign --expires-in="60" s3://undok-artifacts/undok-back/$ARTIFACT_FILENAME)" >> $GITHUB_ENV
-      - name: Test presigned url works
-        run: |
-          mkdir redownload
-          cd redownload
-          wget $ARTIFACT_PRESIGNED_URL -O x.jar
-      - name: Upload artifact to staging
-        uses: actions/upload-artifact@v2
-        with:
-          path: redownload
+#  deploy:
+#    needs: upload
+#    name: Deploy & Restart service on test
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Download jar on target machine and restart the service
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.TEST_HOST }}
+#          username: ${{ secrets.TEST_HOST_USERNAME }}
+#          password: ${{ secrets.TEST_HOST_PASSWORD }}
+#          port: 22
+#          envs: ARTIFACT_PRESIGNED_URL,ARTIFACT_FILENAME
+#          script: |
+#            # should work not tested yet
+#            cd undok-back
+#            ls
+#            export UNDOK_PROC=$(jps | grep undok | awk '{print $1}')
+#            kill $UNDOK_PROC
+#            timeout 60 tail --pid=$UNDOK_PROC -f /dev/null
+#            rm -rf *.jar
+#            wget "$ARTIFACT_PRESIGNED_URL" -O $ARTIFACT_FILENAME
+#            ls
+#            nohup java -Dspring.profiles.active=test -jar $ARTIFACT_FILENAME > application.log &
