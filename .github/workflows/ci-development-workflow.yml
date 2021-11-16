@@ -60,7 +60,7 @@ jobs:
           aws-region: eu-central-1
           role-to-assume: arn:aws:iam::737542033455:role/github-action-undok
           role-session-name: S3DeploySession
-          role-duration-seconds: 60
+          role-duration-seconds: 900
       - name: Upload to S3 bucket
         run: |
           aws s3 sync staging/*.jar s3://undok-artifacts/undok-back
