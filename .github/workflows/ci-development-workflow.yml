@@ -8,7 +8,9 @@ jobs:
   build:
     name: Build artifact
     runs-on: ubuntu-latest
-
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -35,7 +37,29 @@ jobs:
           echo "MAVEN_TEST_RESULT=$(echo $?)" >> $GITHUB_ENV
       - run: |
           mkdir staging && rsync -av --exclude='*.jar.original' target/*.jar staging
-      - name: Upload artifact to staging
-        uses: actions/upload-artifact@v2
+#      - name: Backup artifact on Github Repo (temporarily)
+#        uses: actions/upload-artifact@v2
+#        with:
+#          path: staging
+#      - name: Upload to S3 bucket
+#        uses: jakejarvis/s3-sync-action@master
+#        with:
+#          args: --acl public-read --follow-symlinks --delete
+#        env:
+#          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          AWS_REGION: 'eu-central-1'   # optional: defaults to us-east-1
+#          SOURCE_DIR: 'staging'      # optional: defaults to entire repository
+#          DEST_DIR: 'undok-back'
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          path: staging
+          aws-region: eu-central-1
+          role-to-assume: arn:aws:iam::737542033455:role/github-action-undok
+          role-session-name: S3DeploySession
+          role-duration-seconds: 60
+      - name: Upload to S3 bucket
+        run: |
+          aws s3 sync staging/*.jar s3://undok-artifacts/undok-back
+
