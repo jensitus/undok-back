@@ -6,7 +6,7 @@ on:
       - master
 jobs:
   build:
-    name: Build artifact
+    name: Build, test and upload the artifact
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -54,7 +54,7 @@ jobs:
         run: |
           echo "ARTIFACT_PRESIGNED_URL=$(aws s3 presign --expires-in="60" s3://undok-artifacts/undok-back/$ARTIFACT_FILENAME)" >> $GITHUB_ENV
   deploy:
-    needs: upload
+    needs: build
     name: Deploy & Restart service on test
     runs-on: ubuntu-latest
     steps:
