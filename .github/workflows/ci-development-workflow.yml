@@ -35,8 +35,10 @@ jobs:
         run: |
           mvn verify -Pit
           echo "MAVEN_TEST_RESULT=$(echo $?)" >> $GITHUB_ENV
-      - run: |
+      - name: Prepare staging directory
+        run: |
           mkdir staging && rsync -av --exclude='*.jar.original' target/*.jar staging
+          echo "ARTIFACT_FILENAME=$(ls staging | grep '.jar')" >> $GITHUB_ENV
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -48,4 +50,15 @@ jobs:
       - name: Upload to S3 bucket
         run: |
           aws s3 sync staging s3://undok-artifacts/undok-back
-
+      - name: Create presigned url
+        run: |
+          echo "ARTIFACT_PRESIGNED_URL=$(aws s3 presign --expires-in="60" s3://undok-artifacts/undok-back/$ARTIFACT_FILENAME)" >> $GITHUB_ENV
+      - name: Test presigned url works
+        run: |
+          mkdir redownload
+          cd redownload
+          wget $ARTIFACT_PRESIGNED_URL -O x.jar
+      - name: Upload artifact to staging
+        uses: actions/upload-artifact@v2
+        with:
+          path: redownload
