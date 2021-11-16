@@ -64,10 +64,9 @@ jobs:
           host: ${{ secrets.TEST_HOST }}
           username: ${{ secrets.TEST_HOST_USERNAME }}
           password: ${{ secrets.TEST_HOST_PASSWORD }}
-          port: 22
           envs: ARTIFACT_PRESIGNED_URL,ARTIFACT_FILENAME
+          debug: true
           script: |
-            # should work not tested yet
             cd undok-back
             ls
             export UNDOK_PROC=$(jps | grep undok | awk '{print $1}')
