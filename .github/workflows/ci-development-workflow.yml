@@ -3,7 +3,7 @@ name: UNDOK Development CI
 on:
   push:
     branches:
-      - develop
+      - master
 jobs:
   build:
     name: Build, test and upload the artifact
