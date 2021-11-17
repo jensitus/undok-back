@@ -64,7 +64,7 @@ jobs:
           host: ${{ secrets.TEST_HOST }}
           username: ${{ secrets.TEST_HOST_USERNAME }}
           key: ${{ secrets.TEST_KEY }}
-          envs: ARTIFACT_PRESIGNED_URL,ARTIFACT_FILENAME
+#          envs: ARTIFACT_PRESIGNED_URL,ARTIFACT_FILENAME
           debug: true
           script: |
             cd undok-back
