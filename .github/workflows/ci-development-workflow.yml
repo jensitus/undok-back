@@ -63,7 +63,7 @@ jobs:
         with:
           host: ${{ secrets.TEST_HOST }}
           username: ${{ secrets.TEST_HOST_USERNAME }}
-          key: ${{ secrets.KEY }}
+          key: ${{ secrets.TEST_KEY }}
 #          password: ${{ secrets.TEST_HOST_PASSWORD }}
           envs: ARTIFACT_PRESIGNED_URL,ARTIFACT_FILENAME
           debug: true
