@@ -60,6 +60,9 @@ jobs:
     steps:
       - name: Download jar on target machine and restart the service
         uses: appleboy/ssh-action@master
+        env:
+          ARTIFACT_FILENAME: $ARTIFACT_FILENAME
+          ARTIFACT_PRESIGNED_URL: $ARTIFACT_PRESIGNED_URL
         with:
           host: ${{ secrets.TEST_HOST }}
           username: ${{ secrets.TEST_HOST_USERNAME }}
