@@ -64,15 +64,18 @@ jobs:
           host: ${{ secrets.TEST_HOST }}
           username: ${{ secrets.TEST_HOST_USERNAME }}
           key: ${{ secrets.TEST_KEY }}
-#          envs: ARTIFACT_PRESIGNED_URL,ARTIFACT_FILENAME
+          envs: ARTIFACT_PRESIGNED_URL,ARTIFACT_FILENAME
           debug: true
           script: |
             cd undok-back
             ls
             export UNDOK_PROC=$(jps | grep undok | awk '{print $1}')
+            echo "Found running undok service with pid $UNDOK_PROC. Stopping it (waiting for 60s)."
             kill $UNDOK_PROC
             timeout 60 tail --pid=$UNDOK_PROC -f /dev/null
+            echo "Deleting existing *.jar files in directory"
             rm -rf *.jar
+            echo "Downloading artifact $ARTIFACT_FILENAME from $ARTIFACT_PRESIGNED_URL"
             wget "$ARTIFACT_PRESIGNED_URL" -O $ARTIFACT_FILENAME
             ls
             nohup java -Dspring.profiles.active=test -jar $ARTIFACT_FILENAME > application.log &
