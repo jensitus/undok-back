@@ -1,5 +1,6 @@
 package at.undok.auth.controller;
 
+import at.undok.auth.api.AuthApi;
 import at.undok.auth.model.form.ConfirmAccountForm;
 import at.undok.auth.repository.UserRepo;
 import at.undok.auth.model.dto.UserDto;
@@ -23,29 +24,33 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080", "https://undok.herokuapp.com"}, maxAge = 3600)
 @RestController
-@RequestMapping("/service/auth")
 @Validated
-public class AuthRestApi {
+public class AuthController implements AuthApi {
 
-    @Autowired
+    final
     AuthenticationManager authenticationManager;
 
-    @Autowired
+    final
     UserRepo userRepo;
 
-    @Autowired
+    final
     JwtProvider jwtProvider;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto) {
+    public AuthController(AuthenticationManager authenticationManager, UserRepo userRepo, JwtProvider jwtProvider, UserService userService, AuthService authService) {
+        this.authenticationManager = authenticationManager;
+        this.userRepo = userRepo;
+        this.jwtProvider = jwtProvider;
+        this.userService = userService;
+        this.authService = authService;
+    }
+
+
+    public ResponseEntity<?> authenticateUser(LoginDto loginDto) {
         UserDto userDto = authService.getUserDtoWithJwt(loginDto);
         if (Boolean.TRUE.equals(userDto.getConfirmed())) {
             return new ResponseEntity<>(new JwtResponse(userDto), HttpStatus.OK);
@@ -54,8 +59,7 @@ public class AuthRestApi {
         }
     }
 
-    @PostMapping(value = "/signup")
-    public ResponseEntity<Message> registerUser(@Valid @RequestBody SignUpDto signUpDto) {
+    public ResponseEntity<Message> registerUser(SignUpDto signUpDto) {
         if (userRepo.existsByUsername(signUpDto.getUsername())) {
             return new ResponseEntity<>(new Message("Damn -> this Username is already taken"), HttpStatus.CONFLICT);
         }
@@ -70,13 +74,11 @@ public class AuthRestApi {
         return ResponseEntity.created(URI.create("/service/users/by_username/" + userDto.getUsername())).body(new Message("user created"));
     }
 
-    @GetMapping("/mist")
     public String mist() {
         return "Hi du verdammter Mistkerl";
     }
 
-    @PostMapping("/reset_password")
-    public ResponseEntity<Message> resetPassword(@RequestBody PasswordResetForm passwordResetForm) {
+    public ResponseEntity<Message> resetPassword(PasswordResetForm passwordResetForm) {
         Message message = userService.createPasswordResetTokenForUser(passwordResetForm.getEmail());
         if (!message.getRedirect()) {
             return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
@@ -85,9 +87,8 @@ public class AuthRestApi {
         }
     }
 
-    @GetMapping(value = "/reset_password/{token}/edit")
     @ResponseStatus
-    public ResponseEntity<String> resetPassword(@PathVariable("token") String base64Token, @RequestParam("email") String email) {
+    public ResponseEntity<String> resetPassword(String base64Token, String email) {
         boolean tokenNotExpired = userService.checkIfTokenExpired(base64Token, email, null);
         HttpHeaders headers = new HttpHeaders();
         headers.add("checked", "AuthRestApi");
@@ -100,9 +101,8 @@ public class AuthRestApi {
         }
     }
 
-    @PutMapping("/reset_password/{token}")
     @ResponseStatus
-    public ResponseEntity<Message> resetPassword(@Valid @RequestBody PasswordResetForm passwordResetForm, @PathVariable("token") String base64Token, @RequestParam("email") String email) {
+    public ResponseEntity<Message> resetPassword(PasswordResetForm passwordResetForm, String base64Token, String email) {
         Message message = userService.resetPassword(passwordResetForm, base64Token, email);
         HttpStatus status;
         if (message.getRedirect()) {
@@ -113,8 +113,7 @@ public class AuthRestApi {
         return new ResponseEntity<>(message, status);
     }
 
-    @GetMapping("/{token}/{confirm}/{encoded_email}")
-    public ResponseEntity<Message> checkTheConfirmationData(@PathVariable("token") String encodedToken, @PathVariable("confirm") String confirm, @PathVariable("encoded_email") String encodedEmail) {
+    public ResponseEntity<Message> checkTheConfirmationData(String encodedToken, String confirm, String encodedEmail) {
         boolean tokenNotExpired = userService.checkIfTokenExpired(encodedToken, encodedEmail, confirm);
         boolean changePassword = userService.checkIfPasswordHasToBeChanged(encodedToken, encodedEmail);
         if (tokenNotExpired && changePassword) {
@@ -128,8 +127,7 @@ public class AuthRestApi {
         }
     }
 
-    @PostMapping("/{token}/set_new_password")
-    public ResponseEntity<Message> setNewPW(@RequestBody ConfirmAccountForm confirmAccountForm) {
+    public ResponseEntity<Message> setNewPW(ConfirmAccountForm confirmAccountForm) {
         return new ResponseEntity<>(authService.confirmAccount(confirmAccountForm), HttpStatus.OK);
     }
 
