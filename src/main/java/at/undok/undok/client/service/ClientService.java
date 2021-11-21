@@ -239,6 +239,8 @@ public class ClientService {
             allClientDto.setFirstName(clientDto.getPerson().getFirstName());
             allClientDto.setLastName(clientDto.getPerson().getLastName());
             allClientDto.setDateOfBirth(clientDto.getPerson().getDateOfBirth());
+            allClientDto.setEmail(clientDto.getPerson().getEmail());
+            allClientDto.setTelephone(clientDto.getPerson().getTelephone());
             // address stuff:
             allClientDto.setStreet(clientDto.getPerson().getAddress().getStreet());
             allClientDto.setZipCode(clientDto.getPerson().getAddress().getZipCode());
