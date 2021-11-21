@@ -49,7 +49,7 @@ public class AuthController implements AuthApi {
         this.authService = authService;
     }
 
-
+    @Override
     public ResponseEntity<?> authenticateUser(LoginDto loginDto) {
         UserDto userDto = authService.getUserDtoWithJwt(loginDto);
         if (Boolean.TRUE.equals(userDto.getConfirmed())) {
@@ -59,6 +59,7 @@ public class AuthController implements AuthApi {
         }
     }
 
+    @Override
     public ResponseEntity<Message> registerUser(SignUpDto signUpDto) {
         if (userRepo.existsByUsername(signUpDto.getUsername())) {
             return new ResponseEntity<>(new Message("Damn -> this Username is already taken"), HttpStatus.CONFLICT);
@@ -74,10 +75,12 @@ public class AuthController implements AuthApi {
         return ResponseEntity.created(URI.create("/service/users/by_username/" + userDto.getUsername())).body(new Message("user created"));
     }
 
+    @Override
     public String mist() {
         return "Hi du verdammter Mistkerl";
     }
 
+    @Override
     public ResponseEntity<Message> resetPassword(PasswordResetForm passwordResetForm) {
         Message message = userService.createPasswordResetTokenForUser(passwordResetForm.getEmail());
         if (!message.getRedirect()) {
@@ -88,6 +91,7 @@ public class AuthController implements AuthApi {
     }
 
     @ResponseStatus
+    @Override
     public ResponseEntity<String> resetPassword(String base64Token, String email) {
         boolean tokenNotExpired = userService.checkIfTokenExpired(base64Token, email, null);
         HttpHeaders headers = new HttpHeaders();
@@ -102,6 +106,7 @@ public class AuthController implements AuthApi {
     }
 
     @ResponseStatus
+    @Override
     public ResponseEntity<Message> resetPassword(PasswordResetForm passwordResetForm, String base64Token, String email) {
         Message message = userService.resetPassword(passwordResetForm, base64Token, email);
         HttpStatus status;
@@ -113,6 +118,7 @@ public class AuthController implements AuthApi {
         return new ResponseEntity<>(message, status);
     }
 
+    @Override
     public ResponseEntity<Message> checkTheConfirmationData(String encodedToken, String confirm, String encodedEmail) {
         boolean tokenNotExpired = userService.checkIfTokenExpired(encodedToken, encodedEmail, confirm);
         boolean changePassword = userService.checkIfPasswordHasToBeChanged(encodedToken, encodedEmail);
@@ -127,6 +133,7 @@ public class AuthController implements AuthApi {
         }
     }
 
+    @Override
     public ResponseEntity<Message> setNewPW(ConfirmAccountForm confirmAccountForm) {
         return new ResponseEntity<>(authService.confirmAccount(confirmAccountForm), HttpStatus.OK);
     }
