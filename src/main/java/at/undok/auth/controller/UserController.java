@@ -1,5 +1,6 @@
 package at.undok.auth.controller;
 
+import at.undok.auth.api.UserApi;
 import at.undok.auth.model.dto.ChangePwDto;
 import at.undok.auth.model.dto.SetAdminDto;
 import at.undok.auth.model.dto.UserDto;
@@ -21,10 +22,8 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080", "https://undok.herokuapp.com"}, maxAge = 3600)
 @RestController
-@RequestMapping("/service/users")
-public class UserRestApi {
+public class UserController implements UserApi {
 
   private final UserDetailsServiceImpl userDetailsService;
 
@@ -37,7 +36,7 @@ public class UserRestApi {
 
   private final UserRepo userRepo;
 
-  public UserRestApi(UserDetailsServiceImpl userDetailsService, UserService userService, JwtProvider jwtProvider, AuthService authService, UserRepo userRepo) {
+  public UserController(UserDetailsServiceImpl userDetailsService, UserService userService, JwtProvider jwtProvider, AuthService authService, UserRepo userRepo) {
     this.userDetailsService = userDetailsService;
     this.userService = userService;
     this.jwtProvider = jwtProvider;
@@ -45,25 +44,21 @@ public class UserRestApi {
     this.userRepo = userRepo;
   }
 
-  @GetMapping("/all")
   public List<UserDto> getAllUsers() {
     List<UserDto> userDtoList = userService.getAll();
     return userDtoList;
   }
 
-  @GetMapping("/principle/{username}")
-  public UserDetails getSpecialUser(@PathVariable String username) {
+  public UserDetails getSpecialUser(String username) {
     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
     return userDetails;
   }
 
-  @GetMapping("/by_username/{username}")
-  public UserDto getUserByUsername(@PathVariable("username") String username) {
+  public UserDto getUserByUsername(String username) {
     return userService.getByUsername(username);
   }
 
-  @PostMapping("/auth/check_auth_token")
-  public ResponseEntity<Message> checkTheAuthToken(@RequestBody String token) {
+  public ResponseEntity<Message> checkTheAuthToken(String token) {
     Message message = jwtProvider.validateJwtToken(token);
     if (jwtProvider.validateJwtToken(token).getRedirect()) {
       return new ResponseEntity<>(message, HttpStatus.OK);
@@ -72,14 +67,12 @@ public class UserRestApi {
     }
   }
 
-  @PostMapping("/auth/password_resets")
-  public ResponseEntity<Message> password_resets(@RequestBody String email) {
+  public ResponseEntity<Message> password_resets(String email) {
     userService.createPasswordResetTokenForUser(email);
     return new ResponseEntity<>(new Message("jess god damn"), HttpStatus.OK);
   }
 
-  @PostMapping("/changepw")
-  public ResponseEntity changePw(@Valid @RequestBody ChangePwDto changePwDto) {
+  public ResponseEntity changePw(ChangePwDto changePwDto) {
     Message m = userService.changePw(changePwDto);
     if (m.getRedirect()) {
       return new ResponseEntity<>(new Message(m.getText()), HttpStatus.OK);
@@ -88,15 +81,12 @@ public class UserRestApi {
     }
   }
 
-  @PostMapping("/set-admin/{user_id}")
-  @PreAuthorize("hasRole('ADMIN')")
-  public Message setAdminFlag(@PathVariable("user_id") UUID userId, @RequestBody SetAdminDto setAdminDto) {
+  public Message setAdminFlag(UUID userId, SetAdminDto setAdminDto) {
     userService.setAdmin(userId, setAdminDto.isAdmin());
     return new Message("successfully changed");
   }
 
-  @PostMapping("/create-user-via-admin")
-  public ResponseEntity createUserViaAdmin(@RequestBody CreateUserForm createUserForm) {
+  public ResponseEntity createUserViaAdmin(CreateUserForm createUserForm) {
     if (userRepo.existsByUsername(createUserForm.getUsername())) {
       return ResponseEntity.status(HttpStatus.CONFLICT).body(new Message("Damn -> this Username is already taken"));
     }
