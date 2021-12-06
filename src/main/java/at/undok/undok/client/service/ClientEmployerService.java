@@ -1,5 +1,6 @@
 package at.undok.undok.client.service;
 
+import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.entity.ClientEmployer;
 import at.undok.undok.client.model.entity.Employer;
 import at.undok.undok.client.model.form.ClientEmployerForm;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +18,7 @@ import java.util.UUID;
 public class ClientEmployerService {
 
     private final ClientEmployerRepo clientEmployerRepo;
+    private final ClientService clientService;
 
     public boolean checkClientEmployer(UUID employerId, UUID clientId) {
         ClientEmployer byEmployerIdAndClientId = clientEmployerRepo.findByEmployerIdAndClientId(employerId, clientId);
@@ -24,8 +27,16 @@ public class ClientEmployerService {
         } else {
             return false;
         }
+    }
 
-
+    public List<ClientDto> getClientsForEmployer(UUID employerId) {
+        List<ClientEmployer> clientEmployers = clientEmployerRepo.findByEmployerId(employerId);
+        List<ClientDto> clientDtos = new ArrayList<>();
+        for (ClientEmployer ce : clientEmployers) {
+            ClientDto clientDto = clientService.getClientById(ce.getClientId());
+            clientDtos.add(clientDto);
+        }
+        return clientDtos;
     }
 
     public boolean addEmployerToClient(UUID employerId, UUID clientId, ClientEmployerForm clientEmployerForm) {

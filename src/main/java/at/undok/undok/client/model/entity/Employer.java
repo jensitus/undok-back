@@ -24,8 +24,4 @@ public class Employer extends AbstractCrud {
     @Column(name = "position")
     private String position;
 
-
-
-
-
 }
