@@ -1,6 +1,7 @@
 package at.undok.undok.client.service;
 
 import at.undok.common.encryption.AttributeEncryptor;
+import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.EmployerDto;
 import at.undok.undok.client.model.entity.ClientEmployer;
 import at.undok.undok.client.model.entity.Employer;
@@ -25,6 +26,7 @@ public class EmployerService {
     private final EntityToDtoMapper entityToDtoMapper;
     private final AttributeEncryptor attributeEncryptor;
     private final ClientEmployerService clientEmployerService;
+    private final ClientService clientService;
 
     public EmployerDto setEmployer(EmployerForm employerForm) {
         Person employerPerson = new Person();
@@ -60,13 +62,20 @@ public class EmployerService {
     public List<EmployerDto> getEmployers(UUID clientId) {
         List<Employer> employers = employerRepo.findAll();
         List<EmployerDto> employerDtos = entityToDtoMapper.convertEmployerListToDto(employers);
-        List<EmployerDto> employersWhereClientIsNotEmployed = new ArrayList<>();
-        for (EmployerDto e : employerDtos) {
-            if (clientEmployerService.checkClientEmployer(e.getId(), clientId) != true) {
-                employersWhereClientIsNotEmployed.add(e);
+        if (clientId != null) {
+            List<EmployerDto> employersWhereClientIsNotEmployed = new ArrayList<>();
+            for (EmployerDto e : employerDtos) {
+                if (!clientEmployerService.checkClientEmployer(e.getId(), clientId)) {
+                    employersWhereClientIsNotEmployed.add(e);
+                }
             }
+            return employersWhereClientIsNotEmployed;
+        } else {
+            for (EmployerDto e : employerDtos) {
+                e.setClients(clientEmployerService.getClientsForEmployer(e.getId()));
+            }
+            return employerDtos;
         }
-        return employersWhereClientIsNotEmployed;
     }
 
     public List<EmployerDto> getByClientId(UUID clientId) {

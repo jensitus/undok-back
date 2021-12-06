@@ -17,8 +17,8 @@ public interface EmployerApi {
     @GetMapping("/{id}")
     EmployerDto getEmployerById(@PathVariable("id") UUID id);
 
-    @GetMapping("/all/client/{client_id}")
-    List<EmployerDto> getAll(@PathVariable("client_id") UUID clientId);
+    @GetMapping("/all/")
+    List<EmployerDto> getAll(@RequestParam(value = "client_id", required = false) UUID clientId);
 
     @GetMapping("/{client_id}/by-client")
     List<EmployerDto> getByClientId(@PathVariable("client_id") UUID clientId);

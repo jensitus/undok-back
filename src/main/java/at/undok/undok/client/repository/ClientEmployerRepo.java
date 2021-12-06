@@ -10,4 +10,6 @@ public interface ClientEmployerRepo extends JpaRepository<ClientEmployer, UUID> 
     ClientEmployer findByEmployerIdAndClientId(UUID employerId, UUID clientId);
 
     List<ClientEmployer> findByClientId(UUID clientId);
+
+    List<ClientEmployer> findByEmployerId(UUID employerId);
 }
