@@ -3,6 +3,7 @@ package at.undok.undok.client.model.dto;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,6 +11,8 @@ import java.util.UUID;
 public class AllClientDto {
 
     private UUID id;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String keyword;
     private String education;
     private String maritalStatus;
@@ -30,12 +33,12 @@ public class AllClientDto {
     // person:
 
     private String type;
-    // private String sex;
     private LocalDate dateOfBirth;
     private String lastName;
     private String firstName;
     private String email;
     private String telephone;
+    private String gender;
 
     // address:
 

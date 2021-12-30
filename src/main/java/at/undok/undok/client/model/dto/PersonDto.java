@@ -12,8 +12,6 @@ public class PersonDto {
 
     private String type;
 
-    // private String sex;
-
     private LocalDate dateOfBirth;
 
     private String lastName;
@@ -26,5 +24,7 @@ public class PersonDto {
     private AddressDto address;
 
     private ClientDto client;
+
+    private String gender;
 
 }

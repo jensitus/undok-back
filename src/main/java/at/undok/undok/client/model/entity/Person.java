@@ -15,9 +15,6 @@ import java.util.UUID;
 @Table(name = "persons")
 public class Person extends AbstractCrud implements Serializable {
 
-    /* here we have to clear if it sex or gender */
-//    private String sex;
-
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
@@ -34,9 +31,6 @@ public class Person extends AbstractCrud implements Serializable {
     @OneToOne(mappedBy = "person", fetch = FetchType.LAZY)
     private Employer employer;
 
-//    @OneToMany
-//    private Set<Contact> contacts;
-
     @OneToOne
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
@@ -49,6 +43,9 @@ public class Person extends AbstractCrud implements Serializable {
 
     @Column(name = "telephone")
     private String telephone;
+
+    @Column(name = "gender")
+    private String gender;
 
     @Override
     public String toString() {

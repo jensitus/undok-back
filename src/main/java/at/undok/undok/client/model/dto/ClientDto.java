@@ -6,6 +6,7 @@ import at.undok.undok.client.model.enumeration.ResidentStatus;
 import lombok.Data;
 
 import javax.persistence.OneToOne;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,6 +14,9 @@ import java.util.UUID;
 public class ClientDto {
 
     private UUID id;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     private String keyword;
 
