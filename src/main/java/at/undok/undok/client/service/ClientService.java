@@ -28,30 +28,34 @@ import java.util.*;
 @Transactional
 public class ClientService {
 
-    @Autowired
-    private EntityToDtoMapper entityToDtoMapper;
+    private final EntityToDtoMapper entityToDtoMapper;
 
-    @Autowired
-    private ClientRepo clientRepo;
+    private final ClientRepo clientRepo;
 
-    @Autowired
-    private PersonRepo personRepo;
+    private final PersonRepo personRepo;
 
-    @Autowired
-    private AddressRepo addressRepo;
+    private final AddressRepo addressRepo;
 
-    @Autowired
-    private ToLocalDateService toLocalDateService;
+    private final ToLocalDateService toLocalDateService;
 
-    @Autowired
-    private AttributeEncryptor attributeEncryptor;
+    private final AttributeEncryptor attributeEncryptor;
+
+    public ClientService(EntityToDtoMapper entityToDtoMapper, ClientRepo clientRepo, PersonRepo personRepo, AddressRepo addressRepo, ToLocalDateService toLocalDateService, AttributeEncryptor attributeEncryptor) {
+        this.entityToDtoMapper = entityToDtoMapper;
+        this.clientRepo = clientRepo;
+        this.personRepo = personRepo;
+        this.addressRepo = addressRepo;
+        this.toLocalDateService = toLocalDateService;
+        this.attributeEncryptor = attributeEncryptor;
+    }
 
     public boolean checkIfKeywordAlreadyExists(String keyword) {
         return clientRepo.existsByKeyword(keyword);
     }
 
     public List<AllClientDto> getAll() {
-        List<ClientDto> clientDtos = entityToDtoMapper.convertClientListToDtoList(clientRepo.findAll(Sort.by(Sort.Order.by("createdAt"))));
+        List<ClientDto> clientDtos =
+                entityToDtoMapper.convertClientListToDtoList(clientRepo.findAll(Sort.by(Sort.Order.by("createdAt"))));
         List<AllClientDto> allClientDtoList = turnClientDtoListToAllClientDtoList(clientDtos);
         return allClientDtoList;
     }
