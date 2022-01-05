@@ -13,13 +13,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "clients")
-public class Client {
-
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "id", unique = true, nullable = false, insertable = false, updatable = false)
-    private UUID id;
+public class Client extends AbstractCrud {
 
     @Column(name = "keyword")
     @NotNull

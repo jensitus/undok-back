@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add_gender_to_person" author="jensitus">
+        <addColumn tableName="persons">
+            <column name="gender" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add_timestamps_to_client" author="jensitus">
+        <addColumn tableName="clients">
+            <column name="created_at" type="TIMESTAMP" />
+            <column name="updated_at" type="TIMESTAMP" />
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

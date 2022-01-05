@@ -13,4 +13,5 @@
   <include file="config/liquibase/changelog/employer.xml" />
   <include file="config/liquibase/changelog/add-admin.xml" />
   <include file="config/liquibase/changelog/add_email_tel_person.xml" />
+  <include file="config/liquibase/changelog/undok-29.xml" />
 </databaseChangeLog> 

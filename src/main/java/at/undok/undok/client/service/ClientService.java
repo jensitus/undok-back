@@ -12,7 +12,6 @@ import at.undok.undok.client.repository.AddressRepo;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.PersonRepo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,30 +26,35 @@ import java.util.*;
 @Transactional
 public class ClientService {
 
-    @Autowired
-    private EntityToDtoMapper entityToDtoMapper;
+    private final EntityToDtoMapper entityToDtoMapper;
 
-    @Autowired
-    private ClientRepo clientRepo;
+    private final ClientRepo clientRepo;
 
-    @Autowired
-    private PersonRepo personRepo;
+    private final PersonRepo personRepo;
 
-    @Autowired
-    private AddressRepo addressRepo;
+    private final AddressRepo addressRepo;
 
-    @Autowired
-    private ToLocalDateService toLocalDateService;
+    private final ToLocalDateService toLocalDateService;
 
-    @Autowired
-    private AttributeEncryptor attributeEncryptor;
+    private final AttributeEncryptor attributeEncryptor;
+
+    public ClientService(EntityToDtoMapper entityToDtoMapper, ClientRepo clientRepo, PersonRepo personRepo, AddressRepo addressRepo, ToLocalDateService toLocalDateService, AttributeEncryptor attributeEncryptor) {
+        this.entityToDtoMapper = entityToDtoMapper;
+        this.clientRepo = clientRepo;
+        this.personRepo = personRepo;
+        this.addressRepo = addressRepo;
+        this.toLocalDateService = toLocalDateService;
+        this.attributeEncryptor = attributeEncryptor;
+    }
 
     public boolean checkIfKeywordAlreadyExists(String keyword) {
         return clientRepo.existsByKeyword(keyword);
     }
 
     public List<AllClientDto> getAll() {
-        List<ClientDto> clientDtos = entityToDtoMapper.convertClientListToDtoList(clientRepo.findAll());
+        List<ClientDto> clientDtos =
+                entityToDtoMapper.convertClientListToDtoList(
+                        clientRepo.findAllByOrderByCreatedAtDesc());  // findAll(Sort.by(Sort.Order.by("createdAt"))));
         List<AllClientDto> allClientDtoList = turnClientDtoListToAllClientDtoList(clientDtos);
         return allClientDtoList;
     }
@@ -127,6 +131,9 @@ public class ClientService {
         if (clientForm.getTelephone() != null) {
             clientPerson.setTelephone(attributeEncryptor.convertToDatabaseColumn(clientForm.getTelephone()));
         }
+        if (clientForm.getGender() != null) {
+            clientPerson.setGender(attributeEncryptor.convertToDatabaseColumn(clientForm.getGender()));
+        }
         clientPerson.setCreatedAt(LocalDateTime.now());
 
         client.setEducation(clientForm.getEducation());
@@ -144,6 +151,7 @@ public class ClientService {
         client.setSector(clientForm.getSector());
         client.setOrganization(clientForm.getOrganization());
         client.setPosition(clientForm.getPosition());
+        client.setCreatedAt(LocalDateTime.now());
         Client saveAndFlush = clientRepo.saveAndFlush(client);
 
         if (clientForm.getStreet() != null) {
@@ -190,6 +198,9 @@ public class ClientService {
         if (cDto.getPerson().getTelephone() != null) {
             person.setTelephone(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getTelephone()));
         }
+        if (cDto.getPerson().getGender() != null) {
+            person.setGender(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getGender()));
+        }
         person.setUpdatedAt(LocalDateTime.now());
 
         client.setEducation(cDto.getEducation());
@@ -207,6 +218,7 @@ public class ClientService {
         client.setSector(cDto.getSector());
         client.setOrganization(cDto.getOrganization());
         client.setPosition(cDto.getPosition());
+        client.setUpdatedAt(LocalDateTime.now());
 
         if (cDto.getPerson().getAddress().getStreet() != null) {
             address.setStreet(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getStreet()));
@@ -241,6 +253,7 @@ public class ClientService {
             allClientDto.setDateOfBirth(clientDto.getPerson().getDateOfBirth());
             allClientDto.setEmail(clientDto.getPerson().getEmail());
             allClientDto.setTelephone(clientDto.getPerson().getTelephone());
+            allClientDto.setGender(clientDto.getPerson().getGender());
             // address stuff:
             allClientDto.setStreet(clientDto.getPerson().getAddress().getStreet());
             allClientDto.setZipCode(clientDto.getPerson().getAddress().getZipCode());

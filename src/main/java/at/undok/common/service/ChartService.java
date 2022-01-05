@@ -42,9 +42,6 @@ public class ChartService {
             countryNumbers.add(countCountryNames(cName, countryNames));
         }
 
-        log.info(countryNamesSorted.toString());
-        log.info(countryNumbers.toString());
-
         Object[] countryDataChartArray =  new Object[2];
         String[] cSorted = countryNamesSorted.toArray(new String[0]);
 

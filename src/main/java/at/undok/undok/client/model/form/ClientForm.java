@@ -15,6 +15,7 @@ public class ClientForm {
     private String contactData;
     private String email;
     private String telephone;
+    private String gender;
 
     // Address
     private String street;
