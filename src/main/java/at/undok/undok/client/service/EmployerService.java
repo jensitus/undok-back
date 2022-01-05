@@ -47,6 +47,7 @@ public class EmployerService {
         Employer employer = new Employer();
         employer.setCompany(employerForm.getEmployerCompany());
         employer.setPosition(employerForm.getEmployerPosition());
+        employer.setCreatedAt(LocalDateTime.now());
         employer.setPerson(employerPerson);
 
         Employer e = employerRepo.save(employer);
@@ -60,7 +61,7 @@ public class EmployerService {
     }
 
     public List<EmployerDto> getEmployers(UUID clientId) {
-        List<Employer> employers = employerRepo.findAll();
+        List<Employer> employers = employerRepo.findAllByOrderByCreatedAtDesc();
         List<EmployerDto> employerDtos = entityToDtoMapper.convertEmployerListToDto(employers);
         if (clientId != null) {
             List<EmployerDto> employersWhereClientIsNotEmployed = new ArrayList<>();

@@ -16,6 +16,7 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
 
     boolean existsByKeyword(String keyword);
 
+    List<Client> findAllByOrderByCreatedAtDesc();
 
 
 }

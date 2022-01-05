@@ -12,11 +12,9 @@ import at.undok.undok.client.repository.AddressRepo;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.PersonRepo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +53,8 @@ public class ClientService {
 
     public List<AllClientDto> getAll() {
         List<ClientDto> clientDtos =
-                entityToDtoMapper.convertClientListToDtoList(clientRepo.findAll(Sort.by(Sort.Order.by("createdAt"))));
+                entityToDtoMapper.convertClientListToDtoList(
+                        clientRepo.findAllByOrderByCreatedAtDesc());  // findAll(Sort.by(Sort.Order.by("createdAt"))));
         List<AllClientDto> allClientDtoList = turnClientDtoListToAllClientDtoList(clientDtos);
         return allClientDtoList;
     }
