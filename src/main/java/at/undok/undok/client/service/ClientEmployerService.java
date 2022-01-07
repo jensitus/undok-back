@@ -44,9 +44,12 @@ public class ClientEmployerService {
         clientEmployer.setEmployerId(employerId);
         clientEmployer.setClientId(clientId);
         clientEmployer.setCreatedAt(LocalDateTime.now());
-        clientEmployer.setUpdatedAt(LocalDateTime.now());
-//        clientEmployer.setFrom(clientEmployerForm.getFrom());
-//        clientEmployer.setUntil(clientEmployerForm.getUntil());
+        clientEmployer.setFrom(clientEmployerForm.getFrom());
+        clientEmployer.setUntil(clientEmployerForm.getUntil());
+        clientEmployer.setIndustry(clientEmployerForm.getIndustry());
+        clientEmployer.setIndustrySub(clientEmployerForm.getIndustrySub());
+        clientEmployer.setJobFunction(clientEmployerForm.getJobFunction());
+        clientEmployer.setJobRemarks(clientEmployerForm.getJobRemarks());
         try {
             clientEmployerRepo.save(clientEmployer);
             return true;

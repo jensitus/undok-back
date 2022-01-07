@@ -1,5 +1,6 @@
 package at.undok.undok.client.api;
 
+import at.undok.undok.client.model.dto.ClientEmployerJobDescriptionDto;
 import at.undok.undok.client.model.dto.EmployerDto;
 import at.undok.undok.client.model.form.EmployerForm;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public interface EmployerApi {
     List<EmployerDto> getAll(@RequestParam(value = "client_id", required = false) UUID clientId);
 
     @GetMapping("/{client_id}/by-client")
-    List<EmployerDto> getByClientId(@PathVariable("client_id") UUID clientId);
+    List<ClientEmployerJobDescriptionDto> getByClientId(@PathVariable("client_id") UUID clientId);
 
     @GetMapping("/count")
     Long getNumberOfEmployers();

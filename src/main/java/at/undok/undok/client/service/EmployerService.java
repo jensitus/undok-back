@@ -2,6 +2,7 @@ package at.undok.undok.client.service;
 
 import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.undok.client.model.dto.ClientDto;
+import at.undok.undok.client.model.dto.ClientEmployerJobDescriptionDto;
 import at.undok.undok.client.model.dto.EmployerDto;
 import at.undok.undok.client.model.entity.ClientEmployer;
 import at.undok.undok.client.model.entity.Employer;
@@ -26,7 +27,6 @@ public class EmployerService {
     private final EntityToDtoMapper entityToDtoMapper;
     private final AttributeEncryptor attributeEncryptor;
     private final ClientEmployerService clientEmployerService;
-    private final ClientService clientService;
 
     public EmployerDto setEmployer(EmployerForm employerForm) {
         Person employerPerson = new Person();
@@ -79,20 +79,28 @@ public class EmployerService {
         }
     }
 
-    public List<EmployerDto> getByClientId(UUID clientId) {
+    public List<ClientEmployerJobDescriptionDto> getByClientId(UUID clientId) {
         List<ClientEmployer> clientEmployers = clientEmployerService.getByClientId(clientId);
-        List<EmployerDto> employerDtos = new ArrayList<>();
+        List<ClientEmployerJobDescriptionDto> clientEmployerJobDescriptionDtos = new ArrayList<>();
         for (ClientEmployer ce : clientEmployers) {
             Employer employer = employerRepo.getOne(ce.getEmployerId());
             EmployerDto employerDto = entityToDtoMapper.mapEmployerToDto(employer);
-            employerDtos.add(employerDto);
+            ClientEmployerJobDescriptionDto clientEmployerJobDescriptionDto = new ClientEmployerJobDescriptionDto();
+            clientEmployerJobDescriptionDto.setEmployer(employerDto);
+            clientEmployerJobDescriptionDto.setFrom(ce.getFrom());
+            clientEmployerJobDescriptionDto.setUntil(ce.getUntil());
+            clientEmployerJobDescriptionDto.setIndustry(ce.getIndustry());
+            clientEmployerJobDescriptionDto.setJobFunction(ce.getJobFunction());
+            clientEmployerJobDescriptionDto.setIndustry(ce.getIndustry());
+            clientEmployerJobDescriptionDto.setIndustrySub(ce.getIndustrySub());
+            clientEmployerJobDescriptionDto.setJobRemarks(ce.getJobRemarks());
+            clientEmployerJobDescriptionDtos.add(clientEmployerJobDescriptionDto);
         }
-        return employerDtos;
+        return clientEmployerJobDescriptionDtos;
     }
 
     public Long getNumberOfEmployers() {
         return employerRepo.count();
     }
-
 
 }
