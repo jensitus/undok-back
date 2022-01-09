@@ -13,4 +13,20 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="change_from_to_start" author="jens@ist-ur.org">
+        <dropColumn tableName="client_employer" columnName="from" />
+        <dropColumn tableName="client_employer" columnName="until" />
+        <addColumn tableName="client_employer">
+            <column name="start" type="timestamp" />
+            <column name="end" type="timestamp" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="end_is_a_reserved_word" author="jens@ist-ur.org">
+        <dropColumn tableName="client_employer" columnName="end" />
+        <addColumn tableName="client_employer">
+            <column name="finished" type="timestamp" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
