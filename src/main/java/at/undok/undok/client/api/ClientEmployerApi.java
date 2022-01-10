@@ -9,7 +9,8 @@ import java.util.UUID;
 public interface ClientEmployerApi {
 
     @GetMapping("/{employer_id}/client/{client_id}/present")
-    boolean checkEmployerClient(@PathVariable("employer_id") UUID employerId, @PathVariable("client_id") UUID clientId);
+    boolean checkEmployerClient(@PathVariable("employer_id") UUID employerId,
+                                @PathVariable("client_id") UUID clientId);
 
     @PostMapping("/{employer_id}/client/{client_id}/create")
     boolean addEmployerToClient(@PathVariable("employer_id") UUID employerId,
@@ -17,6 +18,12 @@ public interface ClientEmployerApi {
                                 @RequestBody ClientEmployerForm clientEmployerForm);
 
     @DeleteMapping("/{employer_id}/client/{client_id}/delete")
-    boolean removeEmployerFromClient(@PathVariable("employer_id") UUID employerId, @PathVariable("client_id") UUID clientId);
+    boolean removeEmployerFromClient(@PathVariable("employer_id") UUID employerId,
+                                     @PathVariable("client_id") UUID clientId);
+
+    @PutMapping("/{employer_id}/client/{client_id}")
+    boolean updateClientEmployerJobDescription(@PathVariable("employer_id") UUID employerId,
+                                               @PathVariable("client_id") UUID clientId,
+                                               @RequestBody ClientEmployerForm clientEmployerForm);
 
 }

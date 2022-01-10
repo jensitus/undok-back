@@ -6,6 +6,7 @@ import at.undok.undok.client.model.entity.Employer;
 import at.undok.undok.client.model.form.ClientEmployerForm;
 import at.undok.undok.client.repository.ClientEmployerRepo;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ public class ClientEmployerService {
 
     private final ClientEmployerRepo clientEmployerRepo;
     private final ClientService clientService;
+    private final ModelMapper modelMapper;
 
     public boolean checkClientEmployer(UUID employerId, UUID clientId) {
         ClientEmployer byEmployerIdAndClientId = clientEmployerRepo.findByEmployerIdAndClientId(employerId, clientId);
@@ -41,15 +43,9 @@ public class ClientEmployerService {
 
     public boolean addEmployerToClient(UUID employerId, UUID clientId, ClientEmployerForm clientEmployerForm) {
         ClientEmployer clientEmployer = new ClientEmployer();
-        clientEmployer.setEmployerId(employerId);
-        clientEmployer.setClientId(clientId);
+        clientEmployer = setClientEmployer(clientEmployer, clientEmployerForm);
         clientEmployer.setCreatedAt(LocalDateTime.now());
-        clientEmployer.setFrom(clientEmployerForm.getFrom());
-        clientEmployer.setUntil(clientEmployerForm.getUntil());
-        clientEmployer.setIndustry(clientEmployerForm.getIndustry());
-        clientEmployer.setIndustrySub(clientEmployerForm.getIndustrySub());
-        clientEmployer.setJobFunction(clientEmployerForm.getJobFunction());
-        clientEmployer.setJobRemarks(clientEmployerForm.getJobRemarks());
+
         try {
             clientEmployerRepo.save(clientEmployer);
             return true;
@@ -66,6 +62,26 @@ public class ClientEmployerService {
 
     public List<ClientEmployer> getByClientId(UUID clientId) {
         return clientEmployerRepo.findByClientId(clientId);
+    }
+
+    public boolean updateClientEmployerJobDescription(UUID employerId, UUID clientId, ClientEmployerForm clientEmployerForm) {
+        ClientEmployer clientEmployer = clientEmployerRepo.findByEmployerIdAndClientId(employerId, clientId);
+        clientEmployer = setClientEmployer(clientEmployer, clientEmployerForm);
+        clientEmployer.setUpdatedAt(LocalDateTime.now());
+        clientEmployerRepo.save(clientEmployer);
+        return true;
+    }
+
+    private ClientEmployer setClientEmployer(ClientEmployer clientEmployer, ClientEmployerForm clientEmployerForm) {
+        clientEmployer.setEmployerId(clientEmployerForm.getEmployerId());
+        clientEmployer.setClientId(clientEmployerForm.getClientId());
+        clientEmployer.setFrom(clientEmployerForm.getFrom());
+        clientEmployer.setUntil(clientEmployerForm.getUntil());
+        clientEmployer.setIndustry(clientEmployerForm.getIndustry());
+        clientEmployer.setIndustrySub(clientEmployerForm.getIndustrySub());
+        clientEmployer.setJobRemarks(clientEmployerForm.getJobRemarks());
+        clientEmployer.setJobFunction(clientEmployerForm.getJobFunction());
+        return clientEmployer;
     }
 
 }
