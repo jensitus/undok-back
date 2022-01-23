@@ -22,55 +22,55 @@ public class ChartService {
     public Object[] getCountryChartData() {
         List<AllClientDto> all = clientService.getAll();
 
-        List<String> countryNames = new ArrayList<>();
+        List<String> nationalities = new ArrayList<>();
         for (AllClientDto clientDto : all) {
-            if (clientDto.getCountry() == null) {
-                countryNames.add("unknown");
+            if (clientDto.getNationality() == null) {
+                nationalities.add("unknown");
             } else {
-                countryNames.add(clientDto.getCountry());
+                nationalities.add(clientDto.getNationality());
             }
         }
 
-        List<String> countryNamesSorted = new ArrayList<>();
-        for (String countryName : countryNames) {
-            if (!countryNamesSorted.contains(countryName)) {
-                countryNamesSorted.add(countryName);
+        List<String> nationalitiesSorted = new ArrayList<>();
+        for (String nationality : nationalities) {
+            if (!nationalitiesSorted.contains(nationality)) {
+                nationalitiesSorted.add(nationality);
             }
         }
-        List<Integer> countryNumbers = new ArrayList<>();
-        for (String cName : countryNamesSorted) {
-            countryNumbers.add(countCountryNames(cName, countryNames));
+        List<Integer> nationalityNumbers = new ArrayList<>();
+        for (String cName : nationalitiesSorted) {
+            nationalityNumbers.add(countCountryNames(cName, nationalities));
         }
 
-        Object[] countryDataChartArray =  new Object[2];
-        String[] cSorted = countryNamesSorted.toArray(new String[0]);
+        Object[] nationalityDataChartArray =  new Object[2];
+        String[] cSorted = nationalitiesSorted.toArray(new String[0]);
 
-        int[] numbers = new int[countryNumbers.size()];
-        for (int i = 0; i < countryNumbers.size(); i++) {
-            numbers[i] = countryNumbers.get(i);
+        int[] numbers = new int[nationalityNumbers.size()];
+        for (int i = 0; i < nationalityNumbers.size(); i++) {
+            numbers[i] = nationalityNumbers.get(i);
         }
 
 
-        countryDataChartArray[0] = cSorted;
-        countryDataChartArray[1] = numbers;
+        nationalityDataChartArray[0] = cSorted;
+        nationalityDataChartArray[1] = numbers;
 
-        return countryDataChartArray;
+        return nationalityDataChartArray;
     }
 
-    private int countCountryNames(String countryName, List<String> countryNames) {
-        int countryCounter = 0;
-        for (String cName : countryNames) {
-            if (cName == null && countryName == null) {
-                countryCounter = countryCounter + 1;
-            } else if (cName != null && countryName != null) {
-                if (cName.equals(countryName)) {
-                    countryCounter = countryCounter + 1;
+    private int countCountryNames(String nationality, List<String> nationalities) {
+        int nationalityCounter = 0;
+        for (String cName : nationalities) {
+            if (cName == null && nationality == null) {
+                nationalityCounter = nationalityCounter + 1;
+            } else if (cName != null && nationality != null) {
+                if (cName.equals(nationality)) {
+                    nationalityCounter = nationalityCounter + 1;
                 }
             } else {
                 // what should we do
             }
         }
-        return countryCounter;
+        return nationalityCounter;
     }
 
 }
