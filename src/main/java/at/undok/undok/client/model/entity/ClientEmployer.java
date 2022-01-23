@@ -21,10 +21,22 @@ public class ClientEmployer extends AbstractCrud {
     @Column(name = "employer_id")
     private UUID employerId;
 
-//    @Column(name = "from")
-//    private LocalDate from;
-//
-//    @Column(name = "until")
-//    private LocalDate until;
+    @Column(name = "start")
+    private LocalDate from;
+
+    @Column(name = "finished")
+    private LocalDate until;
+
+    @Column(name = "industry")
+    private String industry;
+
+    @Column(name = "industry_sub")
+    private String industrySub;
+
+    @Column(name = "job_function")
+    private String jobFunction;
+
+    @Column(name = "job_remarks")
+    private String jobRemarks;
 
 }

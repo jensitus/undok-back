@@ -1,6 +1,7 @@
 package at.undok.undok.client.controller;
 
 import at.undok.undok.client.api.EmployerApi;
+import at.undok.undok.client.model.dto.ClientEmployerJobDescriptionDto;
 import at.undok.undok.client.model.dto.EmployerDto;
 import at.undok.undok.client.model.form.EmployerForm;
 import at.undok.undok.client.service.EmployerService;
@@ -32,7 +33,7 @@ public class EmployerController implements EmployerApi {
     }
 
     @Override
-    public List<EmployerDto> getByClientId(UUID clientId) {
+    public List<ClientEmployerJobDescriptionDto> getByClientId(UUID clientId) {
         return employerService.getByClientId(clientId);
     }
 
