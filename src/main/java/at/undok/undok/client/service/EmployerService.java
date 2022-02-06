@@ -4,10 +4,12 @@ import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.ClientEmployerJobDescriptionDto;
 import at.undok.undok.client.model.dto.EmployerDto;
+import at.undok.undok.client.model.entity.Address;
 import at.undok.undok.client.model.entity.ClientEmployer;
 import at.undok.undok.client.model.entity.Employer;
 import at.undok.undok.client.model.entity.Person;
 import at.undok.undok.client.model.form.EmployerForm;
+import at.undok.undok.client.repository.AddressRepo;
 import at.undok.undok.client.repository.EmployerRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -23,6 +25,7 @@ import java.util.UUID;
 public class EmployerService {
 
     private final EmployerRepo employerRepo;
+    private final AddressRepo addressRepo;
     private final ModelMapper modelMapper;
     private final EntityToDtoMapper entityToDtoMapper;
     private final AttributeEncryptor attributeEncryptor;
@@ -30,6 +33,14 @@ public class EmployerService {
 
     public EmployerDto setEmployer(EmployerForm employerForm) {
         Person employerPerson = new Person();
+
+        Address address = new Address();
+        address.setCity(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerCity()));
+        address.setZipCode(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerZipCode()));
+        address.setStreet(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerStreet()));
+        address.setCountry(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerCountry()));
+        Address savedAddress = addressRepo.save(address);
+
         if (employerForm.getEmployerFirstName() != null) {
             employerPerson.setFirstName(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerFirstName()));
         }
@@ -49,10 +60,9 @@ public class EmployerService {
         employer.setPosition(employerForm.getEmployerPosition());
         employer.setCreatedAt(LocalDateTime.now());
         employer.setPerson(employerPerson);
-
-        Employer e = employerRepo.save(employer);
-
-        return modelMapper.map(e, EmployerDto.class);
+        employer.getPerson().setAddress(savedAddress);
+        Employer eWithAddress = employerRepo.save(employer);
+        return modelMapper.map(eWithAddress, EmployerDto.class);
     }
 
     public EmployerDto getEmployerById(UUID id) {
