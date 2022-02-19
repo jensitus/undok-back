@@ -11,4 +11,8 @@ public class EmployerForm {
     private String employerPosition;
     private String employerEmail;
     private String employerTelephone;
+    private String employerStreet;
+    private String employerZipCode;
+    private String employerCity;
+    private String employerCountry;
 }
