@@ -2,6 +2,7 @@ package at.undok.undok.client.api;
 
 import at.undok.undok.client.model.dto.CategoryDto;
 import at.undok.undok.client.model.form.CategoryForm;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,9 +11,9 @@ import java.util.List;
 public interface CategoryApi {
 
     @PostMapping("/create")
-    CategoryDto createCategory(@RequestBody CategoryForm categoryForm);
+    ResponseEntity createCategory(@RequestBody CategoryForm categoryForm);
 
-    @GetMapping("/{type}/by-type")
+    @GetMapping("/by-type/{type}")
     List<CategoryDto> getCategoriesByType(@PathVariable("type") String type);
 
 }

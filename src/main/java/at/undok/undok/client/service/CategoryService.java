@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,10 +19,15 @@ public class CategoryService {
     private final CategoryRepo categoryRepo;
     private final ModelMapper modelMapper;
 
+    public boolean checkIfCategoryAlreadyExists(String name) {
+        return categoryRepo.existsByName(name);
+    }
+
     public CategoryDto createCategory(CategoryForm categoryForm) {
         Category category = new Category();
         category.setName(categoryForm.getName());
         category.setType(categoryForm.getType());
+        category.setCreatedAt(LocalDateTime.now());
         Category c = categoryRepo.save(category);
         return modelMapper.map(c, CategoryDto.class);
     }
