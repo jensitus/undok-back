@@ -2,6 +2,7 @@ package at.undok.undok.client.model.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "client_employer")
 @Data
+@ToString
 public class ClientEmployer extends AbstractCrud {
 
     @Column(name = "client_id")
