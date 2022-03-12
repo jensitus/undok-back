@@ -1,11 +1,13 @@
 package at.undok.undok.client.model.form;
 
 import lombok.Data;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
+@ToString
 public class ClientEmployerForm {
 
     private UUID employerId;

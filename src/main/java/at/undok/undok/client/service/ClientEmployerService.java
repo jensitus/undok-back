@@ -6,6 +6,7 @@ import at.undok.undok.client.model.entity.Employer;
 import at.undok.undok.client.model.form.ClientEmployerForm;
 import at.undok.undok.client.repository.ClientEmployerRepo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ClientEmployerService {
 
     private final ClientEmployerRepo clientEmployerRepo;
@@ -45,9 +47,10 @@ public class ClientEmployerService {
         ClientEmployer clientEmployer = new ClientEmployer();
         clientEmployer = setClientEmployer(clientEmployer, clientEmployerForm);
         clientEmployer.setCreatedAt(LocalDateTime.now());
-
+        log.info(clientEmployer.toString());
         try {
-            clientEmployerRepo.save(clientEmployer);
+            ClientEmployer save = clientEmployerRepo.save(clientEmployer);
+            log.info("try catch savedClientEmployer.clientId" + save.getClientId());
             return true;
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
