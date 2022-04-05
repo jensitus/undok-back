@@ -1,7 +1,6 @@
 package at.undok.auth.security;
 
 import at.undok.auth.serviceimpl.UserDetailsServiceImpl;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,7 +57,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
               .csrf().disable()
               .authorizeRequests()
-                .antMatchers("/service/auth/**", "/service/users/auth/**", "/service/app/migrate/**", "/service/app/formkey/**").permitAll()
+                .antMatchers("/service/auth/**", "/service/users/auth/**", "/service/app/migrate/**", "/service/app/formkey/**", "/service/undok/ping/**").permitAll()
                 .antMatchers("/service/**").authenticated()
             .and()
               .exceptionHandling()

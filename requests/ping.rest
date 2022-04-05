@@ -1,0 +1,2 @@
+### Use ping endpoint for health checks
+GET http://localhost:8080/service/undok/ping
