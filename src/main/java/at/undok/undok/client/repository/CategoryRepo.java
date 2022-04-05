@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface CategoryRepo extends JpaRepository<Category, UUID> {
 
-    @Query("select c from Category c where c.type = :type")
+    @Query("select c from Category c where c.type = :type order by c.name asc")
     List<Category> getCategoriesByType(String type);
 
     boolean existsByName(String name);
