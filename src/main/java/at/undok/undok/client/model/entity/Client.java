@@ -1,14 +1,11 @@
 package at.undok.undok.client.model.entity;
 
-import at.undok.undok.client.model.enumeration.MaritalStatus;
-import at.undok.undok.client.model.enumeration.ResidentStatus;
+import at.undok.common.model.AbstractCrud;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @Entity

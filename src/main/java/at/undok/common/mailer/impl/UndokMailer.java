@@ -44,10 +44,15 @@ public class UndokMailer {
     String the_container = "<div class='container'>" + first_the_salutation + second_the_text + third_the_url + "</div>";
     String the_html_head_and_body = "<html><head>" + STYLE + "</head><body>" + the_container + "</body></html>";
 
+    setMimeMessage(to, the_html_head_and_body, subject);
+
+  }
+
+  private void setMimeMessage(String to, String text, String subject) {
     MimeMessage mimeMessage = mailSender.createMimeMessage();
     MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
     try {
-      helper.setText(the_html_head_and_body, true);
+      helper.setText(text, true);
       helper.setTo(to);
       helper.setSubject(subject);
       helper.setFrom(fromSender);
@@ -76,6 +81,10 @@ public class UndokMailer {
     String confUrl = applicationBaseUrl + "/auth/" + encryptedToken + "/confirm/" + encryptedEmail;
     log.info(confUrl);
     return confUrl;
+  }
+
+  public void send2FactorTokenToUser(String token, String email) {
+    setMimeMessage(email, token, "2Factor");
   }
 
 }

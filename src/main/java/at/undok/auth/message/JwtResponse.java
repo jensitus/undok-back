@@ -1,7 +1,11 @@
 package at.undok.auth.message;
 
 import at.undok.auth.model.dto.UserDto;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class JwtResponse {
 
   private String token;
@@ -16,27 +20,4 @@ public class JwtResponse {
     this.userDto = userDto;
   }
 
-  public String getAccessToken() {
-    return token;
-  }
-
-  public void setAccessToken(String accessToken) {
-    this.token = accessToken;
-  }
-
-  public String getTokeType() {
-    return type;
-  }
-
-  public void setTokenType(String tokenType) {
-    this.type = tokenType;
-  }
-
-  public UserDto getUserDto() {
-    return userDto;
-  }
-
-  public void setUserDto(UserDto userDto) {
-    this.userDto = userDto;
-  }
 }

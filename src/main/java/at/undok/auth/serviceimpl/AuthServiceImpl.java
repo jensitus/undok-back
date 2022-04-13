@@ -1,9 +1,13 @@
 package at.undok.auth.serviceimpl;
 
+import at.undok.auth.model.dto.TwoFactorDto;
+import at.undok.auth.model.entity.RoleName;
+import at.undok.auth.model.entity.TwoFactor;
 import at.undok.auth.model.form.ConfirmAccountForm;
 import at.undok.auth.model.form.CreateUserForm;
+import at.undok.auth.model.form.SecondFactorForm;
+import at.undok.auth.repository.TwoFactorRepo;
 import at.undok.common.mailer.impl.UndokMailer;
-import at.undok.common.util.EmailStuff;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import at.undok.auth.model.dto.LoginDto;
@@ -18,63 +22,124 @@ import at.undok.auth.security.JwtProvider;
 import at.undok.auth.service.AuthService;
 import at.undok.auth.service.UserService;
 import at.undok.common.encryption.AttributeEncryptor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
 public class AuthServiceImpl implements AuthService {
 
-    @Autowired
+    @Value("${service.b.org.app.jwtExpiration}")
+    private int jwtExpiration;
+
+    @Value("${at.undok.secondFactorJwtExpiration}")
+    private int secondFactorJwtExpiration;
+
+    final
     AuthenticationManager authenticationManager;
 
-    @Autowired
+    final
     JwtProvider jwtProvider;
 
-    @Autowired
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
+    final
     PasswordEncoder encoder;
 
-    @Autowired
+    final
     RoleRepo roleRepo;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private UndokMailer undokMailer;
+    private final UndokMailer undokMailer;
 
-    @Autowired
-    private RoleService roleService;
+    private final RoleService roleService;
 
-    @Autowired
-    private AttributeEncryptor attributeEncryptor;
+    private final AttributeEncryptor attributeEncryptor;
+
+    private final TwoFactorRepo twoFactorRepo;
+
+    public AuthServiceImpl(JwtProvider jwtProvider, AuthenticationManager authenticationManager, UserRepo userRepo, ModelMapper modelMapper, PasswordEncoder encoder, RoleRepo roleRepo, UserService userService, UndokMailer undokMailer, RoleService roleService, AttributeEncryptor attributeEncryptor, TwoFactorRepo twoFactorRepo) {
+        this.jwtProvider = jwtProvider;
+        this.authenticationManager = authenticationManager;
+        this.userRepo = userRepo;
+        this.modelMapper = modelMapper;
+        this.encoder = encoder;
+        this.roleRepo = roleRepo;
+        this.userService = userService;
+        this.undokMailer = undokMailer;
+        this.roleService = roleService;
+        this.attributeEncryptor = attributeEncryptor;
+        this.twoFactorRepo = twoFactorRepo;
+    }
 
     @Override
-    public UserDto getUserDtoWithJwt(LoginDto loginDto) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
+    public UserDto getUserDtoWithSecondFactorJwt(LoginDto loginDto) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword())
+        );
+        List<GrantedAuthority> authorities = new ArrayList<>(authentication.getAuthorities());
+        authorities.clear();
+        authorities.add(new SimpleGrantedAuthority(RoleName.ROLE_PREAUTHORIZED.toString()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtProvider.generateJwtToken(authentication);
-        User user = userRepo.findByUsername(loginDto.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found with -> username or email: " + loginDto.getUsername()));
+        String jwt = jwtProvider.generateJwt(
+                new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), authorities),
+                secondFactorJwtExpiration
+        );
+        UserDto userDto = userDtoWithJwt(jwt, loginDto.getUsername());
+        generateAndPersist2FactorToken(userDto);
+        return userDto;
+    }
+
+    private UserDto userDtoWithJwt(String jwt, String username) {
+        User user = userRepo.findByUsername(
+                        username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "User not found with -> username or email: " + username)
+                );
         UserDto userDto = modelMapper.map(user, UserDto.class);
         userDto.setAccessToken(jwt);
         return userDto;
+    }
+
+    private void generateAndPersist2FactorToken(UserDto userDto) {
+        String secondFactorToken = generateSecondFactorToken();
+        TwoFactor twoFactor = new TwoFactor();
+        twoFactor.setToken(encoder.encode(secondFactorToken));
+        twoFactor.setExpiration(LocalDateTime.now().plusMinutes(5));
+        twoFactor.setUserId(userDto.getId());
+        twoFactor.setCreatedAt(LocalDateTime.now());
+        TwoFactorDto twoFactorDto = modelMapper.map(twoFactorRepo.save(twoFactor), TwoFactorDto.class);
+        send2FactorTokenToUser(twoFactorDto, userDto.getEmail());
+    }
+
+    private void send2FactorTokenToUser(TwoFactorDto factor, String email) {
+        undokMailer.send2FactorTokenToUser(factor.getToken(), email);
+    }
+
+    @Override
+    public UserDto getUserDtoWithRealJwt(SecondFactorForm secondFactorForm) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
+        String jwt = null;
+        if (checkSecondFactorToken(secondFactorForm, userPrinciple.getId())) {
+            jwt = jwtProvider.generateJwt(authentication, jwtExpiration);
+        }
+        return userDtoWithJwt(jwt, userPrinciple.getUsername());
     }
 
     @Override
@@ -87,7 +152,6 @@ public class AuthServiceImpl implements AuthService {
         undokMailer.createConfirmationMail(user, confirmationToken);
         return modelMapper.map(user, UserDto.class);
     }
-
 
 
     @Override
@@ -128,6 +192,24 @@ public class AuthServiceImpl implements AuthService {
         Message m = undokMailer.createConfirmationMail(user, confirmationToken);
         userRepo.save(user);
         return m.getText();
+    }
+
+    private String generateSecondFactorToken() {
+        int leftLimit = 48; // numeral '0'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 10;
+        Random random = new Random();
+
+        return random.ints(leftLimit, rightLimit + 1)
+                     .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                     .limit(targetStringLength)
+                     .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                     .toString();
+    }
+
+    private boolean checkSecondFactorToken(SecondFactorForm secondFactorForm, UUID userId) {
+        TwoFactor twoFactor = twoFactorRepo.findByUserIdAndToken(userId, secondFactorForm.getToken());
+        return twoFactor != null && LocalDateTime.now().isBefore(twoFactor.getExpiration());
     }
 
 }

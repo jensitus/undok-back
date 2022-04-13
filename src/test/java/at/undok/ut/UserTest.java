@@ -1,5 +1,7 @@
 package at.undok.ut;
 
+import at.undok.auth.model.dto.LoginDto;
+import at.undok.auth.model.dto.UserDto;
 import at.undok.auth.model.entity.User;
 import at.undok.auth.service.AuthService;
 import at.undok.common.encryption.AttributeEncryptor;
@@ -21,17 +23,20 @@ import at.undok.undok.client.service.ClientService;
 import at.undok.undok.client.service.CounselingService;
 import at.undok.undok.client.service.CsvService;
 import io.jsonwebtoken.impl.Base64Codec;
+import liquibase.pro.packaged.B;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -232,6 +237,24 @@ public class UserTest {
     public void testGetEmployers() {
         List<Employer> employerList = employerRepo.findAll();
         log.info(employerList.toString());
+    }
+
+    @Test
+    public void givenUsingJava8_whenGeneratingRandomAlphanumericString_thenCorrect() {
+        int leftLimit = 48; // numeral '0'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 10;
+        Random random = new Random();
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String encode = bCryptPasswordEncoder.encode(generatedString);
+        System.out.println(generatedString);
     }
 
 }

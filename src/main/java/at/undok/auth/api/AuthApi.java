@@ -4,8 +4,10 @@ import at.undok.auth.message.PasswordResetForm;
 import at.undok.auth.model.dto.LoginDto;
 import at.undok.auth.model.dto.SignUpDto;
 import at.undok.auth.model.form.ConfirmAccountForm;
+import at.undok.auth.model.form.SecondFactorForm;
 import at.undok.common.message.Message;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -15,6 +17,10 @@ public interface AuthApi {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto);
+
+    @PreAuthorize("hasAuthority('ROLE_PREAUTHORIZED')")
+    @PostMapping("/second-factor")
+    public ResponseEntity<?> secondFactor(@RequestBody SecondFactorForm secondFactorForm);
 
     @PostMapping(value = "/signup")
     public ResponseEntity<Message> registerUser(@Valid @RequestBody SignUpDto signUpDto);

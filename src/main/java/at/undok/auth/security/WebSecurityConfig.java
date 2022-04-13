@@ -58,6 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
               .csrf().disable()
               .authorizeRequests()
                 .antMatchers("/service/auth/**", "/service/users/auth/**", "/service/app/migrate/**", "/service/app/formkey/**", "/service/undok/ping/**").permitAll()
+            .antMatchers().hasAnyRole("USER")
                 .antMatchers("/service/**").authenticated()
             .and()
               .exceptionHandling()

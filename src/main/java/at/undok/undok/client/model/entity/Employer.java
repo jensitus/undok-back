@@ -1,11 +1,9 @@
 package at.undok.undok.client.model.entity;
 
-import liquibase.pro.packaged.C;
+import at.undok.common.model.AbstractCrud;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.UUID;
 
 @Entity
 @Data
