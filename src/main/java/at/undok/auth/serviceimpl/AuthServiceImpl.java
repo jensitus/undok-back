@@ -115,6 +115,7 @@ public class AuthServiceImpl implements AuthService {
 
     private void generateAndPersist2FactorToken(UserDto userDto) {
         String secondFactorToken = generateSecondFactorToken();
+        deleteOldTwoFactorTokens(userDto.getId());
         TwoFactor twoFactor = new TwoFactor();
         twoFactor.setToken(secondFactorToken);
         twoFactor.setExpiration(LocalDateTime.now().plusMinutes(5));
@@ -225,6 +226,11 @@ public class AuthServiceImpl implements AuthService {
         roles.remove(roleRepo.findByName(roleName).get());
         user.setRoles(roles);
         userRepo.save(user);
+    }
+
+    private void deleteOldTwoFactorTokens(UUID userId) {
+        List<TwoFactor> twoFactorList = twoFactorRepo.findByUserId(userId);
+        twoFactorRepo.deleteAll(twoFactorList);
     }
 
 }
