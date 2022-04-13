@@ -119,16 +119,16 @@ public class AuthServiceImpl implements AuthService {
     private void generateAndPersist2FactorToken(UserDto userDto) {
         String secondFactorToken = generateSecondFactorToken();
         TwoFactor twoFactor = new TwoFactor();
-        twoFactor.setToken(encoder.encode(secondFactorToken));
+        twoFactor.setToken(secondFactorToken);
         twoFactor.setExpiration(LocalDateTime.now().plusMinutes(5));
         twoFactor.setUserId(userDto.getId());
         twoFactor.setCreatedAt(LocalDateTime.now());
-        TwoFactorDto twoFactorDto = modelMapper.map(twoFactorRepo.save(twoFactor), TwoFactorDto.class);
-        send2FactorTokenToUser(twoFactorDto, userDto.getEmail());
+        twoFactorRepo.save(twoFactor);
+        send2FactorTokenToUser(secondFactorToken, userDto.getEmail());
     }
 
-    private void send2FactorTokenToUser(TwoFactorDto factor, String email) {
-        undokMailer.send2FactorTokenToUser(factor.getToken(), email);
+    private void send2FactorTokenToUser(String secondFactorToken, String email) {
+        undokMailer.send2FactorTokenToUser(secondFactorToken, email);
     }
 
     @Override

@@ -18,7 +18,6 @@ public interface AuthApi {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto);
 
-    @PreAuthorize("hasAuthority('ROLE_PREAUTHORIZED')")
     @PostMapping("/second-factor")
     public ResponseEntity<?> secondFactor(@RequestBody SecondFactorForm secondFactorForm);
 

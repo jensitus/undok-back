@@ -4,16 +4,21 @@ import at.undok.auth.serviceimpl.UserPrinciple;
 import io.jsonwebtoken.*;
 import at.undok.auth.model.entity.User;
 import at.undok.common.message.Message;
+import liquibase.pro.packaged.J;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtProvider {
@@ -34,11 +39,14 @@ public class JwtProvider {
 
   public String generateJwt(Authentication authentication, int expiration) {
     UserPrinciple userPrincipal = (UserPrinciple) authentication.getPrincipal();
+    Map<String, Object> claims = new HashMap<>();
+    String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(" "));
+    claims.put("roles", authorities);
     return Jwts.builder()
                .setSubject((userPrincipal.getUsername()))
                .setIssuedAt(new Date())
                .setExpiration(new Date((new Date()).getTime() + secondFactorJwtExpiration))
-               .claim("Authorities", authentication.getAuthorities())
+               .addClaims(claims)
                .signWith(SignatureAlgorithm.HS512, jwtSecret)
                .compact();
   }
