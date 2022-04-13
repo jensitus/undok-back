@@ -40,13 +40,13 @@ public class JwtProvider {
   public String generateJwt(Authentication authentication, int expiration) {
     UserPrinciple userPrincipal = (UserPrinciple) authentication.getPrincipal();
     Map<String, Object> claims = new HashMap<>();
-    String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(" "));
+    String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
     claims.put("roles", authorities);
     return Jwts.builder()
                .setSubject((userPrincipal.getUsername()))
                .setIssuedAt(new Date())
                .setExpiration(new Date((new Date()).getTime() + secondFactorJwtExpiration))
-               .addClaims(claims)
+               .claim("roles", authorities)
                .signWith(SignatureAlgorithm.HS512, jwtSecret)
                .compact();
   }

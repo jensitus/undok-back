@@ -1,6 +1,6 @@
-package at.undok.undok.client.controller;
+package at.undok.common.controller;
 
-import at.undok.undok.client.api.PingApi;
+import at.undok.common.api.PingApi;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 

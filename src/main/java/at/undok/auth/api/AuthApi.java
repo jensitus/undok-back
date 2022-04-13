@@ -18,9 +18,6 @@ public interface AuthApi {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto);
 
-    @PostMapping("/second-factor")
-    public ResponseEntity<?> secondFactor(@RequestBody SecondFactorForm secondFactorForm);
-
     @PostMapping(value = "/signup")
     public ResponseEntity<Message> registerUser(@Valid @RequestBody SignUpDto signUpDto);
 

@@ -1,6 +1,5 @@
 package at.undok.auth.serviceimpl;
 
-import at.undok.auth.model.dto.TwoFactorDto;
 import at.undok.auth.model.entity.RoleName;
 import at.undok.auth.model.entity.TwoFactor;
 import at.undok.auth.model.form.ConfirmAccountForm;
@@ -26,8 +25,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -88,19 +85,19 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDto getUserDtoWithSecondFactorJwt(LoginDto loginDto) {
+        removeRole(loginDto.getUsername(), RoleName.ROLE_USER);
+        addRole(loginDto.getUsername(), RoleName.ROLE_SECOND_FACTOR);
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword())
         );
-        List<GrantedAuthority> authorities = new ArrayList<>(authentication.getAuthorities());
-        authorities.clear();
-        authorities.add(new SimpleGrantedAuthority(RoleName.ROLE_PREAUTHORIZED.toString()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtProvider.generateJwt(
-                new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), authorities),
+                new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials()),
                 secondFactorJwtExpiration
         );
         UserDto userDto = userDtoWithJwt(jwt, loginDto.getUsername());
         generateAndPersist2FactorToken(userDto);
+        log.info("jwt: " + jwt);
         return userDto;
     }
 
@@ -139,6 +136,8 @@ public class AuthServiceImpl implements AuthService {
         if (checkSecondFactorToken(secondFactorForm, userPrinciple.getId())) {
             jwt = jwtProvider.generateJwt(authentication, jwtExpiration);
         }
+        addRole(userPrinciple.getUsername(), RoleName.ROLE_USER);
+        removeRole(userPrinciple.getUsername(), RoleName.ROLE_SECOND_FACTOR);
         return userDtoWithJwt(jwt, userPrinciple.getUsername());
     }
 
@@ -210,6 +209,24 @@ public class AuthServiceImpl implements AuthService {
     private boolean checkSecondFactorToken(SecondFactorForm secondFactorForm, UUID userId) {
         TwoFactor twoFactor = twoFactorRepo.findByUserIdAndToken(userId, secondFactorForm.getToken());
         return twoFactor != null && LocalDateTime.now().isBefore(twoFactor.getExpiration());
+    }
+
+    private void addRole(String username, RoleName roleName) {
+        User user = userRepo.findByUsername(username).get();
+        Set<Role> roles = user.getRoles();
+        roles.add(roleRepo.findByName(roleName).get());
+        user.setRoles(roles);
+        userRepo.save(user);
+        log.info(user.getRoles().toString());
+    }
+
+    private void removeRole(String username, RoleName roleName) {
+        User user = userRepo.findByUsername(username).get();
+        Set<Role> roles = user.getRoles();
+        roles.remove(roleRepo.findByName(roleName).get());
+        user.setRoles(roles);
+        userRepo.save(user);
+        log.info(roles.toString());
     }
 
 }

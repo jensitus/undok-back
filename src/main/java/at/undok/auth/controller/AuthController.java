@@ -1,6 +1,7 @@
 package at.undok.auth.controller;
 
 import at.undok.auth.api.AuthApi;
+import at.undok.auth.api.SecondFactorApi;
 import at.undok.auth.model.form.ConfirmAccountForm;
 import at.undok.auth.model.form.SecondFactorForm;
 import at.undok.auth.repository.UserRepo;
@@ -55,12 +56,6 @@ public class AuthController implements AuthApi {
         } else {
             return new ResponseEntity<>(new Message("Account is not confirmed"), HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);
         }
-    }
-
-    @Override
-    public ResponseEntity<?> secondFactor(SecondFactorForm secondFactorForm) {
-        UserDto userDto = authService.getUserDtoWithRealJwt(secondFactorForm);
-        return new ResponseEntity<>(new JwtResponse(userDto), HttpStatus.OK);
     }
 
     @Override
