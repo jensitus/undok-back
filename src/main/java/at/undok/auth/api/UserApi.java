@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RequestMapping("/service/users")
+@PreAuthorize("hasRole('USER')")
 public interface UserApi {
 
     @GetMapping("/all")

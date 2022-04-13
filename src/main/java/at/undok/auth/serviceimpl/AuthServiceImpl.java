@@ -217,7 +217,6 @@ public class AuthServiceImpl implements AuthService {
         roles.add(roleRepo.findByName(roleName).get());
         user.setRoles(roles);
         userRepo.save(user);
-        log.info(user.getRoles().toString());
     }
 
     private void removeRole(String username, RoleName roleName) {
@@ -226,7 +225,6 @@ public class AuthServiceImpl implements AuthService {
         roles.remove(roleRepo.findByName(roleName).get());
         user.setRoles(roles);
         userRepo.save(user);
-        log.info(roles.toString());
     }
 
 }
