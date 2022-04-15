@@ -1,4 +1,4 @@
-package at.undok.undok.client.model.entity;
+package at.undok.common.model;
 
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;

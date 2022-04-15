@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="create_two_factor_table" author="jens@ist-ur.org">
+        <createTable tableName="two_factor">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="user_id" type="UUID" />
+            <column name="token" type="varchar(255)" />
+            <column name="expiration" type="timestamp" />
+            <column name="created_at" type="timestamp" />
+            <column name="updated_at" type="timestamp" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-ROLE_SECOND_FACTOR" author="jens@ist-ur.org">
+        <insert tableName="roles">
+            <column name="name" value="ROLE_SECOND_FACTOR" />
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

@@ -3,12 +3,14 @@ package at.undok.undok.client.api;
 import at.undok.undok.client.model.dto.ClientEmployerJobDescriptionDto;
 import at.undok.undok.client.model.dto.EmployerDto;
 import at.undok.undok.client.model.form.EmployerForm;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RequestMapping("/service/undok/employers")
+@PreAuthorize("hasRole('USER')")
 public interface EmployerApi {
 
     @PostMapping("/create")

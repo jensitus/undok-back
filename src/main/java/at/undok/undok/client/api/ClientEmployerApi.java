@@ -1,11 +1,13 @@
 package at.undok.undok.client.api;
 
 import at.undok.undok.client.model.form.ClientEmployerForm;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @RequestMapping("/service/undok/client/employers")
+@PreAuthorize("hasRole('USER')")
 public interface ClientEmployerApi {
 
     @GetMapping("/{employer_id}/client/{client_id}/present")

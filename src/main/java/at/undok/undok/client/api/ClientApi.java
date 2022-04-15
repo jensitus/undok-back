@@ -6,6 +6,7 @@ import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.model.form.CounselingForm;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RequestMapping("/service/undok/clients")
+@PreAuthorize("hasRole('USER')")
 public interface ClientApi {
 
     @CrossOrigin

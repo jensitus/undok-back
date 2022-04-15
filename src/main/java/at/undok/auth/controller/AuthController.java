@@ -1,7 +1,9 @@
 package at.undok.auth.controller;
 
 import at.undok.auth.api.AuthApi;
+import at.undok.auth.api.SecondFactorApi;
 import at.undok.auth.model.form.ConfirmAccountForm;
+import at.undok.auth.model.form.SecondFactorForm;
 import at.undok.auth.repository.UserRepo;
 import at.undok.auth.model.dto.UserDto;
 import at.undok.auth.message.JwtResponse;
@@ -12,8 +14,6 @@ import at.undok.auth.service.AuthService;
 import at.undok.auth.service.UserService;
 import at.undok.auth.security.JwtProvider;
 import at.undok.common.message.Message;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
@@ -51,7 +50,7 @@ public class AuthController implements AuthApi {
 
     @Override
     public ResponseEntity<?> authenticateUser(LoginDto loginDto) {
-        UserDto userDto = authService.getUserDtoWithJwt(loginDto);
+        UserDto userDto = authService.getUserDtoWithSecondFactorJwt(loginDto);
         if (Boolean.TRUE.equals(userDto.getConfirmed())) {
             return new ResponseEntity<>(new JwtResponse(userDto), HttpStatus.OK);
         } else {

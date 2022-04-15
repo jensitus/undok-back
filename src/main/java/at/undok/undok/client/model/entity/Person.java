@@ -1,14 +1,11 @@
 package at.undok.undok.client.model.entity;
 
+import at.undok.common.model.AbstractCrud;
 import lombok.Data;
-import lombok.ToString;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @Entity

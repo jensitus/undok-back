@@ -4,16 +4,21 @@ import at.undok.auth.serviceimpl.UserPrinciple;
 import io.jsonwebtoken.*;
 import at.undok.auth.model.entity.User;
 import at.undok.common.message.Message;
+import liquibase.pro.packaged.J;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtProvider {
@@ -26,15 +31,22 @@ public class JwtProvider {
   @Value("${service.b.org.app.jwtExpiration}")
   private int jwtExpiration;
 
+  @Value("${at.undok.secondFactorJwtExpiration}")
+  private int secondFactorJwtExpiration;
+
   @Value("${service.b.org.app.jwtResetExpiration}")
   private int resetExpiration;
 
-  public String generateJwtToken(Authentication authentication) {
+  public String generateJwt(Authentication authentication, int expiration) {
     UserPrinciple userPrincipal = (UserPrinciple) authentication.getPrincipal();
+    Map<String, Object> claims = new HashMap<>();
+    String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
+    claims.put("roles", authorities);
     return Jwts.builder()
                .setSubject((userPrincipal.getUsername()))
                .setIssuedAt(new Date())
-               .setExpiration(new Date((new Date()).getTime() + jwtExpiration))
+               .setExpiration(new Date((new Date()).getTime() + secondFactorJwtExpiration))
+               .claim("roles", authorities)
                .signWith(SignatureAlgorithm.HS512, jwtSecret)
                .compact();
   }
@@ -63,11 +75,6 @@ public class JwtProvider {
       ZoneId defaultZoneId = ZoneId.systemDefault();
       Instant instant = parsedToken.toInstant();
       LocalDateTime localDateTime = instant.atZone(defaultZoneId).toLocalDateTime();
-      if (localDateTime.isAfter(localDateTime.minusHours(2))) {
-//        logger.info(localDateTime.toString());
-//        logger.info(localDateTime.minusHours(2).toString());
-      }
-
       return new Message(true);
     } catch (SignatureException e) {
       logger.error("Invalid JWT signature -> Message: {} ", e);
@@ -85,7 +92,6 @@ public class JwtProvider {
       logger.error("JWT claims string is empty -> Message: {}", e);
       return new Message(e.toString(), false);
     }
-    // return new Message(false);
   }
 
 }
