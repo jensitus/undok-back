@@ -19,4 +19,10 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="add-ROLE_SECOND_FACTOR" author="jens@ist-ur.org">
+        <insert tableName="roles">
+            <column name="name" value="ROLE_SECOND_FACTOR" />
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
