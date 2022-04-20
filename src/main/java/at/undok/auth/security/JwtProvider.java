@@ -45,7 +45,7 @@ public class JwtProvider {
     return Jwts.builder()
                .setSubject((userPrincipal.getUsername()))
                .setIssuedAt(new Date())
-               .setExpiration(new Date((new Date()).getTime() + secondFactorJwtExpiration))
+               .setExpiration(new Date((new Date()).getTime() + expiration))
                .claim("roles", authorities)
                .signWith(SignatureAlgorithm.HS512, jwtSecret)
                .compact();
