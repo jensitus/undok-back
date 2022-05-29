@@ -35,10 +35,18 @@ public class EmployerService {
         Person employerPerson = new Person();
 
         Address address = new Address();
-        address.setCity(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerCity()));
-        address.setZipCode(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerZipCode()));
-        address.setStreet(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerStreet()));
-        address.setCountry(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerCountry()));
+        if (employerForm.getEmployerCity() != null) {
+            address.setCity(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerCity()));
+        }
+        if (employerForm.getEmployerZipCode() != null) {
+            address.setZipCode(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerZipCode()));
+        }
+        if (employerForm.getEmployerStreet() != null) {
+            address.setStreet(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerStreet()));
+        }
+        if (employerForm.getEmployerCountry() != null) {
+            address.setCountry(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerCountry()));
+        }
         Address savedAddress = addressRepo.save(address);
 
         if (employerForm.getEmployerFirstName() != null) {
