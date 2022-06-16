@@ -6,6 +6,7 @@ import at.undok.auth.model.dto.SignUpDto;
 import at.undok.auth.model.form.ConfirmAccountForm;
 import at.undok.auth.model.form.SecondFactorForm;
 import at.undok.common.message.Message;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RequestMapping("/service/auth")
+@ConditionalOnProperty(name = "auth-api.signup.enabled", havingValue = "true")
 public interface AuthApi {
 
     @PostMapping("/login")
