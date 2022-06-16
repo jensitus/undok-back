@@ -60,8 +60,6 @@ public class ClientService {
     }
 
     public ClientDto createClient(ClientForm clientForm) {
-        log.info(clientForm.toString());
-
         return createTheCompleteClient(clientForm);
     }
 
