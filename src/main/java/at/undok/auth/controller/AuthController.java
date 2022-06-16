@@ -60,18 +60,20 @@ public class AuthController implements AuthApi {
 
     @Override
     public ResponseEntity<Message> registerUser(SignUpDto signUpDto) {
-        if (userRepo.existsByUsername(signUpDto.getUsername())) {
-            return new ResponseEntity<>(new Message("Damn -> this Username is already taken"), HttpStatus.CONFLICT);
-        }
-        if (userRepo.existsByEmail(signUpDto.getEmail())) {
-            return new ResponseEntity<>(new Message("It's a pity -> but this Email is already in use!"), HttpStatus.CONFLICT);
-        }
-        if (!signUpDto.getPasswordConfirmation().equals(signUpDto.getPassword())) {
-            return new ResponseEntity<>(new Message("password does not match the confirmation"), HttpStatus.CONFLICT);
-        }
-        var userDto = authService.createUserAfterSignUp(signUpDto);
-
-        return ResponseEntity.created(URI.create("/service/users/by_username/" + userDto.getUsername())).body(new Message("user created"));
+        Message message = new Message("Selbstregistrierung nicht aktiv, bitte bei Undok anfragen", null);
+        return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
+//        if (userRepo.existsByUsername(signUpDto.getUsername())) {
+//            return new ResponseEntity<>(new Message("Damn -> this Username is already taken"), HttpStatus.CONFLICT);
+//        }
+//        if (userRepo.existsByEmail(signUpDto.getEmail())) {
+//            return new ResponseEntity<>(new Message("It's a pity -> but this Email is already in use!"), HttpStatus.CONFLICT);
+//        }
+//        if (!signUpDto.getPasswordConfirmation().equals(signUpDto.getPassword())) {
+//            return new ResponseEntity<>(new Message("password does not match the confirmation"), HttpStatus.CONFLICT);
+//        }
+//        var userDto = authService.createUserAfterSignUp(signUpDto);
+//
+//        return ResponseEntity.created(URI.create("/service/users/by_username/" + userDto.getUsername())).body(new Message("user created"));
     }
 
     @Override
