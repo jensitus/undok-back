@@ -14,14 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RequestMapping("/service/auth")
-@ConditionalOnProperty(name = "auth-api.signup.enabled", havingValue = "true")
 public interface AuthApi {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto);
 
-    @PostMapping(value = "/signup")
-    public ResponseEntity<Message> registerUser(@Valid @RequestBody SignUpDto signUpDto);
 
     @GetMapping("/mist")
     public String mist();
