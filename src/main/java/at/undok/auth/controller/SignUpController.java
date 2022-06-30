@@ -5,7 +5,6 @@ import at.undok.auth.model.dto.SignUpDto;
 import at.undok.auth.repository.UserRepo;
 import at.undok.auth.service.AuthService;
 import at.undok.common.message.Message;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

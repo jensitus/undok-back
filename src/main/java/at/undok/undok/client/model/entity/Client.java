@@ -42,6 +42,7 @@ public class Client extends AbstractCrud {
     private String howHasThePersonHeardFromUs;
 
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
+    @OrderBy(value = "counselingDate asc")
     private List<Counseling> counselings;
 
     @Column(name = "vulnerable_when_asserting_rights")
