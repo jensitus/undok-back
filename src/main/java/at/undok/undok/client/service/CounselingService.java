@@ -67,7 +67,7 @@ public class CounselingService {
     }
 
     public List<CounselingDto> getAllCounselings() {
-        List<Counseling> all = counselingRepo.findAllByOrderByCreatedAtDesc();
+        List<Counseling> all = counselingRepo.findAllByOrderByCounselingDateDesc();
         return entityToDtoMapper.convertCounselingListToDtoList(all);
     }
 
