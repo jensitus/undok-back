@@ -72,7 +72,7 @@ public class CounselingService {
     }
 
     public CounselingDto updateCounseling(CounselingDto counselingDto) {
-        Counseling counseling = counselingRepo.getOne(counselingDto.getId());
+        Counseling counseling = counselingRepo.getById(counselingDto.getId());
         counseling.setCounselingDate(counselingDto.getCounselingDate());
         counseling.setCounselingStatus(counselingDto.getCounselingStatus());
         counseling.setConcern(counselingDto.getConcern());
@@ -92,6 +92,10 @@ public class CounselingService {
         counseling.setComment(comment);
         Counseling savedCounseling = counselingRepo.save(counseling);
         return modelMapper.map(savedCounseling, CounselingDto.class);
+    }
+
+    public void deleteCounseling(UUID counselingId) {
+        counselingRepo.deleteById(counselingId);
     }
 
 }

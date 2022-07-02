@@ -40,4 +40,9 @@ public class CounselingController implements CounselingApi {
     public CounselingDto setCommentOnCounseling(UUID counselingId, String comment) {
         return counselingService.setCommentOnCounseling(counselingId, comment);
     }
+
+    @Override
+    public void deleteCounseling(UUID counselingId) {
+        counselingService.deleteCounseling(counselingId);
+    }
 }

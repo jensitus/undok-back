@@ -19,5 +19,4 @@ public interface CounselingRepo extends JpaRepository<Counseling, UUID> {
     List<Counseling> findAllInPast(LocalDateTime today);
 
     List<Counseling> findAllByOrderByCounselingDateDesc();
-
 }

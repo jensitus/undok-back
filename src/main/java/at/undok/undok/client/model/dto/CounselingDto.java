@@ -10,29 +10,18 @@ import java.util.UUID;
 public class CounselingDto {
 
     private UUID id;
-
     private String counselingStatus;
-
     private LocalDate entryDate;
-
     private String concern;
-
     private String concernCategory;
-
     private String activity;
-
     private String activityCategory;
-
     private String registeredBy;
-
     private LocalDateTime counselingDate;
-
     private LocalDateTime createdAt;
-
     private String comment;
-
     private UUID clientId;
-
     private String clientFullName;
+    private String keyword;
 
 }
