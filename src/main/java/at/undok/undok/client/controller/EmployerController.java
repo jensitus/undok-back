@@ -41,4 +41,9 @@ public class EmployerController implements EmployerApi {
     public Long getNumberOfEmployers() {
         return employerService.getNumberOfEmployers();
     }
+
+    @Override
+    public EmployerDto updateEmployer(UUID id, EmployerDto employerDto) {
+        return employerService.updateEmployer(employerDto);
+    }
 }

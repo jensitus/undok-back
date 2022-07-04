@@ -1,18 +1,19 @@
 package at.undok.common.encryption;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+import javax.crypto.*;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.persistence.AttributeConverter;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.util.Base64;
 
 @Slf4j
@@ -21,14 +22,20 @@ public class AttributeEncryptor implements AttributeConverter<String, String> {
 
     private static final String AES = "AES";
 
+    private static final String ALGORITHMO = "AES/ECB/PKCS5Padding";
+    private static final String INSTANCE = "PBKDF2WithHmacSHA256";
+    private static final int ITERATIONS = 65536;
+    private static final int LENGTH = 128;
+
     private final Key key;
     private final Cipher cipher;
 
-    public AttributeEncryptor(@Value("${undok.secretKey}") String secret) throws NoSuchPaddingException, NoSuchAlgorithmException {
-        if (secret == null || secret.equals("noKeyProvided") || secret.getBytes().length != 16) {
-            throw new IllegalArgumentException("No valid secret provided");
+    @SneakyThrows
+    public AttributeEncryptor(@Value("${undok.secretKey}") String secretString) {
+        if (secretString == null || secretString.equals("noKeyProvided") || secretString.getBytes().length != 16) {
+            throw new IllegalArgumentException("No valid secretString provided");
         }
-        this.key = new SecretKeySpec(secret.getBytes(), AES);
+        this.key = new SecretKeySpec(secretString.getBytes(), AES);
         this.cipher = Cipher.getInstance(AES);
     }
 
@@ -69,4 +76,12 @@ public class AttributeEncryptor implements AttributeConverter<String, String> {
             throw new IllegalStateException(e);
         }
     }
+
+    @SneakyThrows
+    private SecretKey genKey(String secretString, String salt) {
+        SecretKeyFactory factory = SecretKeyFactory.getInstance(INSTANCE);
+        KeySpec spec = new PBEKeySpec(secretString.toCharArray(), salt.getBytes(), ITERATIONS, LENGTH);
+        return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), AES);
+    }
+
 }

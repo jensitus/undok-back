@@ -74,8 +74,8 @@ public class EmployerService {
     }
 
     public EmployerDto getEmployerById(UUID id) {
-        Employer employer = employerRepo.getOne(id);
-        return modelMapper.map(employer, EmployerDto.class);
+        Employer employer = employerRepo.getById(id);
+        return entityToDtoMapper.mapEmployerToDto(employer);
     }
 
     public List<EmployerDto> getEmployers(UUID clientId) {
@@ -121,4 +121,14 @@ public class EmployerService {
         return employerRepo.count();
     }
 
+    public EmployerDto updateEmployer(EmployerDto employerDto) {
+
+        Address address = addressRepo.save(entityToDtoMapper.mapToAddress(employerDto.getPerson().getAddress()));
+        Employer employer = entityToDtoMapper.mapDtoToEmployer(employerDto);
+        employer.getPerson().setAddress(address);
+        employer.setId(employerDto.getId());
+        employerRepo.save(employer);
+        return modelMapper.map(employer, EmployerDto.class);
+    }
+    
 }
