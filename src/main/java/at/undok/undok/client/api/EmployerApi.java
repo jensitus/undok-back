@@ -28,4 +28,7 @@ public interface EmployerApi {
     @GetMapping("/count")
     Long getNumberOfEmployers();
 
+    @PutMapping("/{id}")
+    EmployerDto updateEmployer(@PathVariable("id") UUID id, @RequestBody EmployerDto employerDto);
+
 }

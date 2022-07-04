@@ -2,14 +2,12 @@ package at.undok.undok.client.service;
 
 import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.undok.client.model.dto.*;
-import at.undok.undok.client.model.entity.Client;
-import at.undok.undok.client.model.entity.Counseling;
-import at.undok.undok.client.model.entity.Employer;
-import at.undok.undok.client.model.entity.Person;
+import at.undok.undok.client.model.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -160,6 +158,52 @@ public class EntityToDtoMapper {
         PersonDto personDto = mapPersonToDto(person);
         employerDto.setPerson(personDto);
         return employerDto;
+    }
+
+    public Employer mapDtoToEmployer(EmployerDto employerDto) {
+        Person employerPerson = new Person();
+
+
+        if (employerDto.getPerson().getFirstName() != null) {
+            employerPerson.setFirstName(attributeEncryptor.convertToDatabaseColumn(employerDto.getPerson().getFirstName()));
+        }
+        if (employerDto.getPerson().getLastName() != null) {
+            employerPerson.setLastName(attributeEncryptor.convertToDatabaseColumn(employerDto.getPerson().getLastName()));
+        }
+        if (employerDto.getPerson().getEmail() != null) {
+            employerPerson.setEmail(attributeEncryptor.convertToDatabaseColumn(employerDto.getPerson().getEmail()));
+        }
+        if (employerDto.getPerson().getTelephone() != null) {
+            employerPerson.setTelephone(attributeEncryptor.convertToDatabaseColumn(employerDto.getPerson().getTelephone()));
+        }
+
+
+        Employer employer = new Employer();
+        employer.setCompany(employerDto.getCompany());
+        employer.setPosition(employerDto.getPosition());
+        employer.setPerson(employerPerson);
+
+        return employer;
+    }
+
+    public Address mapToAddress(AddressDto addressDto) {
+        Address address = new Address();
+        if (addressDto.getId() != null) {
+            address.setId(addressDto.getId());
+        }
+        if (addressDto.getStreet() != null) {
+            address.setStreet(attributeEncryptor.convertToDatabaseColumn(addressDto.getStreet()));
+        }
+        if (addressDto.getCity() != null) {
+            address.setCity(attributeEncryptor.convertToDatabaseColumn(addressDto.getCity()));
+        }
+        if (addressDto.getZipCode() != null) {
+            address.setZipCode(attributeEncryptor.convertToDatabaseColumn(addressDto.getZipCode()));
+        }
+        if (addressDto.getCountry() != null) {
+            address.setCountry(attributeEncryptor.convertToDatabaseColumn(addressDto.getCountry()));
+        }
+        return address;
     }
 
 }
