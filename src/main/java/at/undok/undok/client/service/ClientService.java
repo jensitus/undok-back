@@ -105,6 +105,10 @@ public class ClientService {
         }
     }
 
+    public void deleteClient(UUID clientId) {
+        personRepo.deleteById(clientId);
+    }
+
     private ClientDto createTheCompleteClient(ClientForm clientForm) {
 
         Person clientPerson = new Person();
