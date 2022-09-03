@@ -49,12 +49,14 @@ public class AuthController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<?> authenticateUser(LoginDto loginDto) {
+    public ResponseEntity<JwtResponse> authenticateUser(LoginDto loginDto) {
         UserDto userDto = authService.getUserDtoWithSecondFactorJwt(loginDto);
         if (Boolean.TRUE.equals(userDto.getConfirmed())) {
-            return new ResponseEntity<>(new JwtResponse(userDto), HttpStatus.OK);
+            JwtResponse jwtResponse = new JwtResponse(userDto);
+            return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new Message("Account is not confirmed"), HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);
+            throw new RuntimeException("sorry");
+            //return new ResponseEntity<>(new Message("Account is not confirmed"), HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);
         }
     }
 

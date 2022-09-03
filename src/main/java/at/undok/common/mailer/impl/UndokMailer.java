@@ -26,6 +26,7 @@ public class UndokMailer {
   private String applicationBaseUrl;
 
   private static final String DIV_CLASS_GENERAL = "<div class='general'>";
+  private static final String CLOSING_DIV = "</div>";
 
   private final JavaMailSender mailSender;
 
@@ -84,7 +85,8 @@ public class UndokMailer {
   }
 
   public void send2FactorTokenToUser(String token, String email) {
-    setMimeMessage(email, token, "2Factor");
+    String text = DIV_CLASS_GENERAL + token + CLOSING_DIV;
+    setMimeMessage(email, text, "2Factor");
   }
 
 }

@@ -1,7 +1,8 @@
 package at.undok.it.cucumber.auth;
 
 public enum EmailType {
-    CONFIRMATION("[undok] confirm account");
+    CONFIRMATION("[undok] confirm account"),
+    SECOND_FACTOR("2Factor");
 
     private final String subject;
     private final String mediaType = "text/html;charset=UTF-8";

@@ -20,7 +20,7 @@ public class SecondFactorController implements SecondFactorApi {
     }
 
     @Override
-    public ResponseEntity<?> secondFactor(SecondFactorForm secondFactorForm) {
+    public ResponseEntity<JwtResponse> secondFactor(SecondFactorForm secondFactorForm) {
         UserDto userDto = authService.getUserDtoWithRealJwt(secondFactorForm);
         return new ResponseEntity<>(new JwtResponse(userDto), HttpStatus.OK);
     }

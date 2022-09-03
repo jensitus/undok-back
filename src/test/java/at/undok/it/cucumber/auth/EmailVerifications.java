@@ -76,11 +76,11 @@ public class EmailVerifications {
         }
     }
 
-    public String parseConfirmationLink(String content) {
-        var confirmationLinkElement = Jsoup.parse(content).select("a.confirmation");
+    public String parseConfirmationLink(String content, String cssQuery, String attributeKey) {
+        var confirmationLinkElement = Jsoup.parse(content).select(cssQuery);
         assertThat(confirmationLinkElement).isNotNull();
 
-        var confirmationLink = confirmationLinkElement.attr("href");
+        var confirmationLink = confirmationLinkElement.text();
         assertThat(confirmationLink).isNotBlank();
         return confirmationLink;
     }
