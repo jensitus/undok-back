@@ -5,6 +5,8 @@ import at.undok.auth.model.dto.LoginDto;
 import at.undok.auth.model.dto.SignUpDto;
 import at.undok.auth.model.form.SecondFactorForm;
 import at.undok.common.message.Message;
+import at.undok.undok.client.model.entity.Client;
+import at.undok.undok.client.model.form.ClientForm;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -43,5 +45,13 @@ public class AuthRestApiClient {
         httpHeaders.add("Authorization", "Bearer " + token);
         HttpEntity<SecondFactorForm> secondFactorFormHttpEntity = new HttpEntity<>(secondFactorForm, httpHeaders);
         return testRestTemplate.postForEntity(url, secondFactorFormHttpEntity, JwtResponse.class);
+    }
+
+    public ResponseEntity<Client> createClient(ClientForm clientForm, String accessToken) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization", "Bearer " + accessToken);
+        String url = HOST + serverPort + "/service/undok/clients/create";
+        HttpEntity<ClientForm> clientFormHttpEntity = new HttpEntity<>(clientForm, httpHeaders);
+        return this.testRestTemplate.postForEntity(url, clientFormHttpEntity, Client.class);
     }
 }

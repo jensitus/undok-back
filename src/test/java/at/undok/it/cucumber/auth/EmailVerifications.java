@@ -76,7 +76,7 @@ public class EmailVerifications {
         }
     }
 
-    public String parseConfirmationLink(String content, String cssQuery, String attributeKey) {
+    public String parseConfirmationLink(String content, String cssQuery) {
         var confirmationLinkElement = Jsoup.parse(content).select(cssQuery);
         assertThat(confirmationLinkElement).isNotNull();
 

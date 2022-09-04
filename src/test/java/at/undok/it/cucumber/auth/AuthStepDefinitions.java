@@ -85,7 +85,7 @@ public class AuthStepDefinitions {
 
         var emailMessage = emailVerifications.assertEmailSentTo(validRandomUser.getEmail(), EmailType.CONFIRMATION);
         var content = emailVerifications.getEmailContent(emailMessage);
-        confirmationLink = emailVerifications.parseConfirmationLink(content, "a.confirmation", "href");
+        confirmationLink = emailVerifications.parseConfirmationLink(content, "a.confirmation");
 
         LOGGER.debug("Found confirmation link in E-Mail: {}", confirmationLink);
     }
