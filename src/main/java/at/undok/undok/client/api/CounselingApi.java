@@ -2,6 +2,7 @@ package at.undok.undok.client.api;
 
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.entity.Counseling;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public interface CounselingApi {
     List<CounselingDto> getOldCounselings();
 
     @GetMapping("/all")
-    List<CounselingDto> getAllCounselings();
+    ResponseEntity<List<CounselingDto>> getAllCounselings();
 
     @PutMapping("/{id}/update")
     CounselingDto updateCounseling(@PathVariable("id") UUID counselingId, @RequestBody CounselingDto counselingDto);
