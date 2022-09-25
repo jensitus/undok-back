@@ -5,11 +5,12 @@ import at.undok.auth.model.dto.LoginDto;
 import at.undok.auth.model.dto.SignUpDto;
 import at.undok.auth.model.form.SecondFactorForm;
 import at.undok.common.message.Message;
+import at.undok.undok.client.model.dto.AllClientDto;
+import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.model.form.CounselingForm;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -78,6 +79,27 @@ public class AuthRestApiClient {
         });
 
         return response;
+    }
+
+    public ClientDto getClient(UUID clientId, String accessToken) {
+        HttpHeaders httpHeaders = getHeaders(accessToken);
+        String url = HOST + serverPort + UNDOK_CLIENTS_PATH + "/" + clientId;
+        HttpEntity entity = new HttpEntity<>(httpHeaders);
+        return testRestTemplate.getForObject(url, ClientDto.class);
+    }
+
+    public List<AllClientDto> getAllClients(String accessToken) {
+        HttpHeaders httpHeaders = getHeaders(accessToken);
+        String url = HOST + serverPort + UNDOK_CLIENTS_PATH + "/all";
+        HttpEntity entity = new HttpEntity<>(httpHeaders);
+        return testRestTemplate.exchange(url, HttpMethod.GET, entity, new ParameterizedTypeReference<List<AllClientDto>>() {}).getBody();
+    }
+
+    public void deleteClient(UUID clientId, String accessToken) {
+        HttpHeaders httpHeaders = getHeaders(accessToken);
+        String url = HOST + serverPort + UNDOK_CLIENTS_PATH + "/" + clientId;
+        HttpEntity entity = new HttpEntity<>(httpHeaders);
+        testRestTemplate.exchange(url, HttpMethod.DELETE, entity, Void.class);
     }
 
     private HttpHeaders getHeaders(String accessToken) {

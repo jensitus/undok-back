@@ -54,7 +54,7 @@ public class ClientService {
     public List<AllClientDto> getAll() {
         List<ClientDto> clientDtos =
                 entityToDtoMapper.convertClientListToDtoList(
-                        clientRepo.findAllByOrderByCreatedAtDesc());  // findAll(Sort.by(Sort.Order.by("createdAt"))));
+                        clientRepo.findByStatusOrderByCreatedAtDesc(StatusService.STATUS_ACTIVE));  // findAll(Sort.by(Sort.Order.by("createdAt"))));
         List<AllClientDto> allClientDtoList = turnClientDtoListToAllClientDtoList(clientDtos);
         return allClientDtoList;
     }
@@ -100,6 +100,18 @@ public class ClientService {
             Person person = client.get().getPerson();
             Address address = person.getAddress();
             return updateClient(person, client.get(), address, clientDto);
+        } else {
+            throw new RuntimeException("Sorry");
+        }
+    }
+
+    public void setStatusDeleted(UUID clientPersonId) {
+        Optional<Person> optionalPerson = personRepo.findById(clientPersonId);
+        if (optionalPerson.isPresent()) {
+            Person person = optionalPerson.get();
+            Client client = person.getClient();
+            client.setStatus(StatusService.STATUS_DELETED);
+            clientRepo.save(client);
         } else {
             throw new RuntimeException("Sorry");
         }
@@ -154,6 +166,7 @@ public class ClientService {
         client.setOrganization(clientForm.getOrganization());
         client.setPosition(clientForm.getPosition());
         client.setCreatedAt(LocalDateTime.now());
+        client.setStatus(StatusService.STATUS_ACTIVE);
         Client saveAndFlush = clientRepo.saveAndFlush(client);
 
         if (clientForm.getStreet() != null) {

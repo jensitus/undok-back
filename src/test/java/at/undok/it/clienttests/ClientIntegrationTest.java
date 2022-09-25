@@ -9,6 +9,8 @@ import at.undok.common.message.Message;
 import at.undok.it.IntegrationTestBase;
 import at.undok.it.cucumber.UndokTestData;
 import at.undok.it.cucumber.auth.*;
+import at.undok.undok.client.model.dto.AllClientDto;
+import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.form.ClientForm;
@@ -31,8 +33,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -54,6 +55,8 @@ public class ClientIntegrationTest extends IntegrationTestBase {
 
     private String accessToken;
 
+    private UUID clientId;
+
     @BeforeAll
     public void setAccessToken() {
         generateJwtAccessToken();
@@ -73,9 +76,10 @@ public class ClientIntegrationTest extends IntegrationTestBase {
         ClientForm secondClientForm = createClientForm("second_client");
         ClientForm thirdClientForm = createClientForm("third_client");
         ResponseEntity<Client> secondClient = authRestApiClient.createClient(secondClientForm, accessToken);
+        clientId = Objects.requireNonNull(secondClient.getBody()).getPerson().getId();
         ResponseEntity<Client> thirdClient = authRestApiClient.createClient(thirdClientForm, accessToken);
         CounselingForm counselingFormSecondClient = createCounselingForm(Objects.requireNonNull(secondClient.getBody()).getId());
-        CounselingForm counselingFormThirdClient = createCounselingForm(Objects.requireNonNull(thirdClient.getBody().getId()));
+        CounselingForm counselingFormThirdClient = createCounselingForm(Objects.requireNonNull(Objects.requireNonNull(thirdClient.getBody()).getId()));
         ResponseEntity<CounselingDto> counseling_02 = authRestApiClient.createCounseling(counselingFormSecondClient,
                 accessToken, secondClient.getBody().getId());
         ResponseEntity<CounselingDto> counseling_03 = authRestApiClient.createCounseling(counselingFormThirdClient,
@@ -83,10 +87,30 @@ public class ClientIntegrationTest extends IntegrationTestBase {
         getCounselings();
     }
 
-    private void getCounselings() {
+    @Test
+    public void testDeleteClient() {
+        int first = checkDeletedClient();
+        authRestApiClient.getClient(clientId, accessToken);
+        authRestApiClient.deleteClient(clientId, accessToken);
+        int second = checkDeletedClient();
+        int sum = first - second;
+        assertEquals(1, sum);
+        List<CounselingDto> counselings = getCounselings();
+        
+    }
+
+
+    private int checkDeletedClient() {
+        List<AllClientDto> allClients = authRestApiClient.getAllClients(accessToken);
+        assertNotNull(allClients);
+        return allClients.size();
+    }
+
+    private List<CounselingDto> getCounselings() {
         ResponseEntity<List<CounselingDto>> allCounselings = authRestApiClient.getAllCounselings(accessToken);
-        List<CounselingDto> body = allCounselings.getBody();
-        assertNotNull(body);
+        List<CounselingDto> counselingDtos = allCounselings.getBody();
+        assertNotNull(counselingDtos);
+        return counselingDtos;
     }
 
     private ClientForm createClientForm(String keyword) {

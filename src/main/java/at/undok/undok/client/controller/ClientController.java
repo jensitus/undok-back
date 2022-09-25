@@ -75,6 +75,12 @@ public class ClientController implements ClientApi {
     }
 
     @Override
+    public ResponseEntity setStatusDeleted(UUID clientPersonId) {
+        clientService.setStatusDeleted(clientPersonId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
     public ResponseEntity deleteClient(UUID clientId) {
         clientService.deleteClient(clientId);
         return ResponseEntity.ok().build();

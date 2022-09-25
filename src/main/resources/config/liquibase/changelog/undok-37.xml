@@ -18,4 +18,10 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="set_status" author="jens@ist-ur.org">
+        <addColumn tableName="clients">
+            <column name="status" type="varchar(64)" defaultValue="ACTIVE" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
