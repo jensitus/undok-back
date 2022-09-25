@@ -16,7 +16,7 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
 
     List<Client> findByStatusOrderByCreatedAtDesc(String status);
 
-    long countByStatus();
+    long countByStatus(String status);
 
 
 }

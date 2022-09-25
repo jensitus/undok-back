@@ -90,7 +90,7 @@ public class ClientService {
     }
 
     public Long getNumberOfClients() {
-        return clientRepo.count();
+        return clientRepo.countByStatus(StatusService.STATUS_ACTIVE);
     }
 
     public ClientDto updateClient(UUID clientId, ClientDto clientDto) {
