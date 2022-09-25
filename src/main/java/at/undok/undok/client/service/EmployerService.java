@@ -1,7 +1,6 @@
 package at.undok.undok.client.service;
 
 import at.undok.common.encryption.AttributeEncryptor;
-import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.ClientEmployerJobDescriptionDto;
 import at.undok.undok.client.model.dto.EmployerDto;
 import at.undok.undok.client.model.entity.Address;
@@ -16,9 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -66,6 +63,7 @@ public class EmployerService {
         Employer employer = new Employer();
         employer.setCompany(employerForm.getEmployerCompany());
         employer.setPosition(employerForm.getEmployerPosition());
+        employer.setStatus(StatusService.STATUS_ACTIVE);
         employer.setCreatedAt(LocalDateTime.now());
         employer.setPerson(employerPerson);
         employer.getPerson().setAddress(savedAddress);
@@ -79,7 +77,7 @@ public class EmployerService {
     }
 
     public List<EmployerDto> getEmployers(UUID clientId) {
-        List<Employer> employers = employerRepo.findAllByOrderByCreatedAtDesc();
+        List<Employer> employers = employerRepo.findByStatusOrderByCreatedAtDesc(StatusService.STATUS_ACTIVE);
         List<EmployerDto> employerDtos = entityToDtoMapper.convertEmployerListToDto(employers);
         if (clientId != null) {
             List<EmployerDto> employersWhereClientIsNotEmployed = new ArrayList<>();
@@ -118,7 +116,7 @@ public class EmployerService {
     }
 
     public Long getNumberOfEmployers() {
-        return employerRepo.count();
+        return employerRepo.countByStatus(StatusService.STATUS_ACTIVE);
     }
 
     public EmployerDto updateEmployer(EmployerDto employerDto) {
@@ -130,5 +128,16 @@ public class EmployerService {
         employerRepo.save(employer);
         return modelMapper.map(employer, EmployerDto.class);
     }
-    
+
+    public void setStatusDeleted(UUID employerId) {
+        Optional<Employer> employerOptional = employerRepo.findById(employerId);
+        if (employerOptional.isPresent()) {
+            Employer employer = employerOptional.get();
+            employer.setStatus(StatusService.STATUS_DELETED);
+            employerRepo.save(employer);
+        } else {
+            throw new NoSuchElementException("No Employer found with ID " + employerId);
+        }
+    }
+
 }

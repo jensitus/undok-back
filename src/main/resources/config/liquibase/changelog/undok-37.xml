@@ -24,4 +24,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="set_status_employer" author="jens@ist-ur.org">
+        <addColumn tableName="employers">
+            <column name="status" type="varchar(64)" defaultValue="ACTIVE" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

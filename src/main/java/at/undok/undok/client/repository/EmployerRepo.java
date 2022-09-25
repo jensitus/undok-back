@@ -8,6 +8,9 @@ import java.util.UUID;
 
 public interface EmployerRepo extends JpaRepository<Employer, UUID> {
 
-    List<Employer> findAllByOrderByCreatedAtDesc();
+    List<Employer> findByStatusOrderByCreatedAtDesc(String status);
+
+    long countByStatus(String status);
+
 
 }

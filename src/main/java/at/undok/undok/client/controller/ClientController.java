@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 
@@ -89,5 +90,10 @@ public class ClientController implements ClientApi {
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<Message> handle(EmptyResultDataAccessException emptyResultDataAccessException) {
         return new ResponseEntity<>(new Message(emptyResultDataAccessException.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<Message> handle(NoSuchElementException e) {
+        return new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 }

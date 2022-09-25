@@ -113,7 +113,7 @@ public class ClientService {
             client.setStatus(StatusService.STATUS_DELETED);
             clientRepo.save(client);
         } else {
-            throw new RuntimeException("Sorry");
+            throw new NoSuchElementException("No client found with ID " + clientPersonId);
         }
     }
 
