@@ -1,34 +1,28 @@
 package at.undok.undok.client.model.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class CounselingDto {
-
+public class CounselingResult {
     private UUID id;
-    private String counselingStatus;
-    private LocalDate entryDate;
+
     private String concern;
     private String concernCategory;
     private String activity;
     private String activityCategory;
-    private String registeredBy;
     private LocalDateTime counselingDate;
-    private LocalDateTime createdAt;
     private String comment;
     private UUID clientId;
-    private String clientFullName;
+    // private String clientFullName;
     private String keyword;
 
-    public CounselingDto(UUID id, String concern, String concernCategory, String activity, String activityCategory, LocalDateTime counselingDate, String comment, UUID clientId, String keyword) {
+    public CounselingResult() {
+    }
+
+    public CounselingResult(UUID id, String concern, String concernCategory, String activity, String activityCategory, LocalDateTime counselingDate, String comment, UUID clientId, String keyword) {
         this.id = id;
         this.concern = concern;
         this.concernCategory = concernCategory;

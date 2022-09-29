@@ -30,4 +30,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="set_status_counselings" author="jens@ist-ur.org">
+        <addColumn tableName="counselings">
+            <column name="status" type="varchar(64)" defaultValue="ACTIVE" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
