@@ -1,6 +1,7 @@
 package at.undok.undok.client.service;
 
 import at.undok.common.encryption.AttributeEncryptor;
+import at.undok.undok.client.model.dto.CheckClientEmployerDto;
 import at.undok.undok.client.model.dto.ClientEmployerJobDescriptionDto;
 import at.undok.undok.client.model.dto.EmployerDto;
 import at.undok.undok.client.model.entity.Address;
@@ -130,6 +131,10 @@ public class EmployerService {
     }
 
     public void setStatusDeleted(UUID employerId) {
+        CheckClientEmployerDto checkActiveClient = employerRepo.checkActiveClient(employerId, StatusService.STATUS_ACTIVE);
+        if (checkActiveClient.getCount() > 0) {
+            throw new RuntimeException("There are still active clients related to this employer");
+        }
         Optional<Employer> employerOptional = employerRepo.findById(employerId);
         if (employerOptional.isPresent()) {
             Employer employer = employerOptional.get();

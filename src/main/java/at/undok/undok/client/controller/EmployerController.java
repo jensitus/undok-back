@@ -6,6 +6,7 @@ import at.undok.undok.client.model.dto.ClientEmployerJobDescriptionDto;
 import at.undok.undok.client.model.dto.EmployerDto;
 import at.undok.undok.client.model.form.EmployerForm;
 import at.undok.undok.client.service.EmployerService;
+import liquibase.pro.packaged.M;
 import liquibase.pro.packaged.R;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -63,5 +64,10 @@ public class EmployerController implements EmployerApi {
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Message> handle(NoSuchElementException e) {
         return new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Message> handle(RuntimeException e) {
+        return new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.CONFLICT);
     }
 }
