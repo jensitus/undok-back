@@ -101,7 +101,11 @@ public class CounselingService {
 
     public CounselingDto setCommentOnCounseling(UUID counselingId, String comment) {
         Counseling counseling = counselingRepo.findById(counselingId).get();
-        counseling.setComment(comment);
+        if ("null".equals(comment)) {
+            counseling.setComment(null);
+        } else {
+            counseling.setComment(comment);
+        }
         Counseling savedCounseling = counselingRepo.save(counseling);
         return modelMapper.map(savedCounseling, CounselingDto.class);
     }
