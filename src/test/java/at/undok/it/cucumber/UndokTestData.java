@@ -3,6 +3,8 @@ package at.undok.it.cucumber;
 import at.undok.auth.model.dto.SignUpDto;
 import com.github.javafaker.Faker;
 
+import java.util.Set;
+
 public class UndokTestData {
 
     private final Faker faker;
@@ -17,6 +19,7 @@ public class UndokTestData {
         registration.setEmail(email());
         registration.setUsername(userName());
         registration.setPassword(securePassword());
+        registration.setRole(Set.of("ROLE_USER"));
         registration.setPasswordConfirmation(registration.getPassword());
         return registration;
     }

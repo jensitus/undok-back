@@ -1,5 +1,6 @@
 package at.undok.auth.api;
 
+import at.undok.auth.message.JwtResponse;
 import at.undok.auth.message.PasswordResetForm;
 import at.undok.auth.model.dto.LoginDto;
 import at.undok.auth.model.dto.SignUpDto;
@@ -17,7 +18,7 @@ import javax.validation.Valid;
 public interface AuthApi {
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto);
+    public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginDto loginDto);
 
 
     @GetMapping("/mist")

@@ -18,5 +18,8 @@ public interface CounselingRepo extends JpaRepository<Counseling, UUID> {
     @Query("select c from Counseling c where c.counselingDate <= :today")
     List<Counseling> findAllInPast(LocalDateTime today);
 
-    List<Counseling> findAllByOrderByCounselingDateDesc();
+    List<Counseling> findByStatusOrderByCounselingDateDesc(String status);
+
+    long countByStatus(String status);
+
 }

@@ -5,6 +5,7 @@ import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.service.CounselingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,8 +28,8 @@ public class CounselingController implements CounselingApi {
     }
 
     @Override
-    public List<CounselingDto> getAllCounselings() {
-        return counselingService.getAllCounselings();
+    public ResponseEntity<List<CounselingDto>> getAllCounselings() {
+        return ResponseEntity.ok(counselingService.getAllCounselings());
     }
 
     @Override

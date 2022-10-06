@@ -39,5 +39,10 @@ public interface ClientApi {
     @GetMapping("/all")
     List<AllClientDto> getAll();
 
+    @DeleteMapping("/{id}/set-deleted")
+    ResponseEntity setStatusDeleted(@PathVariable("id") UUID clientPersonId);
+
+    @DeleteMapping("/{id}")
+    ResponseEntity deleteClient(@PathVariable("id") UUID clientId);
 
 }

@@ -41,7 +41,7 @@ public class Client extends AbstractCrud {
     @Column(name = "how_has_the_person_heard_from_us")
     private String howHasThePersonHeardFromUs;
 
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @OrderBy(value = "counselingDate asc")
     private List<Counseling> counselings;
 
@@ -71,6 +71,9 @@ public class Client extends AbstractCrud {
 
     @Column(name = "organization")
     private String organization;
+
+    @Column(name = "status")
+    private String status;
 
 
     @Override

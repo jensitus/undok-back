@@ -1,7 +1,5 @@
 package at.undok.undok.client.model.form;
 
-import javax.validation.constraints.NotNull;
-
 import lombok.Data;
 import lombok.ToString;
 

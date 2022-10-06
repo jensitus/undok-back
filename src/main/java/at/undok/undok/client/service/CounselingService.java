@@ -45,6 +45,7 @@ public class CounselingService {
         c.setRegisteredBy(counselingForm.getRegisteredBy());
         c.setCreatedAt(LocalDateTime.now());
         c.setComment(counselingForm.getComment());
+        c.setStatus(StatusService.STATUS_ACTIVE);
         Optional<Client> clientOptional = clientRepo.findById(counselingForm.getClientId());
         c.setClient(clientOptional.get());
         Counseling counsel = counselingRepo.save(c);
@@ -53,7 +54,7 @@ public class CounselingService {
     }
 
     public Long numberOfCounselings() {
-        return counselingRepo.count();
+        return counselingRepo.countByStatus(StatusService.STATUS_ACTIVE);
     }
 
     public List<CounselingDto> getFutureCounselings() {
@@ -67,8 +68,19 @@ public class CounselingService {
     }
 
     public List<CounselingDto> getAllCounselings() {
-        List<Counseling> all = counselingRepo.findAllByOrderByCounselingDateDesc();
+        List<Counseling> all = counselingRepo.findByStatusOrderByCounselingDateDesc(StatusService.STATUS_ACTIVE);
         return entityToDtoMapper.convertCounselingListToDtoList(all);
+    }
+
+    public void setStatusDeleted(List<UUID> counselingIdList) {
+        counselingIdList.forEach(id -> {
+            Optional<Counseling> counselingOptional = counselingRepo.findById(id);
+            if (counselingOptional.isPresent()) {
+                Counseling counseling = counselingOptional.get();
+                counseling.setStatus(StatusService.STATUS_DELETED);
+                counselingRepo.save(counseling);
+            }
+        });
     }
 
     public CounselingDto updateCounseling(CounselingDto counselingDto) {
@@ -89,7 +101,11 @@ public class CounselingService {
 
     public CounselingDto setCommentOnCounseling(UUID counselingId, String comment) {
         Counseling counseling = counselingRepo.findById(counselingId).get();
-        counseling.setComment(comment);
+        if ("null".equals(comment)) {
+            counseling.setComment(null);
+        } else {
+            counseling.setComment(comment);
+        }
         Counseling savedCounseling = counselingRepo.save(counseling);
         return modelMapper.map(savedCounseling, CounselingDto.class);
     }

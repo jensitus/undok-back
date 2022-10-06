@@ -1,7 +1,8 @@
 package at.undok.ut;
 
-import at.undok.auth.model.dto.LoginDto;
-import at.undok.auth.model.dto.UserDto;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import at.undok.auth.model.entity.User;
 import at.undok.auth.service.AuthService;
 import at.undok.common.encryption.AttributeEncryptor;
@@ -22,32 +23,41 @@ import at.undok.undok.client.repository.PersonRepo;
 import at.undok.undok.client.service.ClientService;
 import at.undok.undok.client.service.CounselingService;
 import at.undok.undok.client.service.CsvService;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.Base64Codec;
-import liquibase.pro.packaged.B;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 // @TestPropertySource(properties = {"undok.secretKey=abcTestKey"})
 @Disabled
 @Slf4j
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserTest {
 
     private static final String USERNAME = "emilius";
+
+    @Value("${service.b.org.app.jwtSecret}")
+    private String jwtSecret;
 
     @Autowired
     private AttributeEncryptor attributeEncryptor;
@@ -78,6 +88,43 @@ public class UserTest {
 
     @Autowired
     private CsvService csvService;
+
+    @Autowired
+    private TestRestTemplate testRestTemplate;
+
+    @LocalServerPort
+    private int port;
+
+    private static final String HOST = "http://localhost:";
+
+    @Test
+    public void testMist() {
+        String forObject = this.testRestTemplate.getForObject(HOST + port + "/service/auth/mist", String.class);
+        assertEquals("Hi du verdammter Mistkerl", forObject);
+    }
+
+    @Test
+    public void testWithToken() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization", "Bearer " + generateJwtToken());
+        String url = HOST + port + "/service/undok/clients/create";
+        ClientForm clientForm = new ClientForm();
+        clientForm.setKeyword("test_the_shit");
+        HttpEntity<ClientForm> clientFormHttpEntity = new HttpEntity<>(clientForm, httpHeaders);
+        ResponseEntity<Client> clientResponseEntity = this.testRestTemplate.postForEntity(url, clientFormHttpEntity, Client.class);
+        assertTrue(clientResponseEntity.getStatusCode().is2xxSuccessful(), "fick dich");
+    }
+
+    private String generateJwtToken() {
+        String authorities = "";
+        return Jwts.builder()
+                   .setSubject((USERNAME))
+                   .setIssuedAt(new Date())
+                   .setExpiration(new Date((new Date()).getTime() + 300000))
+                   .claim("roles", authorities)
+                   .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                   .compact();
+    }
 
     @Test
     public void generateToken() {
@@ -192,7 +239,7 @@ public class UserTest {
     public void getPerson() {
         Person p = personRepo.findByFirstName("Emil");
         // Person p = personRepo.getOne(uuidConverter.convertToEntityAttribute("90242ff4-1547-4d7a-880d-8a4731a2c9e0"));
-        
+
         assertThat(p.getId()).isEqualTo(UUID.fromString("90242ff4-1547-4d7a-880d-8a4731a2c9e0"));
     }
 

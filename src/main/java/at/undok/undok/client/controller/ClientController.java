@@ -1,5 +1,6 @@
 package at.undok.undok.client.controller;
 
+import at.undok.common.message.Message;
 import at.undok.undok.client.api.ClientApi;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
@@ -8,12 +9,16 @@ import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.model.form.CounselingForm;
 import at.undok.undok.client.service.ClientService;
 import at.undok.undok.client.service.CounselingService;
+import org.hibernate.ObjectNotFoundException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 
@@ -68,5 +73,27 @@ public class ClientController implements ClientApi {
     @Override
     public List<AllClientDto> getAll() {
         return clientService.getAll();
+    }
+
+    @Override
+    public ResponseEntity setStatusDeleted(UUID clientPersonId) {
+        clientService.setStatusDeleted(clientPersonId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity deleteClient(UUID clientId) {
+        clientService.deleteClient(clientId);
+        return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<Message> handle(EmptyResultDataAccessException emptyResultDataAccessException) {
+        return new ResponseEntity<>(new Message(emptyResultDataAccessException.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<Message> handle(NoSuchElementException e) {
+        return new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 }

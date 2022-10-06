@@ -3,6 +3,7 @@ package at.undok.undok.client.api;
 import at.undok.undok.client.model.dto.ClientEmployerJobDescriptionDto;
 import at.undok.undok.client.model.dto.EmployerDto;
 import at.undok.undok.client.model.form.EmployerForm;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,5 +31,8 @@ public interface EmployerApi {
 
     @PutMapping("/{id}")
     EmployerDto updateEmployer(@PathVariable("id") UUID id, @RequestBody EmployerDto employerDto);
+
+    @DeleteMapping("/{id}/set-deleted")
+    ResponseEntity setStatusDeleted(@PathVariable("id") UUID id);
 
 }

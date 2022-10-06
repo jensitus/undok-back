@@ -2,8 +2,6 @@ package at.undok.undok.client.repository;
 
 import at.undok.undok.client.model.entity.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,7 +14,9 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
 
     boolean existsByKeyword(String keyword);
 
-    List<Client> findAllByOrderByCreatedAtDesc();
+    List<Client> findByStatusOrderByCreatedAtDesc(String status);
+
+    long countByStatus(String status);
 
 
 }

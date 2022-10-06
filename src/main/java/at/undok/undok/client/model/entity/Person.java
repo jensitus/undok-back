@@ -28,7 +28,7 @@ public class Person extends AbstractCrud implements Serializable {
     @OneToOne(mappedBy = "person", fetch = FetchType.LAZY)
     private Employer employer;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 

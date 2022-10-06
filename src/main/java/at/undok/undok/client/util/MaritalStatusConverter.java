@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.AttributeConverter;
 
-@Component
 public class MaritalStatusConverter implements AttributeConverter<MaritalStatus, String> {
 
     @Override

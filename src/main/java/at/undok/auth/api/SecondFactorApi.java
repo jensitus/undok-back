@@ -1,5 +1,6 @@
 package at.undok.auth.api;
 
+import at.undok.auth.message.JwtResponse;
 import at.undok.auth.model.form.SecondFactorForm;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public interface SecondFactorApi {
 
     @PostMapping("/second-factor")
-    public ResponseEntity<?> secondFactor(@RequestBody SecondFactorForm secondFactorForm);
+    public ResponseEntity<JwtResponse> secondFactor(@RequestBody SecondFactorForm secondFactorForm);
 
 }

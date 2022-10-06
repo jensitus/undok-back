@@ -6,6 +6,7 @@ import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.entity.Address;
 import at.undok.undok.client.model.entity.Client;
+import at.undok.undok.client.model.entity.Counseling;
 import at.undok.undok.client.model.entity.Person;
 import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.repository.AddressRepo;
@@ -27,24 +28,21 @@ import java.util.*;
 public class ClientService {
 
     private final EntityToDtoMapper entityToDtoMapper;
-
     private final ClientRepo clientRepo;
-
     private final PersonRepo personRepo;
-
     private final AddressRepo addressRepo;
-
     private final ToLocalDateService toLocalDateService;
-
     private final AttributeEncryptor attributeEncryptor;
+    private final CounselingService counselingService;
 
-    public ClientService(EntityToDtoMapper entityToDtoMapper, ClientRepo clientRepo, PersonRepo personRepo, AddressRepo addressRepo, ToLocalDateService toLocalDateService, AttributeEncryptor attributeEncryptor) {
+    public ClientService(EntityToDtoMapper entityToDtoMapper, ClientRepo clientRepo, PersonRepo personRepo, AddressRepo addressRepo, ToLocalDateService toLocalDateService, AttributeEncryptor attributeEncryptor, CounselingService counselingService) {
         this.entityToDtoMapper = entityToDtoMapper;
         this.clientRepo = clientRepo;
         this.personRepo = personRepo;
         this.addressRepo = addressRepo;
         this.toLocalDateService = toLocalDateService;
         this.attributeEncryptor = attributeEncryptor;
+        this.counselingService = counselingService;
     }
 
     public boolean checkIfKeywordAlreadyExists(String keyword) {
@@ -54,7 +52,7 @@ public class ClientService {
     public List<AllClientDto> getAll() {
         List<ClientDto> clientDtos =
                 entityToDtoMapper.convertClientListToDtoList(
-                        clientRepo.findAllByOrderByCreatedAtDesc());  // findAll(Sort.by(Sort.Order.by("createdAt"))));
+                        clientRepo.findByStatusOrderByCreatedAtDesc(StatusService.STATUS_ACTIVE));  // findAll(Sort.by(Sort.Order.by("createdAt"))));
         List<AllClientDto> allClientDtoList = turnClientDtoListToAllClientDtoList(clientDtos);
         return allClientDtoList;
     }
@@ -90,7 +88,7 @@ public class ClientService {
     }
 
     public Long getNumberOfClients() {
-        return clientRepo.count();
+        return clientRepo.countByStatus(StatusService.STATUS_ACTIVE);
     }
 
     public ClientDto updateClient(UUID clientId, ClientDto clientDto) {
@@ -103,6 +101,28 @@ public class ClientService {
         } else {
             throw new RuntimeException("Sorry");
         }
+    }
+
+    public void setStatusDeleted(UUID clientPersonId) {
+        Optional<Person> optionalPerson = personRepo.findById(clientPersonId);
+        if (optionalPerson.isPresent()) {
+            Person person = optionalPerson.get();
+            Client client = person.getClient();
+            client.setStatus(StatusService.STATUS_DELETED);
+            clientRepo.save(client);
+            List<Counseling> counselings = client.getCounselings();
+            List<UUID> counselingIds = new ArrayList<>();
+            counselings.forEach(c -> {
+                counselingIds.add(c.getId());
+            });
+            counselingService.setStatusDeleted(counselingIds);
+        } else {
+            throw new NoSuchElementException("No client found with ID " + clientPersonId);
+        }
+    }
+
+    public void deleteClient(UUID clientId) {
+        personRepo.deleteById(clientId);
     }
 
     private ClientDto createTheCompleteClient(ClientForm clientForm) {
@@ -150,6 +170,7 @@ public class ClientService {
         client.setOrganization(clientForm.getOrganization());
         client.setPosition(clientForm.getPosition());
         client.setCreatedAt(LocalDateTime.now());
+        client.setStatus(StatusService.STATUS_ACTIVE);
         Client saveAndFlush = clientRepo.saveAndFlush(client);
 
         if (clientForm.getStreet() != null) {
