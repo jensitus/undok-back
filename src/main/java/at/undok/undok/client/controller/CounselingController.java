@@ -1,10 +1,10 @@
 package at.undok.undok.client.controller;
 
 import at.undok.undok.client.api.CounselingApi;
+import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.service.CounselingService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,7 +28,7 @@ public class CounselingController implements CounselingApi {
     }
 
     @Override
-    public ResponseEntity<List<CounselingDto>> getAllCounselings() {
+    public ResponseEntity<List<AllCounselingDto>> getAllCounselings() {
         return ResponseEntity.ok(counselingService.getAllCounselings());
     }
 
@@ -45,5 +45,10 @@ public class CounselingController implements CounselingApi {
     @Override
     public void deleteCounseling(UUID counselingId) {
         counselingService.deleteCounseling(counselingId);
+    }
+
+    @Override
+    public CounselingDto getSingleCounseling(UUID counselingId) {
+        return counselingService.getSingleCounseling(counselingId);
     }
 }

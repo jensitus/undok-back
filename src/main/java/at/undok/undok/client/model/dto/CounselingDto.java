@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -19,7 +20,7 @@ public class CounselingDto {
     private String concern;
     private String concernCategory;
     private String activity;
-    private String activityCategory;
+    private Set<CategoryDto> activityCategories;
     private String registeredBy;
     private LocalDateTime counselingDate;
     private LocalDateTime createdAt;
@@ -28,12 +29,11 @@ public class CounselingDto {
     private String clientFullName;
     private String keyword;
 
-    public CounselingDto(UUID id, String concern, String concernCategory, String activity, String activityCategory, LocalDateTime counselingDate, String comment, UUID clientId, String keyword) {
+    public CounselingDto(UUID id, String concern, String concernCategory, String activity, LocalDateTime counselingDate, String comment, UUID clientId, String keyword) {
         this.id = id;
         this.concern = concern;
         this.concernCategory = concernCategory;
         this.activity = activity;
-        this.activityCategory = activityCategory;
         this.counselingDate = counselingDate;
         this.comment = comment;
         this.clientId = clientId;

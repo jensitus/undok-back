@@ -1,8 +1,9 @@
 package at.undok.undok.client.model.form;
 
+import at.undok.undok.client.model.dto.CategoryDto;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -18,7 +19,7 @@ public class CounselingForm {
 
     private String activity;
 
-    private String activityCategory;
+    private Set<CategoryDto> activityCategory;
 
     private String registeredBy;
 

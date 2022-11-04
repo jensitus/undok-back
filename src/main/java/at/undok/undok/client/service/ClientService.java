@@ -12,6 +12,7 @@ import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.repository.AddressRepo;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.PersonRepo;
+import at.undok.undok.client.util.StatusService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

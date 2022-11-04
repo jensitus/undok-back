@@ -3,6 +3,7 @@ package at.undok.undok.client.service;
 import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.undok.client.model.dto.*;
 import at.undok.undok.client.model.entity.*;
+import at.undok.undok.client.util.CategoryType;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,8 @@ import java.util.List;
 public class EntityToDtoMapper {
 
     private final ModelMapper modelMapper;
-
     private final AttributeEncryptor attributeEncryptor;
+    private final CategoryService categoryService;
 
     public List<EmployerDto> convertEmployerListToDto(List<Employer> employers) {
         List<EmployerDto> employerDtoList = new ArrayList<>();
@@ -43,8 +44,16 @@ public class EntityToDtoMapper {
         return clientDto;
     }
 
-    private CounselingDto convertCounselingToDto(Counseling counseling) {
-        return modelMapper.map(counseling, CounselingDto.class);
+    public CounselingDto convertCounselingToDto(Counseling counseling) {
+        CounselingDto counselingDto = modelMapper.map(counseling, CounselingDto.class);
+        Client client = counseling.getClient();
+        counselingDto.setClientId(client.getId());
+        counselingDto.setKeyword(client.getKeyword());
+        if (client.getPerson().getFirstName() != null && client.getPerson().getLastName() != null) {
+            counselingDto.setClientFullName(attributeEncryptor.convertToEntityAttribute(client.getPerson().getFirstName())
+                    + " " + attributeEncryptor.convertToEntityAttribute(client.getPerson().getLastName()));
+        }
+        return counselingDto;
     }
 
     public PersonDto convertPersonToDto(Person person) {
@@ -63,10 +72,10 @@ public class EntityToDtoMapper {
         return clientDtos;
     }
 
-    public List<CounselingDto> convertCounselingListToDtoList(List<Counseling> counselings) {
-        List<CounselingDto> dtoList = new ArrayList<>();
+    public List<AllCounselingDto> convertCounselingListToDtoForTableList(List<Counseling> counselings) {
+        List<AllCounselingDto> dtoList = new ArrayList<>();
         for (Counseling c : counselings) {
-            CounselingDto counselingDto = modelMapper.map(c, CounselingDto.class);
+            AllCounselingDto counselingDto = modelMapper.map(c, AllCounselingDto.class);
             Client client = c.getClient();
             counselingDto.setClientId(client.getId());
             counselingDto.setKeyword(client.getKeyword());
@@ -74,6 +83,21 @@ public class EntityToDtoMapper {
                 counselingDto.setClientFullName(attributeEncryptor.convertToEntityAttribute(client.getPerson().getFirstName())
                         + " " + attributeEncryptor.convertToEntityAttribute(client.getPerson().getLastName()));
             }
+            List<CategoryDto> activityCategories = categoryService.getCategoryListByTypeAndEntity(CategoryType.ACTIVITY, c.getId());
+            StringBuilder activityCategoriesSeparatedByComma = new StringBuilder();
+            activityCategories.forEach(activityCategoryDto -> {
+                activityCategoriesSeparatedByComma.append(activityCategoryDto.getName()).append(",");
+            });
+            counselingDto.setActivityCategories(activityCategoriesSeparatedByComma.toString());
+            dtoList.add(counselingDto);
+        }
+        return dtoList;
+    }
+
+    public List<CounselingDto> convertCounselingListToDtoList(List<Counseling> counselings) {
+        List<CounselingDto> dtoList = new ArrayList<>();
+        for (Counseling c : counselings) {
+            CounselingDto counselingDto = convertCounselingToDto(c);
             dtoList.add(counselingDto);
         }
         return dtoList;

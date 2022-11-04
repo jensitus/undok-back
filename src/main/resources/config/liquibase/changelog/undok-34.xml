@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet id="join-table-category" author="jens@ist-ur.org">
+        <createTable tableName="join_category">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="category_id" type="UUID" />
+            <column name="entity_id" type="UUID" />
+            <column name="category_type" type="varchar(64)" />
+            <column name="entity_type" type="varchar(64)" />
+            <column name="created_at" type="TIMESTAMP" />
+            <column name="updated_at" type="timestamp" />
+        </createTable>
+        <addUniqueConstraint tableName="join_category" columnNames="category_id, entity_id, category_type, entity_type" />
+    </changeSet>
+</databaseChangeLog>

@@ -14,4 +14,10 @@ public interface CategoryRepo extends JpaRepository<Category, UUID> {
 
     boolean existsByName(String name);
 
+    @Query("select c from Category c, JoinCategory jc " +
+            "where jc.categoryType = :categoryType " +
+            "and jc.entityId = :entityId " +
+            "and c.id = jc.categoryId ")
+    List<Category> getCategoryByTypeAndEntity(String categoryType, UUID entityId);
+
 }
