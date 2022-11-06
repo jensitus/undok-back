@@ -88,7 +88,11 @@ public class EntityToDtoMapper {
             activityCategories.forEach(activityCategoryDto -> {
                 activityCategoriesSeparatedByComma.append(activityCategoryDto.getName()).append(",");
             });
-            counselingDto.setActivityCategories(activityCategoriesSeparatedByComma.toString());
+            String activityCommaCategories = activityCategoriesSeparatedByComma.toString();
+            if (!activityCommaCategories.equals("")) {
+                activityCommaCategories = activityCommaCategories.substring(0, activityCommaCategories.length() - 1);
+            }
+            counselingDto.setActivityCategories(activityCommaCategories);
             dtoList.add(counselingDto);
         }
         return dtoList;
