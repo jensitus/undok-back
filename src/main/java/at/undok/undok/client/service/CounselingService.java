@@ -2,7 +2,6 @@ package at.undok.undok.client.service;
 
 import at.undok.common.util.ToLocalDateService;
 import at.undok.undok.client.model.dto.AllCounselingDto;
-import at.undok.undok.client.model.dto.CategoryDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.entity.Counseling;
@@ -13,13 +12,11 @@ import at.undok.undok.client.repository.JoinCategoryRepo;
 import at.undok.undok.client.util.StatusService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -44,11 +41,6 @@ public class CounselingService {
         c.setCreatedAt(LocalDateTime.now());
         c.setComment(counselingForm.getComment());
         c.setStatus(StatusService.STATUS_ACTIVE);
-
-        // c.setActivityCategory(counselingForm.getActivityCategory());
-
-        Set<CategoryDto> activityCategory = counselingForm.getActivityCategory();
-
 
         Optional<Client> clientOptional = clientRepo.findById(counselingForm.getClientId());
         c.setClient(clientOptional.get());

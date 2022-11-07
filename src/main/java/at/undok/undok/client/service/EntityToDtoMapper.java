@@ -75,12 +75,12 @@ public class EntityToDtoMapper {
     public List<AllCounselingDto> convertCounselingListToDtoForTableList(List<Counseling> counselings) {
         List<AllCounselingDto> dtoList = new ArrayList<>();
         for (Counseling c : counselings) {
-            AllCounselingDto counselingDto = modelMapper.map(c, AllCounselingDto.class);
+            AllCounselingDto allCounselingDto = modelMapper.map(c, AllCounselingDto.class);
             Client client = c.getClient();
-            counselingDto.setClientId(client.getId());
-            counselingDto.setKeyword(client.getKeyword());
+            allCounselingDto.setClientId(client.getId());
+            allCounselingDto.setKeyword(client.getKeyword());
             if (client.getPerson().getFirstName() != null && client.getPerson().getLastName() != null) {
-                counselingDto.setClientFullName(attributeEncryptor.convertToEntityAttribute(client.getPerson().getFirstName())
+                allCounselingDto.setClientFullName(attributeEncryptor.convertToEntityAttribute(client.getPerson().getFirstName())
                         + " " + attributeEncryptor.convertToEntityAttribute(client.getPerson().getLastName()));
             }
             List<CategoryDto> activityCategories = categoryService.getCategoryListByTypeAndEntity(CategoryType.ACTIVITY, c.getId());
@@ -92,8 +92,8 @@ public class EntityToDtoMapper {
             if (!activityCommaCategories.equals("")) {
                 activityCommaCategories = activityCommaCategories.substring(0, activityCommaCategories.length() - 1);
             }
-            counselingDto.setActivityCategories(activityCommaCategories);
-            dtoList.add(counselingDto);
+            allCounselingDto.setActivityCategories(activityCommaCategories);
+            dtoList.add(allCounselingDto);
         }
         return dtoList;
     }

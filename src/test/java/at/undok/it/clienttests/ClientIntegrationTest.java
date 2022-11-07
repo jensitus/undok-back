@@ -10,7 +10,7 @@ import at.undok.it.IntegrationTestBase;
 import at.undok.it.cucumber.UndokTestData;
 import at.undok.it.cucumber.auth.*;
 import at.undok.undok.client.model.dto.AllClientDto;
-import at.undok.undok.client.model.dto.ClientDto;
+import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.form.ClientForm;
@@ -27,7 +27,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -39,10 +38,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ClientIntegrationTest extends IntegrationTestBase {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    @Autowired
-    private TestRestTemplate testRestTemplate;
 
     @Autowired
     private AuthRestApiClient authRestApiClient;
@@ -95,7 +90,7 @@ public class ClientIntegrationTest extends IntegrationTestBase {
         int second = checkDeletedClient();
         int sum = first - second;
         assertEquals(1, sum);
-        List<CounselingDto> counselings = getCounselings();
+        List<AllCounselingDto> counselings = getCounselings();
         
     }
 
@@ -106,9 +101,9 @@ public class ClientIntegrationTest extends IntegrationTestBase {
         return allClients.size();
     }
 
-    private List<CounselingDto> getCounselings() {
-        ResponseEntity<List<CounselingDto>> allCounselings = authRestApiClient.getAllCounselings(accessToken);
-        List<CounselingDto> counselingDtos = allCounselings.getBody();
+    private List<AllCounselingDto> getCounselings() {
+        ResponseEntity<List<AllCounselingDto>> allCounselings = authRestApiClient.getAllCounselings(accessToken);
+        List<AllCounselingDto> counselingDtos = allCounselings.getBody();
         assertNotNull(counselingDtos);
         return counselingDtos;
     }
