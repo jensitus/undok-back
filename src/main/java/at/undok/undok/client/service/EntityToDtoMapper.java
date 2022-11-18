@@ -83,7 +83,7 @@ public class EntityToDtoMapper {
                 allCounselingDto.setClientFullName(attributeEncryptor.convertToEntityAttribute(client.getPerson().getFirstName())
                         + " " + attributeEncryptor.convertToEntityAttribute(client.getPerson().getLastName()));
             }
-            List<CategoryDto> activityCategories = categoryService.getCategoryListByTypeAndEntity(CategoryType.ACTIVITY, c.getId());
+            List<CategoryDto> activityCategories = categoryService.getCategoryListByTypeAndEntity(CategoryType.LEGAL, c.getId());
             StringBuilder activityCategoriesSeparatedByComma = new StringBuilder();
             activityCategories.forEach(activityCategoryDto -> {
                 activityCategoriesSeparatedByComma.append(activityCategoryDto.getName()).append(",");
