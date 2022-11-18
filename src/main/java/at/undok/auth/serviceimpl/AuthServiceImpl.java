@@ -1,26 +1,27 @@
 package at.undok.auth.serviceimpl;
 
-import at.undok.auth.model.entity.RoleName;
-import at.undok.auth.model.entity.TwoFactor;
-import at.undok.auth.model.form.ConfirmAccountForm;
-import at.undok.auth.model.form.CreateUserForm;
-import at.undok.auth.model.form.SecondFactorForm;
-import at.undok.auth.repository.TwoFactorRepo;
-import at.undok.common.mailer.impl.UndokMailer;
-import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import at.undok.auth.model.dto.LoginDto;
 import at.undok.auth.model.dto.SignUpDto;
 import at.undok.auth.model.dto.UserDto;
-import at.undok.common.message.Message;
 import at.undok.auth.model.entity.Role;
+import at.undok.auth.model.entity.RoleName;
+import at.undok.auth.model.entity.TwoFactor;
 import at.undok.auth.model.entity.User;
+import at.undok.auth.model.form.ConfirmAccountForm;
+import at.undok.auth.model.form.CreateUserForm;
+import at.undok.auth.model.form.SecondFactorForm;
 import at.undok.auth.repository.RoleRepo;
+import at.undok.auth.repository.TwoFactorRepo;
 import at.undok.auth.repository.UserRepo;
 import at.undok.auth.security.JwtProvider;
 import at.undok.auth.service.AuthService;
 import at.undok.auth.service.UserService;
 import at.undok.common.encryption.AttributeEncryptor;
+import at.undok.common.exception.UserNotFoundException;
+import at.undok.common.mailer.impl.UndokMailer;
+import at.undok.common.message.Message;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -221,9 +222,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private void removeRole(String username, RoleName roleName) {
-        User user = userRepo.findByUsername(username).get();
+        User user;
+        try {
+            user = userRepo.findByUsername(username).orElseThrow();
+        } catch (NoSuchElementException e) {
+            throw new UserNotFoundException("we couldn't find a user " + username + " in the database");
+        }
         Set<Role> roles = user.getRoles();
-        roles.remove(roleRepo.findByName(roleName).get());
+        roles.remove(roleRepo.findByName(roleName).orElse(null));
         user.setRoles(roles);
         userRepo.save(user);
     }
