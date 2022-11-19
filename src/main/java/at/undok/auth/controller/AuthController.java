@@ -123,7 +123,7 @@ public class AuthController implements AuthApi {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Message> handleException(UserNotFoundException userNotFoundException) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message(userNotFoundException.getErrorMessage()));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message(String.format("user not found: %s", userNotFoundException.getUsername())));
     }
 
 }

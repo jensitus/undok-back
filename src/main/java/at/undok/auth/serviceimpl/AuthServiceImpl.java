@@ -226,7 +226,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             user = userRepo.findByUsername(username).orElseThrow();
         } catch (NoSuchElementException e) {
-            throw new UserNotFoundException("we couldn't find a user " + username + " in the database");
+            throw new UserNotFoundException(username);
         }
         Set<Role> roles = user.getRoles();
         roles.remove(roleRepo.findByName(roleName).orElse(null));
