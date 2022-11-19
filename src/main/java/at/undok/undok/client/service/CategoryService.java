@@ -54,7 +54,7 @@ public class CategoryService {
     }
 
     public void addJoinCategory(List<JoinCategoryForm> joinCategoryFormList) {
-        joinCategoryFormList.forEach(joinCategoryForm -> {
+        for (JoinCategoryForm joinCategoryForm : joinCategoryFormList) {
             JoinCategory joinCategory = new JoinCategory();
             joinCategory.setCategoryId(joinCategoryForm.getCategoryId());
             joinCategory.setEntityId(joinCategoryForm.getEntityId());
@@ -70,7 +70,7 @@ public class CategoryService {
                 log.debug(e.getMessage());
                 log.warn("joinCategory already exists");
             }
-        });
+        }
     }
 
     public List<CategoryDto> getCategoryListByTypeAndEntity(String categoryType, UUID entityId) {
