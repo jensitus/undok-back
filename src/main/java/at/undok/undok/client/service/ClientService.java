@@ -2,6 +2,7 @@ package at.undok.undok.client.service;
 
 import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.common.util.ToLocalDateService;
+import at.undok.undok.client.exception.KeywordException;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.entity.Address;
@@ -13,12 +14,15 @@ import at.undok.undok.client.repository.AddressRepo;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.PersonRepo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -34,6 +38,8 @@ public class ClientService {
     private final ToLocalDateService toLocalDateService;
     private final AttributeEncryptor attributeEncryptor;
     private final CounselingService counselingService;
+    private static final String KEYWORD_MUST_NOT_BE_NULL = "das Keyword (Schlüsselwort) muss gesetzt sein, hilft nix";
+    private static final String KEYWORD_ALREADY_EXISTS = "dieses Keyword (Schlüsselwort) ist bereits in Verwendung, tut uns leid";
 
     public ClientService(EntityToDtoMapper entityToDtoMapper, ClientRepo clientRepo, PersonRepo personRepo, AddressRepo addressRepo, ToLocalDateService toLocalDateService, AttributeEncryptor attributeEncryptor, CounselingService counselingService) {
         this.entityToDtoMapper = entityToDtoMapper;
@@ -171,7 +177,16 @@ public class ClientService {
         client.setPosition(clientForm.getPosition());
         client.setCreatedAt(LocalDateTime.now());
         client.setStatus(StatusService.STATUS_ACTIVE);
-        Client saveAndFlush = clientRepo.saveAndFlush(client);
+        Client saveAndFlush = null;
+        try {
+            saveAndFlush = clientRepo.saveAndFlush(client);
+        } catch (ConstraintViolationException e) {
+            if (e.getConstraintViolations().stream().findFirst().orElseThrow().getPropertyPath().toString().equals("keyword")) {
+                throw  new KeywordException(HttpStatus.UNPROCESSABLE_ENTITY, KEYWORD_MUST_NOT_BE_NULL);
+            }
+        } catch (DataIntegrityViolationException e) {
+            throw new KeywordException(HttpStatus.CONFLICT, KEYWORD_ALREADY_EXISTS);
+        }
 
         if (clientForm.getStreet() != null) {
             clientAddress.setStreet(attributeEncryptor.convertToDatabaseColumn(clientForm.getStreet()));

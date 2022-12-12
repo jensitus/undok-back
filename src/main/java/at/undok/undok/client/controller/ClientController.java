@@ -2,6 +2,7 @@ package at.undok.undok.client.controller;
 
 import at.undok.common.message.Message;
 import at.undok.undok.client.api.ClientApi;
+import at.undok.undok.client.exception.KeywordException;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.CounselingDto;
@@ -9,7 +10,6 @@ import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.model.form.CounselingForm;
 import at.undok.undok.client.service.ClientService;
 import at.undok.undok.client.service.CounselingService;
-import org.hibernate.ObjectNotFoundException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,14 +34,13 @@ public class ClientController implements ClientApi {
     }
 
     @Override
-    public ResponseEntity createClient(ClientForm clientForm) {
-//        if (clientForm.getKeyword() == null) {
-//            return ResponseEntity.unprocessableEntity().body("Keyword must not be null");
-//        } else if (clientService.checkIfKeywordAlreadyExists(clientForm.getKeyword())) {
-//            return ResponseEntity.status(HttpStatus.CONFLICT).body("Keyword already exists");
-//        } else {
+    public ResponseEntity<ClientDto> createClient(ClientForm clientForm) {
         return ResponseEntity.ok(this.clientService.createClient(clientForm));
+    }
 
+    @ExceptionHandler(KeywordException.class)
+    public ResponseEntity<Message> handle(KeywordException keywordException) {
+        return ResponseEntity.status(keywordException.getHttpStatus()).body(new Message(keywordException.getMessage()));
     }
 
     @Override
