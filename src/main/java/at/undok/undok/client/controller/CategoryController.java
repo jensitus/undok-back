@@ -1,12 +1,16 @@
 package at.undok.undok.client.controller;
 
+import at.undok.common.message.Message;
 import at.undok.undok.client.api.CategoryApi;
+import at.undok.undok.client.exception.CategoryException;
 import at.undok.undok.client.model.dto.CategoryDto;
 import at.undok.undok.client.model.form.CategoryForm;
 import at.undok.undok.client.service.CategoryService;
+import liquibase.pro.packaged.M;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -18,11 +22,13 @@ public class CategoryController implements CategoryApi {
     private final CategoryService categoryService;
 
     @Override
-    public ResponseEntity createCategory(CategoryForm categoryForm) {
-        if (categoryService.checkIfCategoryAlreadyExists(categoryForm.getName())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Category already exists");
-        }
+    public ResponseEntity<CategoryDto> createCategory(CategoryForm categoryForm) {
         return ResponseEntity.ok(categoryService.createCategory(categoryForm));
+    }
+
+    @ExceptionHandler(CategoryException.class)
+    public ResponseEntity<Message> handle(CategoryException categoryException) {
+        return ResponseEntity.status(categoryException.getHttpStatus()).body(new Message(categoryException.getMessage()));
     }
 
     @Override

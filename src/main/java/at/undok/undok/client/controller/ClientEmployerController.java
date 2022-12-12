@@ -11,7 +11,6 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 public class ClientEmployerController implements ClientEmployerApi {
 
     private final ClientEmployerService clientEmployerService;
@@ -23,9 +22,6 @@ public class ClientEmployerController implements ClientEmployerApi {
 
     @Override
     public boolean addEmployerToClient(UUID employerId, UUID clientId, ClientEmployerForm clientEmployerForm) {
-        log.info(clientEmployerForm.toString());
-        log.info(employerId.toString());
-        log.info(clientId.toString());
         return clientEmployerService.addEmployerToClient(employerId, clientId, clientEmployerForm);
     }
 

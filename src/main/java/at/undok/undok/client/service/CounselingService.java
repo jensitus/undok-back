@@ -19,20 +19,19 @@ import java.util.UUID;
 @Service
 public class CounselingService {
 
-    @Autowired
-    private CounselingRepo counselingRepo;
+    private final CounselingRepo counselingRepo;
+    private final ClientRepo clientRepo;
+    private final ModelMapper modelMapper;
+    private final ToLocalDateService toLocalDateService;
+    private final EntityToDtoMapper entityToDtoMapper;
 
-    @Autowired
-    private ClientRepo clientRepo;
-
-    @Autowired
-    private ModelMapper modelMapper;
-
-    @Autowired
-    private ToLocalDateService toLocalDateService;
-
-    @Autowired
-    private EntityToDtoMapper entityToDtoMapper;
+    public CounselingService(CounselingRepo counselingRepo, ClientRepo clientRepo, ModelMapper modelMapper, ToLocalDateService toLocalDateService, EntityToDtoMapper entityToDtoMapper) {
+        this.counselingRepo = counselingRepo;
+        this.clientRepo = clientRepo;
+        this.modelMapper = modelMapper;
+        this.toLocalDateService = toLocalDateService;
+        this.entityToDtoMapper = entityToDtoMapper;
+    }
 
     public CounselingDto createCounseling(UUID clientId, CounselingForm counselingForm) {
         Counseling c = new Counseling();
