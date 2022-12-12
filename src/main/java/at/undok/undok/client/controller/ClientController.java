@@ -35,13 +35,13 @@ public class ClientController implements ClientApi {
 
     @Override
     public ResponseEntity createClient(ClientForm clientForm) {
-        if (clientForm.getKeyword() == null) {
-            return ResponseEntity.unprocessableEntity().body("Keyword must not be null");
-        } else if (clientService.checkIfKeywordAlreadyExists(clientForm.getKeyword())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Keyword already exists");
-        } else {
-            return ResponseEntity.ok(this.clientService.createClient(clientForm));
-        }
+//        if (clientForm.getKeyword() == null) {
+//            return ResponseEntity.unprocessableEntity().body("Keyword must not be null");
+//        } else if (clientService.checkIfKeywordAlreadyExists(clientForm.getKeyword())) {
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body("Keyword already exists");
+//        } else {
+        return ResponseEntity.ok(this.clientService.createClient(clientForm));
+
     }
 
     @Override

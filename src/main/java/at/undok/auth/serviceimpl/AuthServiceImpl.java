@@ -97,7 +97,6 @@ public class AuthServiceImpl implements AuthService {
         );
         UserDto userDto = userDtoWithJwt(jwt, loginDto.getUsername());
         generateAndPersist2FactorToken(userDto);
-        log.info("jwt: " + jwt);
         return userDto;
     }
 
@@ -162,7 +161,6 @@ public class AuthServiceImpl implements AuthService {
         if (!confirmAccountForm.getPassword().equals(confirmAccountForm.getPasswordConfirmation())) {
             return new Message("Password and confirmation do not match");
         }
-        log.info(confirmAccountForm.toString());
         User user = userRepo.findByEmail(attributeEncryptor.decodeUrlEncoded(confirmAccountForm.getEmail()));
         user.setPassword(encoder.encode(confirmAccountForm.getPassword()));
         Set<Role> roleSet = new HashSet<>();
