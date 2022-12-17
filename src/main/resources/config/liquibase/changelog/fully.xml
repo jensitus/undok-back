@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="fully_view" author="jens@ist-ur.org">
+        <createView viewName="fully">
+            select p.first_name as firstname, p.last_name as lastname, c.keyword as keyword, c.id as c_id, p.client_id as p_client_id, c.id as id from persons p, clients c where c.id = p.client_id;
+        </createView>
+    </changeSet>
+
+</databaseChangeLog>
+
+<!--
+create or replace view fully as select p.first_name as firstname, p.last_name as lastname, c.keyword as keyword, c.id as c_id, p.client_id as p_client_id, c.id as id from persons p, clients c where c.id = p.client_id;
+-->

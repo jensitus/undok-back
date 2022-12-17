@@ -13,8 +13,10 @@ import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.entity.Client;
+import at.undok.undok.client.model.entity.Fully;
 import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.model.form.CounselingForm;
+import at.undok.undok.client.repository.FullyRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +48,9 @@ public class ClientIntegrationTest extends IntegrationTestBase {
     private EmailVerifications emailVerifications;
 
     @Autowired
+    private FullyRepo fullyRepo;
+
+    @Autowired
     private UserVerifications userVerifications;
 
     private String accessToken;
@@ -62,8 +67,12 @@ public class ClientIntegrationTest extends IntegrationTestBase {
     public void testCreateOnlyOneClient() {
         ClientForm clientForm = new ClientForm();
         clientForm.setKeyword("test_the_shit");
+        clientForm.setFirstName("Jens");
+        clientForm.setLastName("Arm");
         ResponseEntity<Client> clientResponseEntity = authRestApiClient.createClient(clientForm, accessToken);
         assertTrue(clientResponseEntity.getStatusCode().is2xxSuccessful(), "super");
+        List<Fully> fullyList = fullyRepo.findAll();
+        assertEquals(0,0);
     }
 
     @Test

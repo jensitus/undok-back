@@ -1,8 +1,5 @@
 package at.undok.ut;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import at.undok.auth.model.entity.User;
 import at.undok.auth.service.AuthService;
 import at.undok.common.encryption.AttributeEncryptor;
@@ -11,16 +8,10 @@ import at.undok.it.IntegrationTestBase;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.CounselingDto;
-import at.undok.undok.client.model.entity.Address;
-import at.undok.undok.client.model.entity.Client;
-import at.undok.undok.client.model.entity.Employer;
-import at.undok.undok.client.model.entity.Person;
+import at.undok.undok.client.model.entity.*;
 import at.undok.undok.client.model.enumeration.MaritalStatus;
 import at.undok.undok.client.model.form.ClientForm;
-import at.undok.undok.client.repository.AddressRepo;
-import at.undok.undok.client.repository.ClientRepo;
-import at.undok.undok.client.repository.EmployerRepo;
-import at.undok.undok.client.repository.PersonRepo;
+import at.undok.undok.client.repository.*;
 import at.undok.undok.client.service.ClientService;
 import at.undok.undok.client.service.CounselingService;
 import at.undok.undok.client.service.CsvService;
@@ -48,6 +39,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 // @TestPropertySource(properties = {"undok.secretKey=abcTestKey"})
 // @Disabled
@@ -79,6 +71,9 @@ public class UserTest extends IntegrationTestBase {
     private PersonRepo personRepo;
 
     @Autowired
+    private FullyRepo fullyRepo;
+
+    @Autowired
     private EmployerRepo employerRepo;
 
     @Autowired
@@ -102,6 +97,11 @@ public class UserTest extends IntegrationTestBase {
     public void testMist() {
         String forObject = this.testRestTemplate.getForObject(HOST + port + "/service/auth/mist", String.class);
         assertEquals("Hi du verdammter Mistkerl", forObject);
+    }
+
+    @Test
+    public void testFully() {
+        assertNotEquals(0,1);
     }
 
     private String generateJwtToken() {
