@@ -19,5 +19,7 @@ public class Fully {
     private String firstname;
     private String lastname;
     private String keyword;
+    private String c_id;
+    private String p_client_id;
 
 }

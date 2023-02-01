@@ -5,10 +5,9 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <changeSet id="fully_view" author="jens@ist-ur.org">
-        <createView viewName="fully">
-            select p.first_name as firstname, p.last_name as lastname, c.keyword as keyword, c.id as c_id, p.client_id as p_client_id, c.id as id from persons p, clients c where c.id = p.client_id;
-        </createView>
+        <sqlFile path="fully.sql" relativeToChangelogFile="true" />
     </changeSet>
+
 
 </databaseChangeLog>
 

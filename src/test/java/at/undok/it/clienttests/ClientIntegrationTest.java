@@ -12,11 +12,14 @@ import at.undok.it.cucumber.auth.*;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CounselingDto;
+import at.undok.undok.client.model.dto.FullyDto;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.entity.Fully;
 import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.model.form.CounselingForm;
 import at.undok.undok.client.repository.FullyRepo;
+import at.undok.undok.client.service.MigrationService;
+import at.undok.undok.client.service.SearchService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
@@ -48,10 +51,13 @@ public class ClientIntegrationTest extends IntegrationTestBase {
     private EmailVerifications emailVerifications;
 
     @Autowired
-    private FullyRepo fullyRepo;
+    private SearchService searchService;
 
     @Autowired
     private UserVerifications userVerifications;
+
+    @Autowired
+    private MigrationService migrationService;
 
     private String accessToken;
 
@@ -71,14 +77,18 @@ public class ClientIntegrationTest extends IntegrationTestBase {
         clientForm.setLastName("Arm");
         ResponseEntity<Client> clientResponseEntity = authRestApiClient.createClient(clientForm, accessToken);
         assertTrue(clientResponseEntity.getStatusCode().is2xxSuccessful(), "super");
-        List<Fully> fullyList = fullyRepo.findAll();
+        List<FullyDto> fullyList = searchService.searchFully("keyword_01");
         assertEquals(0,0);
     }
 
     @Test
     public void testCreateMoreClients() {
         ClientForm secondClientForm = createClientForm("second_client");
+        secondClientForm.setLastName("Wappler");
+        secondClientForm.setFirstName("Basis");
         ClientForm thirdClientForm = createClientForm("third_client");
+        thirdClientForm.setFirstName("Meine");
+        thirdClientForm.setLastName("Güte");
         ResponseEntity<Client> secondClient = authRestApiClient.createClient(secondClientForm, accessToken);
         clientId = Objects.requireNonNull(secondClient.getBody()).getPerson().getId();
         ResponseEntity<Client> thirdClient = authRestApiClient.createClient(thirdClientForm, accessToken);
@@ -89,6 +99,7 @@ public class ClientIntegrationTest extends IntegrationTestBase {
         ResponseEntity<CounselingDto> counseling_03 = authRestApiClient.createCounseling(counselingFormThirdClient,
                 accessToken, thirdClient.getBody().getId());
         getCounselings();
+        migrationService.migratePersons();
     }
 
     @Test
