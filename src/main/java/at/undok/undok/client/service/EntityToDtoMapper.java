@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,25 +79,25 @@ public class EntityToDtoMapper {
     }
 
     private ClientDto mapClientToDto(Client client) {
-        ClientDto clientDto = new ClientDto();
+        ClientDto clientDto = modelMapper.map(client, ClientDto.class);
 
-        clientDto.setEducation(client.getEducation());
-        clientDto.setId(client.getId());
-        clientDto.setHowHasThePersonHeardFromUs(client.getHowHasThePersonHeardFromUs());
-        clientDto.setInterpreterNecessary(client.getInterpreterNecessary());
-        clientDto.setKeyword(client.getKeyword());
-        clientDto.setMaritalStatus(client.getMaritalStatus());
-        clientDto.setVulnerableWhenAssertingRights(client.getVulnerableWhenAssertingRights());
-
-        clientDto.setLanguage(client.getLanguage());
-        clientDto.setPosition(client.getPosition());
-        clientDto.setMembership(client.getMembership());
-        clientDto.setOrganization(client.getOrganization());
-        clientDto.setNationality(client.getNationality());
-        clientDto.setSector(client.getSector());
-        clientDto.setUnion(client.getUnion());
-        clientDto.setLabourMarketAccess(client.getLabourMarketAccess());
-        clientDto.setCurrentResidentStatus(client.getCurrentResidentStatus());
+//        clientDto.setEducation(client.getEducation());
+//        clientDto.setId(client.getId());
+//        clientDto.setHowHasThePersonHeardFromUs(client.getHowHasThePersonHeardFromUs());
+//        clientDto.setInterpreterNecessary(client.getInterpreterNecessary());
+//        clientDto.setKeyword(client.getKeyword());
+//        clientDto.setMaritalStatus(client.getMaritalStatus());
+//        clientDto.setVulnerableWhenAssertingRights(client.getVulnerableWhenAssertingRights());
+//
+//        clientDto.setLanguage(client.getLanguage());
+//        clientDto.setPosition(client.getPosition());
+//        clientDto.setMembership(client.getMembership());
+//        clientDto.setOrganization(client.getOrganization());
+//        clientDto.setNationality(client.getNationality());
+//        clientDto.setSector(client.getSector());
+//        clientDto.setUnion(client.getUnion());
+//        clientDto.setLabourMarketAccess(client.getLabourMarketAccess());
+//        clientDto.setCurrentResidentStatus(client.getCurrentResidentStatus());
 
         return clientDto;
     }

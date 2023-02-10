@@ -15,6 +15,7 @@ import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.model.form.CounselingForm;
+import at.undok.undok.client.service.MigrateToDecryptedService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +54,9 @@ public class ClientIntegrationTest extends IntegrationTestBase {
     @Autowired
     private UserVerifications userVerifications;
 
+    @Autowired
+    private MigrateToDecryptedService migrateToDecryptedService;
+
     private String accessToken;
 
     private UUID clientId;
@@ -74,7 +78,11 @@ public class ClientIntegrationTest extends IntegrationTestBase {
     @Test
     public void testCreateMoreClients() {
         ClientForm secondClientForm = createClientForm("second_client");
+        secondClientForm.setFirstName("Mist");
+        secondClientForm.setLastName("Kerl");
         ClientForm thirdClientForm = createClientForm("third_client");
+        thirdClientForm.setFirstName("Meine");
+        thirdClientForm.setLastName("Güte");
         ResponseEntity<Client> secondClient = authRestApiClient.createClient(secondClientForm, accessToken);
         clientId = Objects.requireNonNull(secondClient.getBody()).getPerson().getId();
         ResponseEntity<Client> thirdClient = authRestApiClient.createClient(thirdClientForm, accessToken);
@@ -85,6 +93,8 @@ public class ClientIntegrationTest extends IntegrationTestBase {
         ResponseEntity<CounselingDto> counseling_03 = authRestApiClient.createCounseling(counselingFormThirdClient,
                 accessToken, thirdClient.getBody().getId());
         getCounselings();
+        migrateToDecryptedService.migratePersons();
+        log.info("donner");
     }
 
     @Test
