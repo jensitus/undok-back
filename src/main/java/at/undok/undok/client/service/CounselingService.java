@@ -1,14 +1,17 @@
 package at.undok.undok.client.service;
 
 import at.undok.common.util.ToLocalDateService;
+import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.entity.Counseling;
 import at.undok.undok.client.model.form.CounselingForm;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.CounselingRepo;
+import at.undok.undok.client.repository.JoinCategoryRepo;
+import at.undok.undok.client.util.StatusService;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,22 +20,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class CounselingService {
 
-    @Autowired
-    private CounselingRepo counselingRepo;
-
-    @Autowired
-    private ClientRepo clientRepo;
-
-    @Autowired
-    private ModelMapper modelMapper;
-
-    @Autowired
-    private ToLocalDateService toLocalDateService;
-
-    @Autowired
-    private EntityToDtoMapper entityToDtoMapper;
+    private final CounselingRepo counselingRepo;
+    private final ClientRepo clientRepo;
+    private final ModelMapper modelMapper;
+    private final ToLocalDateService toLocalDateService;
+    private final EntityToDtoMapper entityToDtoMapper;
+    private final JoinCategoryRepo joinCategoryRepo;
 
     public CounselingDto createCounseling(UUID clientId, CounselingForm counselingForm) {
         Counseling c = new Counseling();
@@ -41,11 +37,11 @@ public class CounselingService {
         c.setConcern(counselingForm.getConcern());
         c.setConcernCategory(counselingForm.getConcernCategory());
         c.setCounselingDate(toLocalDateService.formatStringToLocalDateTime(counselingForm.getCounselingDate()));
-        c.setActivityCategory(counselingForm.getActivityCategory());
         c.setRegisteredBy(counselingForm.getRegisteredBy());
         c.setCreatedAt(LocalDateTime.now());
         c.setComment(counselingForm.getComment());
         c.setStatus(StatusService.STATUS_ACTIVE);
+
         Optional<Client> clientOptional = clientRepo.findById(counselingForm.getClientId());
         c.setClient(clientOptional.get());
         Counseling counsel = counselingRepo.save(c);
@@ -67,9 +63,9 @@ public class CounselingService {
         return entityToDtoMapper.convertCounselingListToDtoList(allInPast);
     }
 
-    public List<CounselingDto> getAllCounselings() {
+    public List<AllCounselingDto> getAllCounselings() {
         List<Counseling> all = counselingRepo.findByStatusOrderByCounselingDateDesc(StatusService.STATUS_ACTIVE);
-        return entityToDtoMapper.convertCounselingListToDtoList(all);
+        return entityToDtoMapper.convertCounselingListToDtoForTableList(all);
     }
 
     public void setStatusDeleted(List<UUID> counselingIdList) {
@@ -91,7 +87,7 @@ public class CounselingService {
         counseling.setCreatedAt(counselingDto.getCreatedAt());
         counseling.setActivity(counselingDto.getActivity());
         counseling.setConcernCategory(counselingDto.getConcernCategory());
-        counseling.setActivityCategory(counselingDto.getActivityCategory());
+        // counseling.setActivityCategory(counselingDto.getActivityCategory());
         counseling.setComment(counselingDto.getComment());
         counseling.setUpdatedAt(LocalDateTime.now());
 
@@ -112,6 +108,16 @@ public class CounselingService {
 
     public void deleteCounseling(UUID counselingId) {
         counselingRepo.deleteById(counselingId);
+    }
+
+    public CounselingDto getSingleCounseling(UUID counselingId) {
+        Optional<Counseling> counseling = counselingRepo.findById(counselingId);
+        CounselingDto counselingDto = null;
+        if (counseling.isPresent()) {
+           return counselingDto = entityToDtoMapper.convertCounselingToDto(counseling.get());
+        } else {
+            throw new RuntimeException("counseling is not present, sorry");
+        }
     }
 
 }

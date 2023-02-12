@@ -6,6 +6,7 @@ import at.undok.auth.model.dto.SignUpDto;
 import at.undok.auth.model.form.SecondFactorForm;
 import at.undok.common.message.Message;
 import at.undok.undok.client.model.dto.AllClientDto;
+import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.entity.Client;
@@ -71,11 +72,11 @@ public class AuthRestApiClient {
         return testRestTemplate.postForEntity(url, counselingFormHttpEntity, CounselingDto.class);
     }
 
-    public ResponseEntity<List<CounselingDto>> getAllCounselings(String accessToken) {
+    public ResponseEntity<List<AllCounselingDto>> getAllCounselings(String accessToken) {
         HttpHeaders httpHeaders = getHeaders(accessToken);
         String url = HOST + serverPort + UNDOK_COUNSELINGS_PATH + "/all";
         HttpEntity entity = new HttpEntity(httpHeaders);
-        ResponseEntity<List<CounselingDto>> response = testRestTemplate.exchange(url, HttpMethod.GET, entity, new ParameterizedTypeReference<List<CounselingDto>>() {
+        ResponseEntity<List<AllCounselingDto>> response = testRestTemplate.exchange(url, HttpMethod.GET, entity, new ParameterizedTypeReference<List<AllCounselingDto>>() {
         });
 
         return response;

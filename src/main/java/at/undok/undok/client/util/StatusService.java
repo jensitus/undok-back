@@ -1,4 +1,4 @@
-package at.undok.undok.client.service;
+package at.undok.undok.client.util;
 
 public abstract class StatusService {
 

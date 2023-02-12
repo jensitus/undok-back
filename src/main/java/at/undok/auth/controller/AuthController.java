@@ -1,27 +1,25 @@
 package at.undok.auth.controller;
 
 import at.undok.auth.api.AuthApi;
-import at.undok.auth.api.SecondFactorApi;
-import at.undok.auth.model.form.ConfirmAccountForm;
-import at.undok.auth.model.form.SecondFactorForm;
-import at.undok.auth.repository.UserRepo;
-import at.undok.auth.model.dto.UserDto;
 import at.undok.auth.message.JwtResponse;
-import at.undok.auth.model.dto.LoginDto;
 import at.undok.auth.message.PasswordResetForm;
-import at.undok.auth.model.dto.SignUpDto;
+import at.undok.auth.model.dto.LoginDto;
+import at.undok.auth.model.dto.UserDto;
+import at.undok.auth.model.form.ConfirmAccountForm;
+import at.undok.auth.repository.UserRepo;
+import at.undok.auth.security.JwtProvider;
 import at.undok.auth.service.AuthService;
 import at.undok.auth.service.UserService;
-import at.undok.auth.security.JwtProvider;
+import at.undok.common.exception.UserNotFoundException;
 import at.undok.common.message.Message;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Validated
@@ -121,6 +119,11 @@ public class AuthController implements AuthApi {
     @Override
     public ResponseEntity<Message> setNewPW(ConfirmAccountForm confirmAccountForm) {
         return new ResponseEntity<>(authService.confirmAccount(confirmAccountForm), HttpStatus.OK);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Message> handleException(UserNotFoundException userNotFoundException) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message(String.format("user not found: %s", userNotFoundException.getUsername())));
     }
 
 }
