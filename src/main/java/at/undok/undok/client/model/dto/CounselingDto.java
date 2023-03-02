@@ -22,14 +22,14 @@ public class CounselingDto {
     private String activity;
     private Set<CategoryDto> activityCategories;
     private String registeredBy;
-    private LocalDateTime counselingDate;
+    private String counselingDate;
     private LocalDateTime createdAt;
     private String comment;
     private UUID clientId;
     private String clientFullName;
     private String keyword;
 
-    public CounselingDto(UUID id, String concern, String concernCategory, String activity, LocalDateTime counselingDate, String comment, UUID clientId, String keyword) {
+    public CounselingDto(UUID id, String concern, String concernCategory, String activity, String counselingDate, String comment, UUID clientId, String keyword) {
         this.id = id;
         this.concern = concern;
         this.concernCategory = concernCategory;
