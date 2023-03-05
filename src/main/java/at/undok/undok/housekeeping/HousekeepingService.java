@@ -1,7 +1,6 @@
 package at.undok.undok.housekeeping;
 
 import at.undok.undok.client.model.entity.Counseling;
-import at.undok.undok.client.repository.CounselingRepo;
 import at.undok.undok.client.service.CounselingService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
