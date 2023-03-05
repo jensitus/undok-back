@@ -120,4 +120,8 @@ public class CounselingService {
         }
     }
 
+    public List<Counseling> getCounselingsWithoutDate() {
+        return counselingRepo.findByCounselingDateIsNull();
+    }
+
 }

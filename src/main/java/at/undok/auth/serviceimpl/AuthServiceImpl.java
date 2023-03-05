@@ -98,7 +98,6 @@ public class AuthServiceImpl implements AuthService {
         );
         UserDto userDto = userDtoWithJwt(jwt, loginDto.getUsername());
         generateAndPersist2FactorToken(userDto);
-        log.info("jwt: " + jwt);
         return userDto;
     }
 
