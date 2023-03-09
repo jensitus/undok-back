@@ -22,4 +22,6 @@ public interface CounselingRepo extends JpaRepository<Counseling, UUID> {
 
     long countByStatus(String status);
 
+    List<Counseling> findByCounselingDateIsNull();
+
 }

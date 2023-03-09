@@ -34,5 +34,4 @@ public interface CounselingApi {
     @GetMapping("/{id}")
     CounselingDto getSingleCounseling(@PathVariable("id") UUID counselingId);
 
-
 }

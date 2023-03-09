@@ -36,7 +36,7 @@ public class CounselingService {
         c.setActivity(counselingForm.getActivity());
         c.setConcern(counselingForm.getConcern());
         c.setConcernCategory(counselingForm.getConcernCategory());
-        c.setCounselingDate(toLocalDateService.formatStringToLocalDateTime(counselingForm.getCounselingDate()));
+        // c.setCounselingDate(toLocalDateService.formatStringToLocalDateTime(counselingForm.getCounselingDate()));
         c.setRegisteredBy(counselingForm.getRegisteredBy());
         c.setCreatedAt(LocalDateTime.now());
         c.setComment(counselingForm.getComment());
@@ -81,7 +81,8 @@ public class CounselingService {
 
     public CounselingDto updateCounseling(CounselingDto counselingDto) {
         Counseling counseling = counselingRepo.getById(counselingDto.getId());
-        counseling.setCounselingDate(counselingDto.getCounselingDate());
+        // counseling.setCounselingDate(toLocalDateService.formatStringToLocalDateTime(counselingDto.getCounselingDate()));
+        counseling.setCounselingDate(LocalDateTime.parse(counselingDto.getCounselingDate()));
         counseling.setCounselingStatus(counselingDto.getCounselingStatus());
         counseling.setConcern(counselingDto.getConcern());
         counseling.setCreatedAt(counselingDto.getCreatedAt());
@@ -112,12 +113,15 @@ public class CounselingService {
 
     public CounselingDto getSingleCounseling(UUID counselingId) {
         Optional<Counseling> counseling = counselingRepo.findById(counselingId);
-        CounselingDto counselingDto = null;
         if (counseling.isPresent()) {
-           return counselingDto = entityToDtoMapper.convertCounselingToDto(counseling.get());
+           return entityToDtoMapper.convertCounselingToDto(counseling.get());
         } else {
             throw new RuntimeException("counseling is not present, sorry");
         }
+    }
+
+    public List<Counseling> getCounselingsWithoutDate() {
+        return counselingRepo.findByCounselingDateIsNull();
     }
 
 }
