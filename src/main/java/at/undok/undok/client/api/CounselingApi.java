@@ -2,6 +2,8 @@ package at.undok.undok.client.api;
 
 import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CounselingDto;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,5 +35,8 @@ public interface CounselingApi {
 
     @GetMapping("/{id}")
     CounselingDto getSingleCounseling(@PathVariable("id") UUID counselingId);
+
+    @GetMapping("/csv")
+    public ResponseEntity<Resource> getFile();
 
 }

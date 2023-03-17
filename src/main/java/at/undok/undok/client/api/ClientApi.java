@@ -45,4 +45,7 @@ public interface ClientApi {
     @DeleteMapping("/{id}")
     ResponseEntity deleteClient(@PathVariable("id") UUID clientId);
 
+    @GetMapping("/csv")
+    ResponseEntity getClientsCsv();
+
 }
