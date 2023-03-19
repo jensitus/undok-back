@@ -30,8 +30,8 @@ public class CsvService {
     private final CategoryService categoryService;
     private final ToLocalDateService localDateService;
 
-    private static final String[] COUNSELING_HEADERS = {"id", "Keyword", "concern", "Legal Categories", "activity",
-            "activityCategories", "registeredBy", "counselingDate", "clientFullName", "comment"};
+    private static final String[] COUNSELING_HEADERS = {"id", "Keyword", "Anliegen", "Rechtskategorien", "Aktivität",
+            "Aktivitätskategorien", "Registriert von", "Beratungsdatum", "Clientname", "Kommentar"};
 
 
     public ByteArrayInputStream loadClientCsv() {
@@ -39,11 +39,11 @@ public class CsvService {
         return writeClientsToCsv(clientDtos);
     }
 
-    private static final String[] CLIENT_HEADERS = {"id", "keyword", "firstName", "lastName", "dateOfBirth", "email",
-            "telephone", "street", "zipCode", "city", "country", "education", "maritalStatus", "interpreterNecessary",
-            "howHasThePersonHeardFromUs", "vulnerableWhenAssertingRights", "nationality", "language",
-            "currentResidentStatus", "labourMarketAccess", "position", "sector", "union",
-            "membership", "organization", "gender"};
+    private static final String[] CLIENT_HEADERS = {"id", "keyword", "Vorname", "Nachname", "Geburtsdatum", "Email",
+            "Telephon", "Straße", "Plz", "Stadt", "Land", "Bildung", "Familienstatus", "Dolmetsch erforderlich",
+            "Woher kennt uns die Person", "gefährdet bei Geltendmachung", "Nationalität", "Sprache",
+            "Aufenthaltsstatus", "Arbeitsmarktzugang", "Position", "Branche", "Gewerkschaft",
+            "Mitgliedschaft", "Organization", "Gender"};
 
     private ByteArrayInputStream writeClientsToCsv(List<AllClientDto> clientDtos) {
         final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL).withHeader(CLIENT_HEADERS);
