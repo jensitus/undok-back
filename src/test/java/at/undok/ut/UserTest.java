@@ -188,6 +188,13 @@ public class UserTest extends IntegrationTestBase {
     }
 
     @Test
+    public void testLocalDateTimeFormat()  {
+        LocalDateTime now = LocalDateTime.now();
+        String s = toLocalDateService.localDateTimeToString(now);
+        assertEquals(now.toString().substring(8, 10), s.substring(0, 2));
+    }
+
+    @Test
     public void findKeywords() {
         List<AllClientDto> all = clientService.getAll();
         List<String> countryNames = new ArrayList<>();

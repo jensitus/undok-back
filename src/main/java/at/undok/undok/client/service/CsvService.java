@@ -121,7 +121,7 @@ public class CsvService {
                         counselingDto.getActivity(),
                         getCategories(CategoryType.ACTIVITY, counselingDto.getId()),
                         counselingDto.getRegisteredBy(),
-                        counselingDto.getCounselingDate().toString(),
+                        localDateService.localDateTimeToString(counselingDto.getCounselingDate()),
                         counselingDto.getClientFullName(),
                         counselingDto.getComment()
                 );
