@@ -21,4 +21,9 @@ public class ToLocalDateService {
         return localDateTime;
     }
 
+    public String localDateToString(LocalDate localDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
+        return localDate.format(formatter);
+    }
+
 }

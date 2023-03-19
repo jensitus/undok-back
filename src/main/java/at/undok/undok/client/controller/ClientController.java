@@ -102,7 +102,7 @@ public class ClientController implements ClientApi {
     @Override
     public ResponseEntity<Resource> getClientsCsv() {
         String filename = "clients.csv";
-        InputStreamResource file = new InputStreamResource(csvService.load());
+        InputStreamResource file = new InputStreamResource(csvService.loadClientCsv());
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);

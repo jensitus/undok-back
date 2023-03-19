@@ -180,7 +180,7 @@ public class UserTest extends IntegrationTestBase {
 
     @Test
     public void testCsv() throws IOException {
-        csvService.writeClientsToCsv();
+        csvService.loadClientCsv();
     }
 
     @Test
