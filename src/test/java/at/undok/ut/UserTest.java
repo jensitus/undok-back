@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import at.undok.auth.model.entity.User;
 import at.undok.auth.service.AuthService;
 import at.undok.common.encryption.AttributeEncryptor;
+import at.undok.common.util.ToLocalDateService;
 import at.undok.common.util.UUIDConverter;
 import at.undok.it.IntegrationTestBase;
 import at.undok.undok.client.model.dto.AllClientDto;
@@ -43,6 +44,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -88,7 +90,7 @@ public class UserTest extends IntegrationTestBase {
     private CounselingService counselingService;
 
     @Autowired
-    private CsvService csvService;
+    private ToLocalDateService toLocalDateService;
 
     @Autowired
     private TestRestTemplate testRestTemplate;
@@ -179,8 +181,10 @@ public class UserTest extends IntegrationTestBase {
     }
 
     @Test
-    public void testCsv() throws IOException {
-        csvService.loadClientCsv();
+    public void testLocalDateFormat()  {
+        LocalDate today = LocalDate.now();
+        String s = toLocalDateService.localDateToString(today);
+        assertEquals(today.toString().substring(8, 10), s.substring(0, 2));
     }
 
     @Test

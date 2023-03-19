@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 @Service
 public class ToLocalDateService {
@@ -22,8 +23,9 @@ public class ToLocalDateService {
     }
 
     public String localDateToString(LocalDate localDate) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
-        return localDate.format(formatter);
+        Locale locale = new Locale("de", "AT");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd. MMM yyyy", locale);
+        return localDate.format(dateTimeFormatter);
     }
 
 }
