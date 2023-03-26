@@ -4,18 +4,29 @@ import at.undok.common.model.AbstractCrud;
 import at.undok.common.util.UUIDConverter;
 import lombok.Builder;
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Table(name = JoinCategory.TABLE_NAME)
 @Entity
 @Data
-public class JoinCategory extends AbstractCrud {
+public class JoinCategory {
 
     public static final String TABLE_NAME = "join_category";
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    protected Long id;
+
+    @Column(name = "created_at")
+    protected LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    protected LocalDateTime updatedAt;
 
     @Column(name = "category_id")
     private UUID categoryId;

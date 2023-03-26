@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @Data
 public class JoinCategoryDto {
-    private UUID id;
+    private Long id;
     private UUID categoryId;
     private UUID entityId;
     private String categoryType;
