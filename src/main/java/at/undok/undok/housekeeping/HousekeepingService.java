@@ -16,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class HousekeepingService {
 
+    private static final String COUNSELINGS_TO_BE_DELETED = " counselings without proper date to be deleted";
     private final CounselingService counselingService;
 
     @Scheduled(cron = "${housekeeping.schedule}")
@@ -28,7 +29,7 @@ public class HousekeepingService {
     }
 
     private void delete(List<Counseling> counselings) {
-        log.info(counselings.size() + " counselings without proper date to be deleted");
+        log.info(counselings.size() + COUNSELINGS_TO_BE_DELETED);
         for (Counseling c : counselings) {
             counselingService.deleteCounseling(c.getId());
         }
