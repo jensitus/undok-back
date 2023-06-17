@@ -133,26 +133,32 @@ public class CsvService {
         final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL).withHeader(COUNSELING_HEADERS);
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
              CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format);) {
-            for (AllCounselingDto counselingDto : counselingDtos) {
-                List<String> data = Arrays.asList(
-                        String.valueOf(counselingDto.getId()),
-                        counselingDto.getKeyword(),
-                        counselingDto.getConcern(),
-                        getCategories(CategoryType.LEGAL, counselingDto.getId()),
-                        counselingDto.getActivity(),
-                        getCategories(CategoryType.ACTIVITY, counselingDto.getId()),
-                        counselingDto.getRegisteredBy(),
-                        localDateService.localDateTimeToString(counselingDto.getCounselingDate()),
-                        counselingDto.getClientFullName(),
-                        counselingDto.getComment()
-                );
-                csvPrinter.printRecord(data);
-            }
+            List<String> data = counselingDataForCsv(counselingDtos);
+            csvPrinter.printRecord(data);
             csvPrinter.flush();
             return new ByteArrayInputStream(out.toByteArray());
         } catch (IOException e) {
             throw new RuntimeException("fail to import data to CSV file: " + e.getMessage());
         }
+    }
+
+    private List<String> counselingDataForCsv(List<AllCounselingDto> counselingDtos) {
+        List<String> data = null;
+        for (AllCounselingDto counselingDto : counselingDtos) {
+             data = Arrays.asList(
+                    String.valueOf(counselingDto.getId()),
+                    counselingDto.getKeyword(),
+                    counselingDto.getConcern(),
+                    getCategories(CategoryType.LEGAL, counselingDto.getId()),
+                    counselingDto.getActivity(),
+                    getCategories(CategoryType.ACTIVITY, counselingDto.getId()),
+                    counselingDto.getRegisteredBy(),
+                    localDateService.localDateTimeToString(counselingDto.getCounselingDate()),
+                    counselingDto.getClientFullName(),
+                    counselingDto.getComment()
+            );
+        }
+        return data;
     }
 
     private String getCategories(String categoryType, UUID entityId) {
@@ -164,14 +170,19 @@ public class CsvService {
         return sj.toString();
     }
 
-    @SneakyThrows
     @Scheduled(cron = "${csv-backup.schedule}")
     public void csvAsBackup() {
         deleteOldCSVs();
         log.info("- - - - - start csv backup - - - - -");
+        clientsBackup();
+        counselingsBackup();
+    }
+
+    @SneakyThrows
+    private void clientsBackup() {
         String fileName = LocalDateTime.now() + "-clients.csv";
-        FileWriter fileOut = new FileWriter(CSV_DIR + fileName);
-        try (CSVPrinter csvPrinter = new CSVPrinter(fileOut, CSVFormat.DEFAULT.withHeader(CLIENT_HEADERS))) {
+        FileWriter clientFileOut = new FileWriter(CSV_DIR + fileName);
+        try (CSVPrinter csvPrinter = new CSVPrinter(clientFileOut, CSVFormat.DEFAULT.withHeader(CLIENT_HEADERS))) {
             List<AllClientDto> all = clientService.getAll();
             for (AllClientDto clientDto : all) {
                 List<String> data = iterateThroughClients(clientDto);
@@ -183,18 +194,32 @@ public class CsvService {
     }
 
     @SneakyThrows
-    private Set<String> deleteOldCSVs() {
+    private void counselingsBackup() {
+        String fileName = LocalDateTime.now() + "-counselings.csv";
+        FileWriter counselingFileOut = new FileWriter(CSV_DIR + fileName);
+        try (CSVPrinter csvPrinter = new CSVPrinter(counselingFileOut, CSVFormat.DEFAULT.withHeader(CLIENT_HEADERS))) {
+            List<AllClientDto> all = clientService.getAll();
+            for (AllClientDto clientDto : all) {
+                List<String> data = iterateThroughClients(clientDto);
+                csvPrinter.printRecord(data);
+            }
+        } catch (IOException e) {
+            log.error("error while writing csv {}", e.toString());
+        }
+    }
+
+    @SneakyThrows
+    private void deleteOldCSVs() {
         Set<String> stringSet = getCsvFileNamesFromDirectory();
         for (String fileName : stringSet) {
             String[] split = fileName.split("T");
             LocalDate localDateTime = LocalDate.parse(split[0]);
             if (localDateTime.isBefore(LocalDate.now().minusDays(7))) {
                 Path toDelete = Paths.get(CSV_DIR + fileName);
-                log.info("CSV {} to delete", toDelete.toString());
+                log.info("CSV {} to delete " + toDelete.toString());
                 Files.delete(toDelete);
             }
         }
-        return stringSet;
     }
 
     private Set<String> getCsvFileNamesFromDirectory() {
