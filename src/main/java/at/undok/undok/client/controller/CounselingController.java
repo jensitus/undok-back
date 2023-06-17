@@ -63,8 +63,8 @@ public class CounselingController implements CounselingApi {
         String filename = "counselings.csv";
         InputStreamResource file = new InputStreamResource(csvService.load());
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
-                .contentType(MediaType.parseMediaType("application/csv"))
-                .body(file);
+                             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                             .contentType(MediaType.parseMediaType("application/csv"))
+                             .body(file);
     }
 }

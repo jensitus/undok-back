@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -124,6 +125,10 @@ public class CsvService {
         return counselingsToCSV(allCounselings);
     }
 
+    public Set<String> getCsvFileNames() {
+        return getCsvFileNamesFromDirectory();
+    }
+
     public ByteArrayInputStream counselingsToCSV(List<AllCounselingDto> counselingDtos) {
         final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL).withHeader(COUNSELING_HEADERS);
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -179,9 +184,7 @@ public class CsvService {
 
     @SneakyThrows
     private Set<String> deleteOldCSVs() {
-        Set<String> stringSet =
-                Stream.of(Objects.requireNonNull(new File("csv/").listFiles()))
-                      .filter(file -> !file.isDirectory()).map(File::getName).collect(Collectors.toSet());
+        Set<String> stringSet = getCsvFileNamesFromDirectory();
         for (String fileName : stringSet) {
             String[] split = fileName.split("T");
             LocalDate localDateTime = LocalDate.parse(split[0]);
@@ -192,6 +195,17 @@ public class CsvService {
             }
         }
         return stringSet;
+    }
+
+    private Set<String> getCsvFileNamesFromDirectory() {
+        return Stream.of(Objects.requireNonNull(new File(CSV_DIR).listFiles()))
+                     .filter(file -> !file.isDirectory()).map(File::getName).collect(Collectors.toSet());
+    }
+
+    @SneakyThrows
+    public ByteArrayResource getBackupCsv(String fileName) {
+        Path backupPath = Paths.get(CSV_DIR + fileName);
+        return new ByteArrayResource(Files.readAllBytes(backupPath));
     }
 
 }
