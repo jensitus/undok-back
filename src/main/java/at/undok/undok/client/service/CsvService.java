@@ -1,6 +1,7 @@
 package at.undok.undok.client.service;
 
 import at.undok.common.util.ToLocalDateService;
+import at.undok.undok.client.exception.CsvNotFoundException;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CategoryDto;
@@ -12,6 +13,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -71,7 +73,7 @@ public class CsvService {
     }
 
     private List<String> iterateThroughClients(AllClientDto clientDto) {
-        List<String> data = null;
+        List<String> data;
 
         String interpreterNecessary = null;
         if (clientDto.getInterpreterNecessary() != null) {
@@ -132,7 +134,7 @@ public class CsvService {
     public ByteArrayInputStream counselingsToCSV(List<AllCounselingDto> counselingDtos) {
         final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL).withHeader(COUNSELING_HEADERS);
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
-             CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format);) {
+             CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
             List<String> data = counselingDataForCsv(counselingDtos);
             csvPrinter.printRecord(data);
             csvPrinter.flush();
@@ -172,10 +174,10 @@ public class CsvService {
 
     @Scheduled(cron = "${csv-backup.schedule}")
     public void csvAsBackup() {
-        deleteOldCSVs();
         log.info("- - - - - start csv backup - - - - -");
         clientsBackup();
         counselingsBackup();
+        deleteOldCSVs();
     }
 
     @SneakyThrows
@@ -223,8 +225,13 @@ public class CsvService {
     }
 
     private Set<String> getCsvFileNamesFromDirectory() {
-        return Stream.of(Objects.requireNonNull(new File(CSV_DIR).listFiles()))
-                     .filter(file -> !file.isDirectory()).map(File::getName).collect(Collectors.toSet());
+        try {
+            return Stream.of(Objects.requireNonNull(new File(CSV_DIR).listFiles()))
+                         .filter(file -> !file.isDirectory()).map(File::getName).collect(Collectors.toSet());
+        } catch (NullPointerException e) {
+            throw new CsvNotFoundException(HttpStatus.INSUFFICIENT_STORAGE, "sorry, we didn't find any CSV File ");
+        }
+
     }
 
     @SneakyThrows
