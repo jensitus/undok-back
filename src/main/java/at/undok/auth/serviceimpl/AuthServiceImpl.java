@@ -18,7 +18,7 @@ import at.undok.auth.security.JwtProvider;
 import at.undok.auth.service.AuthService;
 import at.undok.auth.service.UserService;
 import at.undok.common.encryption.AttributeEncryptor;
-import at.undok.common.exception.UserNotFoundException;
+import at.undok.auth.exception.UserNotFoundException;
 import at.undok.common.mailer.impl.UndokMailer;
 import at.undok.common.message.Message;
 import lombok.RequiredArgsConstructor;
