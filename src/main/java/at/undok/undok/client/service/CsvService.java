@@ -5,6 +5,7 @@ import at.undok.undok.client.exception.CsvNotFoundException;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CategoryDto;
+import at.undok.undok.client.model.dto.CounselingResult;
 import at.undok.undok.client.util.CategoryType;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -163,6 +164,25 @@ public class CsvService {
         return data;
     }
 
+    private List<String> counselingsForCsv(CounselingResult counselingResult) {
+        List<String> data = null;
+            data = Arrays.asList(
+                    String.valueOf(counselingResult.getId()),
+                    counselingResult.getKeyword(),
+                    counselingResult.getConcern(),
+                    // getCategories(CategoryType.LEGAL, counselingResult.getId()),
+                    counselingResult.getLegalCategories(),
+                    counselingResult.getActivity(),
+                    // getCategories(CategoryType.ACTIVITY, counselingResult.getId()),
+                    counselingResult.getActivityCategories(),
+                    counselingResult.getRegisteredBy(),
+                    localDateService.localDateTimeToString(counselingResult.getCounselingDate()),
+                    // counselingResult.getClientFullName(),
+                    counselingResult.getComment()
+            );
+        return data;
+    }
+
     private String getCategories(String categoryType, UUID entityId) {
         List<CategoryDto> categoryListByTypeAndEntity = categoryService.getCategoryListByTypeAndEntity(categoryType, entityId);
         StringJoiner sj = new StringJoiner(",");
@@ -199,10 +219,10 @@ public class CsvService {
     private void counselingsBackup() {
         String fileName = LocalDateTime.now() + "-counselings.csv";
         FileWriter counselingFileOut = new FileWriter(CSV_DIR + fileName);
-        try (CSVPrinter csvPrinter = new CSVPrinter(counselingFileOut, CSVFormat.DEFAULT.withHeader(CLIENT_HEADERS))) {
-            List<AllClientDto> all = clientService.getAll();
-            for (AllClientDto clientDto : all) {
-                List<String> data = iterateThroughClients(clientDto);
+        try (CSVPrinter csvPrinter = new CSVPrinter(counselingFileOut, CSVFormat.DEFAULT.withHeader(COUNSELING_HEADERS))) {
+            List<CounselingResult> counselingResults = counselingService.getCounselingsForCsv();
+            for (CounselingResult counselingResult : counselingResults) {
+                List<String> data = counselingsForCsv(counselingResult);
                 csvPrinter.printRecord(data);
             }
         } catch (IOException e) {

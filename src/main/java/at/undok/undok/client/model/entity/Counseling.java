@@ -17,22 +17,30 @@ import java.util.UUID;
 @Entity
 @Table(name = "counselings")
 @NamedNativeQuery(name = "getCounselingDto",
-        query = "select co.id as id, co.client_id as clientId, co.activity as activity, " +
-                "co.activity_category as activityCategory, co.comment as comment," +
-                "co.counseling_date as counselingDate, co.concern as concern, " +
-                "co.concern_category as concernCategory, cl.keyword as keyword " +
-                "from counselings co, clients cl where co.client_id = cl.id and cl.status = 'ACTIVE'",
+        query = "select co.id as id, " +
+                "co.activity as activity, " +
+                "co.comment as comment, " +
+                "co.counseling_date as counselingDate, " +
+                "co.concern as concern, " +
+                "co.registered_by as registeredBy, " +
+                "cl.keyword as keyword, " +
+                "(select string_agg(ca.name, ',') from categories ca, join_category jc " +
+                "where jc.entity_id = co.id and jc.category_id = ca.id and jc.category_type = 'LEGAL') as legalCategories, " +
+                "(select string_agg(ca.name, ',') from categories ca, join_category jc " +
+                "where jc.entity_id = co.id and jc.category_id = ca.id and jc.category_type = 'ACTIVITY') as activityCategories " +
+                "from counselings co, clients cl " +
+                "where co.client_id = cl.id and cl.status = 'ACTIVE' group by co.id, cl.keyword",
         resultSetMapping = "setToCounselingDto")
 @SqlResultSetMapping(name = "setToCounselingDto", classes = @ConstructorResult(targetClass = CounselingResult.class, columns = {
         @ColumnResult(name = "id", type = UUID.class),
-        @ColumnResult(name = "concern", type = String.class),
-        @ColumnResult(name = "concernCategory", type = String.class),
         @ColumnResult(name = "activity", type = String.class),
-        @ColumnResult(name = "activityCategory", type = String.class),
-        @ColumnResult(name = "counselingDate", type = LocalDateTime.class),
         @ColumnResult(name = "comment", type = String.class),
-        @ColumnResult(name = "clientId", type = UUID.class),
-        @ColumnResult(name = "keyword", type = String.class)
+        @ColumnResult(name = "counselingDate", type = LocalDateTime.class),
+        @ColumnResult(name = "concern", type = String.class),
+        @ColumnResult(name = "registeredBy", type = String.class),
+        @ColumnResult(name = "keyword", type = String.class),
+        @ColumnResult(name = "legalCategories", type = String.class),
+        @ColumnResult(name = "activityCategories", type = String.class),
 }))
 public class Counseling extends AbstractCrud {
 
