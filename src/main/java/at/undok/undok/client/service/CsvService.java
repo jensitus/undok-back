@@ -5,7 +5,7 @@ import at.undok.undok.client.exception.CsvNotFoundException;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CategoryDto;
-import at.undok.undok.client.model.dto.CounselingResult;
+import at.undok.undok.client.model.dto.CounselingForCsvResult;
 import at.undok.undok.client.util.CategoryType;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -41,7 +41,7 @@ public class CsvService {
     private final ToLocalDateService localDateService;
 
     private static final String[] COUNSELING_HEADERS = {"id", "Keyword", "Anliegen", "Rechtskategorien", "Aktivität",
-            "Aktivitätskategorien", "Registriert von", "Beratungsdatum", "Clientname", "Kommentar"};
+            "Aktivitätskategorien", "Registriert von", "client id", "Beratungsdatum", "Clientname", "Kommentar"};
 
 
     public ByteArrayInputStream loadClientCsv() {
@@ -128,7 +128,7 @@ public class CsvService {
         return counselingsToCSV(allCounselings);
     }
 
-    public Set<String> getCsvFileNames() {
+    public List<String> getCsvFileNames() {
         return getCsvFileNamesFromDirectory();
     }
 
@@ -148,7 +148,7 @@ public class CsvService {
     private List<String> counselingDataForCsv(List<AllCounselingDto> counselingDtos) {
         List<String> data = null;
         for (AllCounselingDto counselingDto : counselingDtos) {
-             data = Arrays.asList(
+            data = Arrays.asList(
                     String.valueOf(counselingDto.getId()),
                     counselingDto.getKeyword(),
                     counselingDto.getConcern(),
@@ -164,22 +164,21 @@ public class CsvService {
         return data;
     }
 
-    private List<String> counselingsForCsv(CounselingResult counselingResult) {
+    private List<String> counselingsForCsv(CounselingForCsvResult counselingForCsvResult) {
         List<String> data = null;
-            data = Arrays.asList(
-                    String.valueOf(counselingResult.getId()),
-                    counselingResult.getKeyword(),
-                    counselingResult.getConcern(),
-                    // getCategories(CategoryType.LEGAL, counselingResult.getId()),
-                    counselingResult.getLegalCategories(),
-                    counselingResult.getActivity(),
-                    // getCategories(CategoryType.ACTIVITY, counselingResult.getId()),
-                    counselingResult.getActivityCategories(),
-                    counselingResult.getRegisteredBy(),
-                    localDateService.localDateTimeToString(counselingResult.getCounselingDate()),
-                    // counselingResult.getClientFullName(),
-                    counselingResult.getComment()
-            );
+        data = Arrays.asList(
+                String.valueOf(counselingForCsvResult.getId()),
+                counselingForCsvResult.getKeyword(),
+                counselingForCsvResult.getConcern(),
+                counselingForCsvResult.getLegalCategories(),
+                counselingForCsvResult.getActivity(),
+                counselingForCsvResult.getActivityCategories(),
+                counselingForCsvResult.getRegisteredBy(),
+                counselingForCsvResult.getClientId(),
+                localDateService.localDateTimeToString(counselingForCsvResult.getCounselingDate()),
+                // counselingResult.getClientFullName(),
+                counselingForCsvResult.getComment()
+        );
         return data;
     }
 
@@ -220,9 +219,9 @@ public class CsvService {
         String fileName = LocalDateTime.now() + "-counselings.csv";
         FileWriter counselingFileOut = new FileWriter(CSV_DIR + fileName);
         try (CSVPrinter csvPrinter = new CSVPrinter(counselingFileOut, CSVFormat.DEFAULT.withHeader(COUNSELING_HEADERS))) {
-            List<CounselingResult> counselingResults = counselingService.getCounselingsForCsv();
-            for (CounselingResult counselingResult : counselingResults) {
-                List<String> data = counselingsForCsv(counselingResult);
+            List<CounselingForCsvResult> counselingForCsvResults = counselingService.getCounselingsForCsv();
+            for (CounselingForCsvResult counselingForCsvResult : counselingForCsvResults) {
+                List<String> data = counselingsForCsv(counselingForCsvResult);
                 csvPrinter.printRecord(data);
             }
         } catch (IOException e) {
@@ -232,7 +231,7 @@ public class CsvService {
 
     @SneakyThrows
     private void deleteOldCSVs() {
-        Set<String> stringSet = getCsvFileNamesFromDirectory();
+        List<String> stringSet = getCsvFileNamesFromDirectory();
         for (String fileName : stringSet) {
             String[] split = fileName.split("T");
             LocalDate localDateTime = LocalDate.parse(split[0]);
@@ -244,10 +243,12 @@ public class CsvService {
         }
     }
 
-    private Set<String> getCsvFileNamesFromDirectory() {
+    private List<String> getCsvFileNamesFromDirectory() {
         try {
             return Stream.of(Objects.requireNonNull(new File(CSV_DIR).listFiles()))
-                         .filter(file -> !file.isDirectory()).map(File::getName).collect(Collectors.toSet());
+                         .filter(file -> !file.isDirectory()).map(File::getName)
+                         .sorted()
+                         .collect(Collectors.toList());
         } catch (NullPointerException e) {
             throw new CsvNotFoundException(HttpStatus.INSUFFICIENT_STORAGE, "sorry, we didn't find any CSV File ");
         }

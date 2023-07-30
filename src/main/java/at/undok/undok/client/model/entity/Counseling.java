@@ -1,22 +1,20 @@
 package at.undok.undok.client.model.entity;
 
 import at.undok.common.model.AbstractCrud;
-import at.undok.undok.client.model.dto.CounselingDto;
-import at.undok.undok.client.model.dto.CounselingResult;
+import at.undok.undok.client.model.dto.CounselingForCsvResult;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @Entity
 @Table(name = "counselings")
-@NamedNativeQuery(name = "getCounselingDto",
+@NamedNativeQuery(name = "getCounselingsForCsv",
         query = "select co.id as id, " +
                 "co.activity as activity, " +
                 "co.comment as comment, " +
@@ -24,14 +22,15 @@ import java.util.UUID;
                 "co.concern as concern, " +
                 "co.registered_by as registeredBy, " +
                 "cl.keyword as keyword, " +
+                "co.client_id as clientId, " +
                 "(select string_agg(ca.name, ',') from categories ca, join_category jc " +
                 "where jc.entity_id = co.id and jc.category_id = ca.id and jc.category_type = 'LEGAL') as legalCategories, " +
                 "(select string_agg(ca.name, ',') from categories ca, join_category jc " +
                 "where jc.entity_id = co.id and jc.category_id = ca.id and jc.category_type = 'ACTIVITY') as activityCategories " +
                 "from counselings co, clients cl " +
                 "where co.client_id = cl.id and cl.status = 'ACTIVE' group by co.id, cl.keyword",
-        resultSetMapping = "setToCounselingDto")
-@SqlResultSetMapping(name = "setToCounselingDto", classes = @ConstructorResult(targetClass = CounselingResult.class, columns = {
+        resultSetMapping = "mapToCounselingForCsv")
+@SqlResultSetMapping(name = "mapToCounselingForCsv", classes = @ConstructorResult(targetClass = CounselingForCsvResult.class, columns = {
         @ColumnResult(name = "id", type = UUID.class),
         @ColumnResult(name = "activity", type = String.class),
         @ColumnResult(name = "comment", type = String.class),
@@ -39,6 +38,7 @@ import java.util.UUID;
         @ColumnResult(name = "concern", type = String.class),
         @ColumnResult(name = "registeredBy", type = String.class),
         @ColumnResult(name = "keyword", type = String.class),
+        @ColumnResult(name = "clientId", type = String.class),
         @ColumnResult(name = "legalCategories", type = String.class),
         @ColumnResult(name = "activityCategories", type = String.class),
 }))

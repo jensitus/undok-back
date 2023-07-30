@@ -1,6 +1,6 @@
 package at.undok.undok.client.repository;
 
-import at.undok.undok.client.model.dto.CounselingResult;
+import at.undok.undok.client.model.dto.CounselingForCsvResult;
 import at.undok.undok.client.model.entity.Counseling;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,7 +25,7 @@ public interface CounselingRepo extends JpaRepository<Counseling, UUID> {
 
     List<Counseling> findByCounselingDateIsNull();
 
-    @Query(name = "getCounselingDto", nativeQuery = true)
-    List<CounselingResult> getCounselingForCsv();
+    @Query(name = "getCounselingsForCsv", nativeQuery = true)
+    List<CounselingForCsvResult> getCounselingForCsv();
 
 }

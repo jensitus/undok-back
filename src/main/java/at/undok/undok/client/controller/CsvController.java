@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Set;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +22,7 @@ public class CsvController implements CsvApi {
     private final CsvService csvService;
 
     @Override
-    public Set<String> getCsvFileNames() {
+    public List<String> getCsvFileNames() {
         return csvService.getCsvFileNames();
     }
 
