@@ -30,4 +30,7 @@ public interface CategoryApi {
     @DeleteMapping("/join-categories")
     ResponseEntity deleteJoinCategories(@RequestBody List<JoinCategoryDto> categoryDtos);
 
+    @GetMapping("/all")
+    ResponseEntity<List<CategoryDto>> getAllCategories();
+
 }

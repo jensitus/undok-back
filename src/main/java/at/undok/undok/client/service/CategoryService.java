@@ -88,4 +88,8 @@ public class CategoryService {
         joinCategoryRepo.deleteAll(joinCategories);
     }
 
+    public List<CategoryDto> getAllCategories() {
+        return mapList(categoryRepo.findAll(), CategoryDto.class);
+    }
+
 }
