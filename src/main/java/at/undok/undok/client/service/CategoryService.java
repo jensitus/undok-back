@@ -1,5 +1,6 @@
 package at.undok.undok.client.service;
 
+import at.undok.undok.client.exception.CategoryNotFoundException;
 import at.undok.undok.client.model.dto.CategoryDto;
 import at.undok.undok.client.model.dto.JoinCategoryDto;
 import at.undok.undok.client.model.entity.Category;
@@ -12,11 +13,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -90,6 +93,19 @@ public class CategoryService {
 
     public List<CategoryDto> getAllCategories() {
         return mapList(categoryRepo.findAll(), CategoryDto.class);
+    }
+
+    public CategoryDto updateCategory(UUID id, String name) {
+        if (categoryRepo.existsById(id)) {
+            Optional<Category> categoryOptional = categoryRepo.findById(id);
+            Category categoryToUpdate = categoryOptional.orElseThrow();
+            categoryToUpdate.setName(name);
+            Category savedCategory = categoryRepo.save(categoryToUpdate);
+            return modelMapper.map(savedCategory, CategoryDto.class);
+        } else {
+            throw new CategoryNotFoundException("Category doesn't exist");
+        }
+
     }
 
 }

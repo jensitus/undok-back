@@ -56,4 +56,10 @@ public class CategoryController implements CategoryApi {
     public ResponseEntity<List<CategoryDto>> getAllCategories() {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
+
+    @Override
+    public ResponseEntity<CategoryDto> updateCategory(UUID id, String name) {
+        return ResponseEntity.ok(categoryService.updateCategory(id, name));
+    }
+
 }
