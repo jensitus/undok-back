@@ -136,18 +136,19 @@ public class CsvService {
         final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL).withHeader(COUNSELING_HEADERS);
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
              CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
-            List<String> data = counselingDataForCsv(counselingDtos);
-            csvPrinter.printRecord(data);
-            csvPrinter.flush();
+            for (AllCounselingDto counselingDto : counselingDtos) {
+                List<String> data = counselingDataForCsv(counselingDto);
+                csvPrinter.printRecord(data);
+                csvPrinter.flush();
+            }
             return new ByteArrayInputStream(out.toByteArray());
         } catch (IOException e) {
             throw new RuntimeException("fail to import data to CSV file: " + e.getMessage());
         }
     }
 
-    private List<String> counselingDataForCsv(List<AllCounselingDto> counselingDtos) {
+    private List<String> counselingDataForCsv(AllCounselingDto counselingDto) {
         List<String> data = null;
-        for (AllCounselingDto counselingDto : counselingDtos) {
             data = Arrays.asList(
                     String.valueOf(counselingDto.getId()),
                     counselingDto.getKeyword(),
@@ -156,11 +157,11 @@ public class CsvService {
                     counselingDto.getActivity(),
                     getCategories(CategoryType.ACTIVITY, counselingDto.getId()),
                     counselingDto.getRegisteredBy(),
+                    counselingDto.getClientFullName(),
                     localDateService.localDateTimeToString(counselingDto.getCounselingDate()),
                     counselingDto.getClientFullName(),
                     counselingDto.getComment()
             );
-        }
         return data;
     }
 
