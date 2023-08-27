@@ -201,7 +201,7 @@ public class ClientService {
 
     private ClientDto updateClient(Person person, Client client, Address address, ClientDto cDto) {
         try {
-            person.setDateOfBirth(person.getDateOfBirth());
+            person.setDateOfBirth(cDto.getPerson().getDateOfBirth());
         } catch (Exception e) {
             person.setDateOfBirth(null);
         }
