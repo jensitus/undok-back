@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -60,11 +61,11 @@ public class CounselingController implements CounselingApi {
 
     @Override
     public ResponseEntity<Resource> getFile() {
-        String filename = "counselings.csv";
+        String filename = LocalDateTime.now() + "-counselings.csv";
         InputStreamResource file = new InputStreamResource(csvService.load());
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
-                .contentType(MediaType.parseMediaType("application/csv"))
-                .body(file);
+                             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                             .contentType(MediaType.parseMediaType("application/csv"))
+                             .body(file);
     }
 }

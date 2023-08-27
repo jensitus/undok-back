@@ -1,6 +1,7 @@
 package at.undok.auth.controller;
 
 import at.undok.auth.api.AuthApi;
+import at.undok.auth.exception.BadCredentialsException;
 import at.undok.auth.message.JwtResponse;
 import at.undok.auth.message.PasswordResetForm;
 import at.undok.auth.model.dto.LoginDto;
@@ -10,7 +11,7 @@ import at.undok.auth.repository.UserRepo;
 import at.undok.auth.security.JwtProvider;
 import at.undok.auth.service.AuthService;
 import at.undok.auth.service.UserService;
-import at.undok.common.exception.UserNotFoundException;
+import at.undok.auth.exception.UserNotFoundException;
 import at.undok.common.message.Message;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -123,7 +124,14 @@ public class AuthController implements AuthApi {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Message> handleException(UserNotFoundException userNotFoundException) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message(String.format("user not found: %s", userNotFoundException.getUsername())));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                             .body(new Message(String.format("user not found: %s", userNotFoundException.getUsername())));
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Message> handleBadCredentials(BadCredentialsException badCredentialsException) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                             .body(new Message(badCredentialsException.getMessage()));
     }
 
 }

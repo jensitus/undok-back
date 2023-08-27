@@ -4,6 +4,7 @@ import at.undok.undok.client.model.dto.CategoryDto;
 import at.undok.undok.client.model.dto.JoinCategoryDto;
 import at.undok.undok.client.model.form.CategoryForm;
 import at.undok.undok.client.model.form.JoinCategoryForm;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,5 +30,11 @@ public interface CategoryApi {
 
     @DeleteMapping("/join-categories")
     ResponseEntity deleteJoinCategories(@RequestBody List<JoinCategoryDto> categoryDtos);
+
+    @GetMapping("/all")
+    ResponseEntity<List<CategoryDto>> getAllCategories();
+
+    @PutMapping("/{id}/update")
+    ResponseEntity<CategoryDto> updateCategory(@PathVariable("id") UUID id, @RequestBody String name);
 
 }

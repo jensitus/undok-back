@@ -1,4 +1,4 @@
-package at.undok.common.exception;
+package at.undok.auth.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

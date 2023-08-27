@@ -1,5 +1,6 @@
 package at.undok.auth.serviceimpl;
 
+import at.undok.auth.manager.UndokAuthenticationManager;
 import at.undok.auth.model.dto.LoginDto;
 import at.undok.auth.model.dto.SignUpDto;
 import at.undok.auth.model.dto.UserDto;
@@ -17,9 +18,10 @@ import at.undok.auth.security.JwtProvider;
 import at.undok.auth.service.AuthService;
 import at.undok.auth.service.UserService;
 import at.undok.common.encryption.AttributeEncryptor;
-import at.undok.common.exception.UserNotFoundException;
+import at.undok.auth.exception.UserNotFoundException;
 import at.undok.common.mailer.impl.UndokMailer;
 import at.undok.common.message.Message;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +38,7 @@ import java.util.*;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     @Value("${service.b.org.app.jwtExpiration}")
@@ -69,28 +72,14 @@ public class AuthServiceImpl implements AuthService {
     private final AttributeEncryptor attributeEncryptor;
 
     private final TwoFactorRepo twoFactorRepo;
+    private final UndokAuthenticationManager undokAuthenticationManager;
 
-    public AuthServiceImpl(JwtProvider jwtProvider, AuthenticationManager authenticationManager, UserRepo userRepo, ModelMapper modelMapper, PasswordEncoder encoder, RoleRepo roleRepo, UserService userService, UndokMailer undokMailer, RoleService roleService, AttributeEncryptor attributeEncryptor, TwoFactorRepo twoFactorRepo) {
-        this.jwtProvider = jwtProvider;
-        this.authenticationManager = authenticationManager;
-        this.userRepo = userRepo;
-        this.modelMapper = modelMapper;
-        this.encoder = encoder;
-        this.roleRepo = roleRepo;
-        this.userService = userService;
-        this.undokMailer = undokMailer;
-        this.roleService = roleService;
-        this.attributeEncryptor = attributeEncryptor;
-        this.twoFactorRepo = twoFactorRepo;
-    }
 
     @Override
     public UserDto getUserDtoWithSecondFactorJwt(LoginDto loginDto) {
         removeRole(loginDto.getUsername(), RoleName.ROLE_USER);
         addRole(loginDto.getUsername(), RoleName.ROLE_SECOND_FACTOR);
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword())
-        );
+        Authentication authentication = undokAuthenticationManager.authenticate(loginDto);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtProvider.generateJwt(
                 new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials()),
@@ -103,11 +92,11 @@ public class AuthServiceImpl implements AuthService {
 
     private UserDto userDtoWithJwt(String jwt, String username) {
         User user = userRepo.findByUsername(
-                        username)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException(
-                                "User not found with -> username or email: " + username)
-                );
+                                    username)
+                            .orElseThrow(() ->
+                                                 new UsernameNotFoundException(
+                                                         "User not found with -> username or email: " + username)
+                            );
         UserDto userDto = modelMapper.map(user, UserDto.class);
         userDto.setAccessToken(jwt);
         return userDto;

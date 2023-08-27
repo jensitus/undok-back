@@ -32,7 +32,11 @@ public class ToLocalDateService {
     public String localDateTimeToString(LocalDateTime localDateTime) {
         Locale locale = new Locale("de", "AT");
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd. MMM yyyy HH:mm", locale);
-        return localDateTime.format(dateTimeFormatter);
+        if (localDateTime != null) {
+            return localDateTime.format(dateTimeFormatter);
+        } else {
+            return null;
+        }
     }
 
 }

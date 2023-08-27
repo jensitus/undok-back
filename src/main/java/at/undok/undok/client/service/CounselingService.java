@@ -3,6 +3,7 @@ package at.undok.undok.client.service;
 import at.undok.common.util.ToLocalDateService;
 import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CounselingDto;
+import at.undok.undok.client.model.dto.CounselingForCsvResult;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.entity.Counseling;
 import at.undok.undok.client.model.form.CounselingForm;
@@ -122,6 +123,10 @@ public class CounselingService {
 
     public List<Counseling> getCounselingsWithoutDate() {
         return counselingRepo.findByCounselingDateIsNull();
+    }
+
+    public List<CounselingForCsvResult> getCounselingsForCsv() {
+        return counselingRepo.getCounselingForCsv();
     }
 
 }

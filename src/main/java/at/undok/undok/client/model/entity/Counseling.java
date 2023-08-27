@@ -1,38 +1,46 @@
 package at.undok.undok.client.model.entity;
 
 import at.undok.common.model.AbstractCrud;
-import at.undok.undok.client.model.dto.CounselingDto;
-import at.undok.undok.client.model.dto.CounselingResult;
+import at.undok.undok.client.model.dto.CounselingForCsvResult;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @Entity
 @Table(name = "counselings")
-@NamedNativeQuery(name = "getCounselingDto",
-        query = "select co.id as id, co.client_id as clientId, co.activity as activity, " +
-                "co.activity_category as activityCategory, co.comment as comment," +
-                "co.counseling_date as counselingDate, co.concern as concern, " +
-                "co.concern_category as concernCategory, cl.keyword as keyword " +
-                "from counselings co, clients cl where co.client_id = cl.id and cl.status = 'ACTIVE'",
-        resultSetMapping = "setToCounselingDto")
-@SqlResultSetMapping(name = "setToCounselingDto", classes = @ConstructorResult(targetClass = CounselingResult.class, columns = {
+@NamedNativeQuery(name = "getCounselingsForCsv",
+        query = "select co.id as id, " +
+                "co.activity as activity, " +
+                "co.comment as comment, " +
+                "co.counseling_date as counselingDate, " +
+                "co.concern as concern, " +
+                "co.registered_by as registeredBy, " +
+                "cl.keyword as keyword, " +
+                "co.client_id as clientId, " +
+                "(select string_agg(ca.name, ',') from categories ca, join_category jc " +
+                "where jc.entity_id = co.id and jc.category_id = ca.id and jc.category_type = 'LEGAL') as legalCategories, " +
+                "(select string_agg(ca.name, ',') from categories ca, join_category jc " +
+                "where jc.entity_id = co.id and jc.category_id = ca.id and jc.category_type = 'ACTIVITY') as activityCategories " +
+                "from counselings co, clients cl " +
+                "where co.client_id = cl.id and cl.status = 'ACTIVE' group by co.id, cl.keyword",
+        resultSetMapping = "mapToCounselingForCsv")
+@SqlResultSetMapping(name = "mapToCounselingForCsv", classes = @ConstructorResult(targetClass = CounselingForCsvResult.class, columns = {
         @ColumnResult(name = "id", type = UUID.class),
-        @ColumnResult(name = "concern", type = String.class),
-        @ColumnResult(name = "concernCategory", type = String.class),
         @ColumnResult(name = "activity", type = String.class),
-        @ColumnResult(name = "activityCategory", type = String.class),
-        @ColumnResult(name = "counselingDate", type = LocalDateTime.class),
         @ColumnResult(name = "comment", type = String.class),
-        @ColumnResult(name = "clientId", type = UUID.class),
-        @ColumnResult(name = "keyword", type = String.class)
+        @ColumnResult(name = "counselingDate", type = LocalDateTime.class),
+        @ColumnResult(name = "concern", type = String.class),
+        @ColumnResult(name = "registeredBy", type = String.class),
+        @ColumnResult(name = "keyword", type = String.class),
+        @ColumnResult(name = "clientId", type = String.class),
+        @ColumnResult(name = "legalCategories", type = String.class),
+        @ColumnResult(name = "activityCategories", type = String.class),
 }))
 public class Counseling extends AbstractCrud {
 

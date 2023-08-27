@@ -51,4 +51,15 @@ public class CategoryController implements CategoryApi {
         categoryService.deleteJoinCategories(categoryDtos);
         return ResponseEntity.ok().build();
     }
+
+    @Override
+    public ResponseEntity<List<CategoryDto>> getAllCategories() {
+        return ResponseEntity.ok(categoryService.getAllCategories());
+    }
+
+    @Override
+    public ResponseEntity<CategoryDto> updateCategory(UUID id, String name) {
+        return ResponseEntity.ok(categoryService.updateCategory(id, name));
+    }
+
 }
