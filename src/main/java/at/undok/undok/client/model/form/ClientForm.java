@@ -41,5 +41,6 @@ public class ClientForm {
     private String union;
     private Boolean membership;
     private String organization;
+    private String socialInsuranceNumber;
 
 }

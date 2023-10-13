@@ -171,6 +171,7 @@ public class ClientService {
         client.setOrganization(clientForm.getOrganization());
         client.setPosition(clientForm.getPosition());
         client.setCreatedAt(LocalDateTime.now());
+        client.setSocialInsuranceNumber(clientForm.getSocialInsuranceNumber());
         client.setStatus(StatusService.STATUS_ACTIVE);
         Client saveAndFlush = clientRepo.saveAndFlush(client);
 
@@ -239,6 +240,7 @@ public class ClientService {
         client.setOrganization(cDto.getOrganization());
         client.setPosition(cDto.getPosition());
         client.setUpdatedAt(LocalDateTime.now());
+        client.setSocialInsuranceNumber(cDto.getSocialInsuranceNumber());
 
         if (cDto.getPerson().getAddress().getStreet() != null) {
             address.setStreet(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getStreet()));
@@ -295,6 +297,7 @@ public class ClientService {
             allClientDto.setInterpreterNecessary(clientDto.getInterpreterNecessary());
             allClientDto.setMaritalStatus(clientDto.getMaritalStatus());
             allClientDto.setLabourMarketAccess(clientDto.getLabourMarketAccess());
+            allClientDto.setSocialInsuranceNumber(clientDto.getSocialInsuranceNumber());
 
             allClientDtoList.add(allClientDto);
         }

@@ -21,4 +21,5 @@
   <include file="config/liquibase/changelog/undok-39.xml" />
   <include file="config/liquibase/changelog/undok-34.xml" />
   <include file="config/liquibase/changelog/change_id_of_join_category.xml" />
+  <include file="config/liquibase/changelog/social_insurance_number.xml" />
 </databaseChangeLog> 

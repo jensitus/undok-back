@@ -75,6 +75,8 @@ public class Client extends AbstractCrud {
     @Column(name = "status")
     private String status;
 
+    @Column(name = "social_insurance_number")
+    private String socialInsuranceNumber;
 
     @Override
     public String toString() {
