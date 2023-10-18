@@ -49,7 +49,7 @@ public class CsvService {
         return writeClientsToCsv(clientDtos);
     }
 
-    private static final String[] CLIENT_HEADERS = {"id", "keyword", "Vorname", "Nachname", "Geburtsdatum", "Email",
+    private static final String[] CLIENT_HEADERS = {"id", "keyword", "Vorname", "Nachname", "SV-Nummer", "Geburtsdatum", "Email",
             "Telephon", "Straße", "Plz", "Stadt", "Land", "Bildung", "Familienstatus", "Dolmetsch erforderlich",
             "Woher kennt uns die Person", "gefährdet bei Geltendmachung", "Nationalität", "Sprache",
             "Aufenthaltsstatus", "Arbeitsmarktzugang", "Position", "Branche", "Gewerkschaft",
@@ -97,6 +97,7 @@ public class CsvService {
                 clientDto.getKeyword(),
                 clientDto.getFirstName(),
                 clientDto.getLastName(),
+                clientDto.getSocialInsuranceNumber(),
                 dateOfBirth,
                 clientDto.getEmail(),
                 clientDto.getTelephone(),
@@ -238,7 +239,7 @@ public class CsvService {
             LocalDate localDateTime = LocalDate.parse(split[0]);
             if (localDateTime.isBefore(LocalDate.now().minusDays(7))) {
                 Path toDelete = Paths.get(CSV_DIR + fileName);
-                log.info("CSV {} to delete " + toDelete.toString());
+                log.info("CSV {} to delete ", toDelete);
                 Files.delete(toDelete);
             }
         }

@@ -127,6 +127,7 @@ public class EntityToDtoMapper {
         clientDto.setUnion(client.getUnion());
         clientDto.setLabourMarketAccess(client.getLabourMarketAccess());
         clientDto.setCurrentResidentStatus(client.getCurrentResidentStatus());
+        clientDto.setSocialInsuranceNumber(client.getSocialInsuranceNumber());
 
         return clientDto;
     }
