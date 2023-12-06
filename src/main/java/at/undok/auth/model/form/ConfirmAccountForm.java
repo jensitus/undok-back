@@ -4,8 +4,8 @@ import lombok.ToString;
 import at.undok.auth.validation.NewPasswordMatch;
 import at.undok.auth.validation.annotation.PasswordMatches;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 
 @ToString

@@ -4,8 +4,10 @@ import at.undok.common.model.AbstractCrud;
 import at.undok.undok.client.model.dto.CheckClientEmployerDto;
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @Table(name = Employer.TABLE_NAME)

@@ -3,13 +3,15 @@ package at.undok.undok.client.model.entity;
 import at.undok.common.model.AbstractCrud;
 import at.undok.undok.client.model.dto.CounselingForCsvResult;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @Entity

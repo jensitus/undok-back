@@ -3,10 +3,13 @@ package at.undok.undok.client.model.entity;
 import at.undok.common.model.AbstractCrud;
 import lombok.Data;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.EqualsAndHashCode;
+
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = "clients")

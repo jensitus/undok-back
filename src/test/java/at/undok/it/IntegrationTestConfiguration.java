@@ -32,10 +32,11 @@ public class IntegrationTestConfiguration {
 
     @Bean
     TestRestTemplate testRestTemplate() {
-        var restTemplateBuilder = new RestTemplateBuilder()
-                .requestFactory(HttpComponentsClientHttpRequestFactory::new);
-
-        return new TestRestTemplate(restTemplateBuilder);
+        return new TestRestTemplate();
+//        var restTemplateBuilder = new RestTemplateBuilder()
+//                .requestFactory(HttpComponentsClientHttpRequestFactory::new);
+//
+//        return new TestRestTemplate(restTemplateBuilder);
     }
 
     @Bean

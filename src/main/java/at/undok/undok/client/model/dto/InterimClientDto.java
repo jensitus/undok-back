@@ -1,13 +1,8 @@
 package at.undok.undok.client.model.dto;
 
-import at.undok.undok.client.model.entity.Person;
 import at.undok.undok.client.model.enumeration.MaritalStatus;
 import lombok.Data;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import java.time.LocalDate;
 import java.util.UUID;
 

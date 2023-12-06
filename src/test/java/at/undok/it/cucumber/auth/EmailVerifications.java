@@ -3,8 +3,8 @@ package at.undok.it.cucumber.auth;
 import com.icegreen.greenmail.spring.GreenMailBean;
 import org.jsoup.Jsoup;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
