@@ -15,14 +15,12 @@ import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.model.form.CounselingForm;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -76,9 +74,9 @@ public class ClientIntegrationTest extends IntegrationTestBase {
         CounselingForm counselingFormSecondClient = createCounselingForm(Objects.requireNonNull(secondClient.getBody()).getId());
         CounselingForm counselingFormThirdClient = createCounselingForm(Objects.requireNonNull(Objects.requireNonNull(thirdClient.getBody()).getId()));
         ResponseEntity<CounselingDto> counseling_02 = authRestApiClient.createCounseling(counselingFormSecondClient,
-                accessToken, secondClient.getBody().getId());
+                                                                                         accessToken, secondClient.getBody().getId());
         ResponseEntity<CounselingDto> counseling_03 = authRestApiClient.createCounseling(counselingFormThirdClient,
-                accessToken, thirdClient.getBody().getId());
+                                                                                         accessToken, thirdClient.getBody().getId());
         getCounselings();
     }
 
@@ -91,7 +89,7 @@ public class ClientIntegrationTest extends IntegrationTestBase {
         int sum = first - second;
         assertEquals(1, sum);
         List<AllCounselingDto> counselings = getCounselings();
-        
+
     }
 
 
