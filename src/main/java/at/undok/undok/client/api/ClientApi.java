@@ -2,6 +2,7 @@ package at.undok.undok.client.api;
 
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
+import at.undok.undok.client.model.dto.ClientForTableDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.model.form.CounselingForm;
@@ -47,5 +48,8 @@ public interface ClientApi {
 
     @GetMapping("/csv")
     ResponseEntity getClientsCsv();
+
+    @GetMapping("/overview")
+    ResponseEntity<List<ClientForTableDto>> getClientOverview();
 
 }

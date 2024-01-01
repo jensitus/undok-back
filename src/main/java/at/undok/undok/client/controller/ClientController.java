@@ -4,6 +4,7 @@ import at.undok.common.message.Message;
 import at.undok.undok.client.api.ClientApi;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
+import at.undok.undok.client.model.dto.ClientForTableDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.model.form.CounselingForm;
@@ -106,5 +107,10 @@ public class ClientController implements ClientApi {
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
+    }
+
+    @Override
+    public ResponseEntity<List<ClientForTableDto>> getClientOverview() {
+        return ResponseEntity.ok(clientService.getClientForOverviewTable());
     }
 }

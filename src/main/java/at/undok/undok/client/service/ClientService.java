@@ -4,6 +4,7 @@ import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.common.util.ToLocalDateService;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
+import at.undok.undok.client.model.dto.ClientForTableDto;
 import at.undok.undok.client.model.entity.Address;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.entity.Counseling;
@@ -303,6 +304,23 @@ public class ClientService {
         }
 
         return allClientDtoList;
+    }
+
+    public List<ClientForTableDto> getClientForOverviewTable() {
+        List<AllClientDto> all = getAll();
+        List<ClientForTableDto> clientForTableDtoList = new ArrayList<>();
+        for (AllClientDto allClientDto : all) {
+            ClientForTableDto clientForTableDto = new ClientForTableDto();
+            clientForTableDto.setClientId(allClientDto.getId());
+            clientForTableDto.setKeyword(allClientDto.getKeyword());
+            clientForTableDto.setFirstName(allClientDto.getFirstName());
+            clientForTableDto.setLastName(allClientDto.getLastName());
+            clientForTableDto.setNationality(allClientDto.getNationality());
+            clientForTableDto.setSector(allClientDto.getSector());
+            clientForTableDto.setCurrentResidentStatus(allClientDto.getCurrentResidentStatus());
+            clientForTableDtoList.add(clientForTableDto);
+        }
+        return clientForTableDtoList;
     }
 
 }
