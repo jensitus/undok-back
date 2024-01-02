@@ -27,7 +27,7 @@
         <!-- artifact naming -->
         <!--suppress UnresolvedMavenProperty -->
         <version.number>${git.commit.time}.${git.commit.id.describe}</version.number>
-        <project.build.final.name>${project.artifactId}-${version.number}</project.build.final.name>
+        <build.final.name>${project.artifactId}-${version.number}</build.final.name>
     </properties>
 
     <dependencies>
@@ -197,7 +197,7 @@
     </dependencies>
 
     <build>
-        <finalName>${project.name}</finalName>
+        <finalName>${build.final.name}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -222,6 +222,42 @@
                     <target>17</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <configuration>
+                    <dateFormat>yyyyMMdd-HHmmss</dateFormat>
+                    <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+                    </generateGitPropertiesFilename>
+                    <offline>true</offline>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+                <groupId>pl.project13.maven</groupId>
+                <version>${git-commit-id-plugin.version}</version>
+            </plugin>
+            <!--
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Git-Revision>${git.commit.id.describe-short}</Git-Revision>
+                            <Git-Build-Time>${git.build.time}</Git-Build-Time>
+                            <Git-Commit-Time>${git.commit.time}</Git-Commit-Time>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            -->
         </plugins>
     </build>
 
