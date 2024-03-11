@@ -97,4 +97,10 @@ public class UserController implements UserApi {
     return  ResponseEntity.ok(new Message(confirmationUrl));
   }
 
+  @Override
+  public ResponseEntity<Message> resendConfirmationLink(String userId) {
+    String s = authService.resendConfirmationToken(userId);
+    return ResponseEntity.ok(new Message("Confirmation link successfully sent"));
+  }
+
 }

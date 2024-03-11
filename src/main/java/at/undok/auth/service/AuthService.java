@@ -22,4 +22,6 @@ public interface AuthService {
 
   void confirmAccountWithoutPWChange(String encodedToken, String encodedEmail);
 
+  String resendConfirmationToken(String userId);
+
 }

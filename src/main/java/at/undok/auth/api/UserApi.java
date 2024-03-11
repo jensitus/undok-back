@@ -44,4 +44,8 @@ public interface UserApi {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity createUserViaAdmin(@RequestBody CreateUserForm createUserForm);
 
+    @PostMapping("/resend-confirmation-link")
+    @PreAuthorize("hasRole('ADMIN')")
+    ResponseEntity<Message> resendConfirmationLink(@RequestBody String userId);
+
 }

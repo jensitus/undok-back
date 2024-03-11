@@ -172,7 +172,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String createUserViaAdmin(CreateUserForm createUserForm) {
-        log.info(createUserForm.toString());
         String confirmationToken = UUID.randomUUID().toString();
         User user = new User(createUserForm.getUsername(), createUserForm.getEmail(), confirmationToken, LocalDateTime.now(), LocalDateTime.now());
         user.setAdmin(createUserForm.isAdmin());
@@ -183,9 +182,21 @@ public class AuthServiceImpl implements AuthService {
         return m.getText();
     }
 
+    @Override
+    public String resendConfirmationToken(String userId) {
+        User user = userRepo.findById(UUID.fromString(userId)).orElse(null);
+        String confirmationToken = UUID.randomUUID().toString();
+        assert user != null;
+        user.setConfirmationTokenCreatedAt(LocalDateTime.now());
+        user.setChangePassword(true);
+        Message m = undokMailer.createConfirmationMail(user, confirmationToken);
+        userRepo.save(user);
+        return m.getText();
+    }
+
     private String generateSecondFactorToken() {
-        int leftLimit = 48; // numeral '0'
-        int rightLimit = 122; // letter 'z'
+        int leftLimit = 48;            //\\ numeral '0'
+        int rightLimit = 122;         //  \\ letter 'z'
         int targetStringLength = 10;
         Random random = new Random();
 
