@@ -18,7 +18,7 @@ import javax.validation.Valid;
 public interface AuthApi {
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginDto loginDto);
+    ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginDto loginDto);
 
 
     @GetMapping("/mist")

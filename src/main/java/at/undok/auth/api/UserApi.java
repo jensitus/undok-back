@@ -1,6 +1,7 @@
 package at.undok.auth.api;
 
 import at.undok.auth.model.dto.ChangePwDto;
+import at.undok.auth.model.dto.LockUserDto;
 import at.undok.auth.model.dto.SetAdminDto;
 import at.undok.auth.model.dto.UserDto;
 import at.undok.auth.model.form.CreateUserForm;
@@ -47,5 +48,9 @@ public interface UserApi {
     @PostMapping("/resend-confirmation-link")
     @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Message> resendConfirmationLink(@RequestBody String userId);
+
+    @PostMapping("/{id}/lock")
+    @PreAuthorize("hasRole('ADMIN')")
+    ResponseEntity<Message> lockUser(@RequestBody LockUserDto lockUserDto);
 
 }

@@ -1,5 +1,6 @@
 package at.undok.auth.serviceimpl;
 
+import at.undok.auth.exception.UserLockedException;
 import at.undok.auth.manager.UndokAuthenticationManager;
 import at.undok.auth.model.dto.LoginDto;
 import at.undok.auth.model.dto.SignUpDto;
@@ -77,6 +78,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDto getUserDtoWithSecondFactorJwt(LoginDto loginDto) {
+        boolean byLockedTrue = userRepo.checkIfLockedByUsername(loginDto.getUsername());
+        if (byLockedTrue) {
+            throw new UserLockedException("you're locked");
+        }
         removeRole(loginDto.getUsername(), RoleName.ROLE_USER);
         addRole(loginDto.getUsername(), RoleName.ROLE_SECOND_FACTOR);
         Authentication authentication = undokAuthenticationManager.authenticate(loginDto);

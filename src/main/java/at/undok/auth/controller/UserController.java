@@ -2,6 +2,7 @@ package at.undok.auth.controller;
 
 import at.undok.auth.api.UserApi;
 import at.undok.auth.model.dto.ChangePwDto;
+import at.undok.auth.model.dto.LockUserDto;
 import at.undok.auth.model.dto.SetAdminDto;
 import at.undok.auth.model.dto.UserDto;
 import at.undok.auth.model.form.CreateUserForm;
@@ -103,4 +104,15 @@ public class UserController implements UserApi {
     return ResponseEntity.ok(new Message("Confirmation link successfully sent"));
   }
 
+  @Override
+  public ResponseEntity<Message> lockUser(LockUserDto lockUserDto) {
+    boolean locked = userService.lockUser(lockUserDto);
+    Message message = new Message();
+    if (locked) {
+      message.setText("user locked");
+    } else {
+      message.setText("user unlocked");
+    }
+    return ResponseEntity.ok(message);
+  }
 }

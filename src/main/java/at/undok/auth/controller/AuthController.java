@@ -2,6 +2,7 @@ package at.undok.auth.controller;
 
 import at.undok.auth.api.AuthApi;
 import at.undok.auth.exception.BadCredentialsException;
+import at.undok.auth.exception.UserLockedException;
 import at.undok.auth.message.JwtResponse;
 import at.undok.auth.message.PasswordResetForm;
 import at.undok.auth.model.dto.LoginDto;
@@ -132,6 +133,11 @@ public class AuthController implements AuthApi {
     public ResponseEntity<Message> handleBadCredentials(BadCredentialsException badCredentialsException) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                              .body(new Message(badCredentialsException.getMessage()));
+    }
+
+    @ExceptionHandler(UserLockedException.class)
+    public ResponseEntity<Message> handleUserLockedException(UserLockedException userLockedException) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Message(userLockedException.getMessage()));
     }
 
 }
