@@ -33,4 +33,5 @@ public class DashboardController implements DashboardApi {
   public Object[] getCountryChartData() {
     return chartService.getCountryChartData();
   }
+
 }

@@ -207,7 +207,23 @@ public class UserServiceImpl implements UserService {
         User user = userRepo.findById(lockUserDto.getId()).orElse(null);
         assert user != null;
         user.setLocked(lockUserDto.isLock());
+        Set<Role> roleSet = user.getRoles();
+        if (user.isLocked()) {
+            for (Role role : roleSet) {
+                roleSet.remove(role);
+            }
+            Role lockedRole = roleService.getLockedRole();
+            roleSet.add(lockedRole);
+        } else {
+            for (Role role : roleSet) {
+                roleSet.remove(role);
+            }
+            Role userRole = roleService.getUserRole();
+            roleSet.add(userRole);
+        }
+        user.setRoles(roleSet);
         User saved = userRepo.save(user);
         return saved.isLocked();
     }
+
 }

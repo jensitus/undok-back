@@ -12,14 +12,11 @@ import at.undok.auth.service.AuthService;
 import at.undok.auth.service.UserService;
 import at.undok.auth.serviceimpl.UserDetailsServiceImpl;
 import at.undok.common.message.Message;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -115,4 +112,5 @@ public class UserController implements UserApi {
     }
     return ResponseEntity.ok(message);
   }
+
 }
