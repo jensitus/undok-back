@@ -57,12 +57,17 @@ public class UserController implements UserApi {
   }
 
   public ResponseEntity<Message> checkTheAuthToken(String token) {
-    Message message = jwtProvider.validateJwtToken(token);
-    if (jwtProvider.validateJwtToken(token).getRedirect()) {
+    try {
+      Message message = jwtProvider.validateJwtToken(token);
       return new ResponseEntity<>(message, HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
+    } catch (Exception e) {
+      throw new RuntimeException(e.getMessage());
     }
+    // if (jwtProvider.validateJwtToken(token).getRedirect()) {
+
+//    } else {
+//      return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
+//    }
   }
 
   public ResponseEntity<Message> password_resets(String email) {

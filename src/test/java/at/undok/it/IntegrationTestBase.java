@@ -18,7 +18,7 @@ import org.testcontainers.utility.DockerImageName;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Testcontainers
 @Import(IntegrationTestConfiguration.class)
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 public abstract class IntegrationTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTestBase.class);
 
@@ -27,7 +27,7 @@ public abstract class IntegrationTestBase {
      */
     private static final boolean SETUP_DOCKER_BASED_TEST_INFRASTRUCTURE = true;
 
-    private static final DockerImageName DATABASE_IMAGE_NAME = DockerImageName.parse("postgres:11");
+    private static final DockerImageName DATABASE_IMAGE_NAME = DockerImageName.parse("postgres:14");
 
     static final PostgreSQLContainer<?> DATABASE = new PostgreSQLContainer<>(DATABASE_IMAGE_NAME);
 

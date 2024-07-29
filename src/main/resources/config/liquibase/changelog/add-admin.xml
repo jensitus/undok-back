@@ -5,6 +5,34 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-
-
+    <property name="isActive" value="true" context="test" />
+    <property name="isActive" value="false" context="dev" />
+    <property name="uuid_type" value="uuid" dbms="postgresql"/>
+    <property name="uuid_function" value="gen_random_uuid()" dbms="postgresql"/>
+    <changeSet id="add-admin" author="jensitus">
+        <preConditions onFail="MARK_RAN">
+            <or>
+                <changeLogPropertyDefined property="isActive" value="true" />
+            </or>
+        </preConditions>
+        <insert tableName="users">
+            <column name="id" valueComputed="${uuid_function}" />
+            <column name="username" value="admin" />
+            <column name="email" value="admin@undok.at" />
+            <column name="created_at" value="now()" />
+            <column name="password" value="$2a$10$OmCxcCNC6FunLtR9UU1Gqeum50BzNaIbPDLdSiMNQDxmb4all1E2e" />
+            <column name="locked" value="false" />
+            <column name="admin" value="true" />
+            <column name="change_password" value="false" />
+            <column name="confirmed" value="true" />
+        </insert>
+        <insert tableName="user_roles">
+            <column name="role_id" value="1" />
+            <column name="user_id" valueComputed="(select id from users where username = 'admin')" />
+        </insert>
+        <insert tableName="user_roles">
+            <column name="role_id" value="2"/>
+            <column name="user_id" valueComputed="(select id from users where username = 'admin')" />
+        </insert>
+    </changeSet>
 </databaseChangeLog>

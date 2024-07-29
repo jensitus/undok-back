@@ -1,5 +1,6 @@
 package at.undok.auth.security;
 
+import at.undok.auth.exception.TokenExpiredException;
 import at.undok.auth.serviceimpl.UserPrinciple;
 import io.jsonwebtoken.*;
 import at.undok.auth.model.entity.User;
@@ -84,7 +85,7 @@ public class JwtProvider {
       return new Message(e.toString(), false);
     } catch (ExpiredJwtException e) {
       logger.error("Expired JWT token -> Message: {}", e.getMessage());
-      return new Message(e.toString(), false);
+      throw new TokenExpiredException("Token expired");
     } catch (UnsupportedJwtException e) {
       logger.error("Unsupported JWT token -> Message: {}", e);
       return new Message(e.toString(), false);
