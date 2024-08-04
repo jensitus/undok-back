@@ -3,12 +3,13 @@ services:
 
   postgres:
     container_name: dev-undok-postgres
-    image: postgres:11
+    image: postgres:14.5-alpine
     ports:
-      - "5432:5432"
+      - "5431:5432"
     environment:
-      - POSTGRES_PASSWORD=dev123
-      - POSTGRES_USER=undok
+      POSTGRES_DB: undok
+      POSTGRES_PASSWORD: dev123
+      POSTGRES_USER: undok
     volumes:
       - pg-data:/var/lib/postgresql/data
 

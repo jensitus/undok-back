@@ -109,4 +109,12 @@ public class AuthRestApiClient {
         return httpHeaders;
     }
 
+    public ResponseEntity<Message> pingPong(String accessToken) {
+        HttpHeaders httpHeaders = getHeaders(accessToken);
+        String url = HOST + serverPort + "/service/undok/ping/pong";
+        HttpEntity<Object> entity = new HttpEntity<>(httpHeaders);
+        ResponseEntity<Message> response = testRestTemplate.exchange(url, HttpMethod.GET, entity, Message.class);
+        return response;
+    }
+
 }

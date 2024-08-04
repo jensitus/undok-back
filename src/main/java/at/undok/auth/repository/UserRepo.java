@@ -26,4 +26,7 @@ public interface UserRepo extends JpaRepository<User, UUID> {
   @Query("select u.changePassword from User u where u.email = :email and u.confirmationToken = :confirmationToken")
   boolean selectChangePasswordFromUser(String email, String confirmationToken);
 
+  @Query("select u.locked from User u where u.username = :username")
+  boolean checkIfLockedByUsername(String username);
+
 }

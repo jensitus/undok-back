@@ -2,6 +2,7 @@ package at.undok.auth.controller;
 
 import at.undok.auth.api.UserApi;
 import at.undok.auth.model.dto.ChangePwDto;
+import at.undok.auth.model.dto.LockUserDto;
 import at.undok.auth.model.dto.SetAdminDto;
 import at.undok.auth.model.dto.UserDto;
 import at.undok.auth.model.form.CreateUserForm;
@@ -11,14 +12,11 @@ import at.undok.auth.service.AuthService;
 import at.undok.auth.service.UserService;
 import at.undok.auth.serviceimpl.UserDetailsServiceImpl;
 import at.undok.common.message.Message;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,12 +57,17 @@ public class UserController implements UserApi {
   }
 
   public ResponseEntity<Message> checkTheAuthToken(String token) {
-    Message message = jwtProvider.validateJwtToken(token);
-    if (jwtProvider.validateJwtToken(token).getRedirect()) {
+    try {
+      Message message = jwtProvider.validateJwtToken(token);
       return new ResponseEntity<>(message, HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
+    } catch (Exception e) {
+      throw new RuntimeException(e.getMessage());
     }
+    // if (jwtProvider.validateJwtToken(token).getRedirect()) {
+
+//    } else {
+//      return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
+//    }
   }
 
   public ResponseEntity<Message> password_resets(String email) {
@@ -95,6 +98,24 @@ public class UserController implements UserApi {
     }
     String confirmationUrl = authService.createUserViaAdmin(createUserForm);
     return  ResponseEntity.ok(new Message(confirmationUrl));
+  }
+
+  @Override
+  public ResponseEntity<Message> resendConfirmationLink(String userId) {
+    String s = authService.resendConfirmationToken(userId);
+    return ResponseEntity.ok(new Message("Confirmation link successfully sent"));
+  }
+
+  @Override
+  public ResponseEntity<Message> lockUser(LockUserDto lockUserDto) {
+    boolean locked = userService.lockUser(lockUserDto);
+    Message message = new Message();
+    if (locked) {
+      message.setText("user locked");
+    } else {
+      message.setText("user unlocked");
+    }
+    return ResponseEntity.ok(message);
   }
 
 }

@@ -1,6 +1,7 @@
 package at.undok.auth.service;
 
 import at.undok.auth.model.dto.ChangePwDto;
+import at.undok.auth.model.dto.LockUserDto;
 import at.undok.auth.model.dto.UserDto;
 import at.undok.auth.message.PasswordResetForm;
 import at.undok.common.message.Message;
@@ -29,5 +30,7 @@ public interface UserService {
   UserDto getByUsername(String username);
 
   boolean checkIfPasswordHasToBeChanged(String encodedToken, String encodedEmail);
+
+  boolean lockUser(LockUserDto lockUserDto);
 
 }

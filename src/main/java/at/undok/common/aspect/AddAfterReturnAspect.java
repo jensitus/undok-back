@@ -3,15 +3,19 @@ package at.undok.common.aspect;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
 @Slf4j
 @Aspect
 @Component
+@Profile("dev")
 public class AddAfterReturnAspect {
 
     @Around("execution(* at.undok.undok.client.service..*(..))")
@@ -26,5 +30,12 @@ public class AddAfterReturnAspect {
         log.info("Execution time of " + className + "." + methodName + " "
                 + ":: " + stopWatch.getTotalTimeMillis() + " ms");
         return result;
+    }
+
+
+    @Around("execution(* org.springframework.security.access..*(..))")
+    public Object doHandle(ProceedingJoinPoint joinPoint) throws Throwable {
+        log.info("access denied aop: {}", joinPoint);
+        return joinPoint.proceed();
     }
 }
