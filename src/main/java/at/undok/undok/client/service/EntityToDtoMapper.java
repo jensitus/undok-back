@@ -50,8 +50,8 @@ public class EntityToDtoMapper {
         counselingDto.setClientId(client.getId());
         counselingDto.setKeyword(client.getKeyword());
         if (client.getPerson().getFirstName() != null && client.getPerson().getLastName() != null) {
-            counselingDto.setClientFullName(attributeEncryptor.convertToEntityAttribute(client.getPerson().getFirstName())
-                    + " " + attributeEncryptor.convertToEntityAttribute(client.getPerson().getLastName()));
+            counselingDto.setClientFullName(client.getPerson().getFirstName()
+                    + " " + client.getPerson().getLastName());
         }
         return counselingDto;
     }
@@ -80,8 +80,8 @@ public class EntityToDtoMapper {
             allCounselingDto.setClientId(client.getId());
             allCounselingDto.setKeyword(client.getKeyword());
             if (client.getPerson().getFirstName() != null && client.getPerson().getLastName() != null) {
-                allCounselingDto.setClientFullName(attributeEncryptor.convertToEntityAttribute(client.getPerson().getFirstName())
-                        + " " + attributeEncryptor.convertToEntityAttribute(client.getPerson().getLastName()));
+                allCounselingDto.setClientFullName(client.getPerson().getFirstName()
+                        + " " + client.getPerson().getLastName());
             }
             List<CategoryDto> activityCategories = categoryService.getCategoryListByTypeAndEntity(CategoryType.LEGAL, c.getId());
             StringBuilder activityCategoriesSeparatedByComma = new StringBuilder();
@@ -139,19 +139,19 @@ public class EntityToDtoMapper {
             return null;
         }
         if (person.getFirstName() != null) {
-            personDto.setFirstName(attributeEncryptor.convertToEntityAttribute(person.getFirstName()));
+            personDto.setFirstName(person.getFirstName());
         }
         if (person.getLastName() != null) {
-            personDto.setLastName(attributeEncryptor.convertToEntityAttribute(person.getLastName()));
+            personDto.setLastName(person.getLastName());
         }
         if (person.getEmail() != null) {
-            personDto.setEmail(attributeEncryptor.convertToEntityAttribute(person.getEmail()));
+            personDto.setEmail(person.getEmail());
         }
         if (person.getTelephone() != null) {
-            personDto.setTelephone(attributeEncryptor.convertToEntityAttribute(person.getTelephone()));
+            personDto.setTelephone(person.getTelephone());
         }
         if (person.getGender() != null) {
-            personDto.setGender(attributeEncryptor.convertToEntityAttribute(person.getGender()));
+            personDto.setGender(person.getGender());
         }
 
         personDto.setId(person.getId());
@@ -161,16 +161,16 @@ public class EntityToDtoMapper {
             AddressDto addressDto = new AddressDto();
             addressDto.setId(person.getAddress().getId());
             if (person.getAddress().getCity() != null) {
-                addressDto.setCity(attributeEncryptor.convertToEntityAttribute(person.getAddress().getCity()));
+                addressDto.setCity(person.getAddress().getCity());
             }
             if (person.getAddress().getStreet() != null) {
-                addressDto.setStreet(attributeEncryptor.convertToEntityAttribute(person.getAddress().getStreet()));
+                addressDto.setStreet(person.getAddress().getStreet());
             }
             if (person.getAddress().getZipCode() != null) {
-                addressDto.setZipCode(attributeEncryptor.convertToEntityAttribute(person.getAddress().getZipCode()));
+                addressDto.setZipCode(person.getAddress().getZipCode());
             }
             if (person.getAddress().getCountry() != null) {
-                addressDto.setCountry(attributeEncryptor.convertToEntityAttribute(person.getAddress().getCountry()));
+                addressDto.setCountry(person.getAddress().getCountry());
             }
             personDto.setAddress(addressDto);
         }
@@ -194,16 +194,16 @@ public class EntityToDtoMapper {
 
 
         if (employerDto.getPerson().getFirstName() != null) {
-            employerPerson.setFirstName(attributeEncryptor.convertToDatabaseColumn(employerDto.getPerson().getFirstName()));
+            employerPerson.setFirstName(employerDto.getPerson().getFirstName());
         }
         if (employerDto.getPerson().getLastName() != null) {
-            employerPerson.setLastName(attributeEncryptor.convertToDatabaseColumn(employerDto.getPerson().getLastName()));
+            employerPerson.setLastName(employerDto.getPerson().getLastName());
         }
         if (employerDto.getPerson().getEmail() != null) {
-            employerPerson.setEmail(attributeEncryptor.convertToDatabaseColumn(employerDto.getPerson().getEmail()));
+            employerPerson.setEmail(employerDto.getPerson().getEmail());
         }
         if (employerDto.getPerson().getTelephone() != null) {
-            employerPerson.setTelephone(attributeEncryptor.convertToDatabaseColumn(employerDto.getPerson().getTelephone()));
+            employerPerson.setTelephone(employerDto.getPerson().getTelephone());
         }
 
 
@@ -221,16 +221,16 @@ public class EntityToDtoMapper {
             address.setId(addressDto.getId());
         }
         if (addressDto.getStreet() != null) {
-            address.setStreet(attributeEncryptor.convertToDatabaseColumn(addressDto.getStreet()));
+            address.setStreet(addressDto.getStreet());
         }
         if (addressDto.getCity() != null) {
-            address.setCity(attributeEncryptor.convertToDatabaseColumn(addressDto.getCity()));
+            address.setCity(addressDto.getCity());
         }
         if (addressDto.getZipCode() != null) {
-            address.setZipCode(attributeEncryptor.convertToDatabaseColumn(addressDto.getZipCode()));
+            address.setZipCode(addressDto.getZipCode());
         }
         if (addressDto.getCountry() != null) {
-            address.setCountry(attributeEncryptor.convertToDatabaseColumn(addressDto.getCountry()));
+            address.setCountry(addressDto.getCountry());
         }
         return address;
     }

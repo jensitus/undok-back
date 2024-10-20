@@ -35,30 +35,30 @@ public class EmployerService {
 
         Address address = new Address();
         if (employerForm.getEmployerCity() != null) {
-            address.setCity(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerCity()));
+            address.setCity(employerForm.getEmployerCity());
         }
         if (employerForm.getEmployerZipCode() != null) {
-            address.setZipCode(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerZipCode()));
+            address.setZipCode(employerForm.getEmployerZipCode());
         }
         if (employerForm.getEmployerStreet() != null) {
-            address.setStreet(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerStreet()));
+            address.setStreet(employerForm.getEmployerStreet());
         }
         if (employerForm.getEmployerCountry() != null) {
-            address.setCountry(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerCountry()));
+            address.setCountry(employerForm.getEmployerCountry());
         }
         Address savedAddress = addressRepo.save(address);
 
         if (employerForm.getEmployerFirstName() != null) {
-            employerPerson.setFirstName(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerFirstName()));
+            employerPerson.setFirstName(employerForm.getEmployerFirstName());
         }
         if (employerForm.getEmployerLastName() != null) {
-            employerPerson.setLastName(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerLastName()));
+            employerPerson.setLastName(employerForm.getEmployerLastName());
         }
         if (employerForm.getEmployerEmail() != null) {
-            employerPerson.setEmail(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerEmail()));
+            employerPerson.setEmail(employerForm.getEmployerEmail());
         }
         if (employerForm.getEmployerTelephone() != null) {
-            employerPerson.setTelephone(attributeEncryptor.convertToDatabaseColumn(employerForm.getEmployerTelephone()));
+            employerPerson.setTelephone(employerForm.getEmployerTelephone());
         }
         employerPerson.setCreatedAt(LocalDateTime.now());
 

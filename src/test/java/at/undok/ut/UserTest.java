@@ -128,16 +128,6 @@ public class UserTest extends IntegrationTestBase {
     }
 
     @Test
-    public void encryptUserName() {
-        User user = new User();
-        String toEncrypted = attributeEncryptor.convertToDatabaseColumn(USERNAME);
-        user.setUsername(toEncrypted);
-        log.info(user.toString());
-        String toDecrypted = attributeEncryptor.convertToEntityAttribute(user.getUsername());
-        log.info(toDecrypted);
-    }
-
-    @Test
     public void createConfUrlTest() {
         // String confirmationUrl = authService.createConfirmationUrl("birgitt@service-b.org", UUID.randomUUID().toString());
         // log.info(confirmationUrl);

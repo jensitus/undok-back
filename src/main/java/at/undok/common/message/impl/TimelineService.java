@@ -55,7 +55,7 @@ public class TimelineService {
       timelineItemDto.setCounselingId(c.getId());
       timelineItemDto.setCreatedAt(c.getCreatedAt());
       if (c.getClient().getPerson().getFirstName() != null && c.getClient().getPerson().getLastName() != null) {
-        timelineItemDto.setName(attributeEncryptor.convertToEntityAttribute(c.getClient().getPerson().getFirstName()) + ' ' + attributeEncryptor.convertToEntityAttribute(c.getClient().getPerson().getLastName()));
+        timelineItemDto.setName(c.getClient().getPerson().getFirstName() + ' ' + c.getClient().getPerson().getLastName());
       } else {
         timelineItemDto.setName(c.getClient().getKeyword());
       }
