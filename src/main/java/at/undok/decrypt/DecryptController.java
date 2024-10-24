@@ -1,12 +1,9 @@
 package at.undok.decrypt;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping("decrypt")
+//@RestController
+//@RequestMapping("decrypt")
 public class DecryptController {
 
     private final DecryptService decryptService;
@@ -15,7 +12,7 @@ public class DecryptController {
         this.decryptService = decryptService;
     }
 
-    @GetMapping
+//    @GetMapping
     public ResponseEntity<Void> getDecryption() {
         decryptService.getAddresses();
         return ResponseEntity.ok().build();
