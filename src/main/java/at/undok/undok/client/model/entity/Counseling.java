@@ -78,6 +78,9 @@ public class Counseling extends AbstractCrud {
     @Column(name = "status")
     private String status;
 
+    @Column(name = "required_time")
+    private Integer requiredTime;
+
     @Override
     public String toString() {
         return "Counseling{" +

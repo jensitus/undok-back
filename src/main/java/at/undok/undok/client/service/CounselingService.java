@@ -129,4 +129,10 @@ public class CounselingService {
         return counselingRepo.getCounselingForCsv();
     }
 
+    public CounselingDto setRequiredTime(UUID counselingId, Integer requiredTime) {
+        Counseling counseling = counselingRepo.findById(counselingId).orElseThrow();
+        counseling.setRequiredTime(requiredTime);
+        return modelMapper.map(counselingRepo.save(counseling), CounselingDto.class);
+    }
+
 }

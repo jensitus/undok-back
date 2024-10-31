@@ -28,6 +28,7 @@ public class CounselingDto {
     private UUID clientId;
     private String clientFullName;
     private String keyword;
+    private Integer requiredTime;
 
     public CounselingDto(UUID id, String concern, String concernCategory, String activity, String counselingDate, String comment, UUID clientId, String keyword) {
         this.id = id;
