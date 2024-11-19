@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.*;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.persistence.AttributeConverter;
+import jakarta.persistence.AttributeConverter;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;

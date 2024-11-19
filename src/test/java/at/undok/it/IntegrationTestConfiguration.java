@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 import java.util.Locale;
@@ -32,8 +33,9 @@ public class IntegrationTestConfiguration {
 
     @Bean
     TestRestTemplate testRestTemplate() {
-        var restTemplateBuilder = new RestTemplateBuilder()
-                .requestFactory(HttpComponentsClientHttpRequestFactory::new);
+        var restTemplateBuilder = new RestTemplateBuilder();
+
+        // HttpComponentsClientHttpRequestFactory::new
 
         return new TestRestTemplate(restTemplateBuilder);
     }

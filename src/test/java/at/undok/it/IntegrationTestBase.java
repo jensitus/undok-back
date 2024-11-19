@@ -1,6 +1,6 @@
 package at.undok.it;
 
-import org.hibernate.dialect.PostgreSQL9Dialect;
+import org.hibernate.dialect.PostgreSQLDialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -55,7 +55,7 @@ public abstract class IntegrationTestBase {
         registry.add("spring.datasource.url", DATABASE::getJdbcUrl);
         registry.add("spring.datasource.username", DATABASE::getUsername);
         registry.add("spring.datasource.password", DATABASE::getPassword);
-        registry.add("spring.jpa.properties.hibernate.dialect", () -> PostgreSQL9Dialect.class.getName());
+        registry.add("spring.jpa.properties.hibernate.dialect", PostgreSQLDialect.class::getName);
     }
 
 }

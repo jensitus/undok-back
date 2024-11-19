@@ -1,11 +1,13 @@
 package at.undok.common.util;
 
+import jakarta.persistence.Converter;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.AttributeConverter;
+import jakarta.persistence.AttributeConverter;
 import java.util.UUID;
 
 @Component
+@Converter
 public class UUIDConverter implements AttributeConverter<UUID, String> {
 
   @Override

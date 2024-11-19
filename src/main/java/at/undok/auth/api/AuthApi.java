@@ -3,16 +3,12 @@ package at.undok.auth.api;
 import at.undok.auth.message.JwtResponse;
 import at.undok.auth.message.PasswordResetForm;
 import at.undok.auth.model.dto.LoginDto;
-import at.undok.auth.model.dto.SignUpDto;
 import at.undok.auth.model.form.ConfirmAccountForm;
-import at.undok.auth.model.form.SecondFactorForm;
 import at.undok.common.message.Message;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @RequestMapping("/service/auth")
 public interface AuthApi {

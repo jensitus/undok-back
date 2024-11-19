@@ -4,7 +4,7 @@ import at.undok.common.model.AbstractCrud;
 import at.undok.undok.client.model.dto.CheckClientEmployerDto;
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Data

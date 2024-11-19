@@ -5,7 +5,7 @@ import at.undok.undok.client.model.dto.CounselingForCsvResult;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -94,4 +94,9 @@ public class Counseling extends AbstractCrud {
                 ", registeredBy='" + registeredBy + '\'' +
                 '}';
     }
+
+//    @ManyToOne(optional = false)
+//    @JoinColumn(name = "case_id")
+//    private Case cases;
+
 }
