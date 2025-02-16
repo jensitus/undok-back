@@ -1,6 +1,5 @@
 package at.undok.undok.client.service;
 
-import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.common.util.ToLocalDateService;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
@@ -14,6 +13,7 @@ import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.PersonRepo;
 import at.undok.undok.client.util.StatusService;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,16 +33,14 @@ public class ClientService {
     private final PersonRepo personRepo;
     private final AddressRepo addressRepo;
     private final ToLocalDateService toLocalDateService;
-    private final AttributeEncryptor attributeEncryptor;
     private final CounselingService counselingService;
 
-    public ClientService(EntityToDtoMapper entityToDtoMapper, ClientRepo clientRepo, PersonRepo personRepo, AddressRepo addressRepo, ToLocalDateService toLocalDateService, AttributeEncryptor attributeEncryptor, CounselingService counselingService) {
+    public ClientService(EntityToDtoMapper entityToDtoMapper, ClientRepo clientRepo, PersonRepo personRepo, AddressRepo addressRepo, ToLocalDateService toLocalDateService, CounselingService counselingService) {
         this.entityToDtoMapper = entityToDtoMapper;
         this.clientRepo = clientRepo;
         this.personRepo = personRepo;
         this.addressRepo = addressRepo;
         this.toLocalDateService = toLocalDateService;
-        this.attributeEncryptor = attributeEncryptor;
         this.counselingService = counselingService;
     }
 
@@ -84,8 +82,9 @@ public class ClientService {
     }
 
     public ClientDto getClientById(UUID id) {
-        Optional<Client> personOptional = clientRepo.findById(id);
-        return entityToDtoMapper.convertClientToDto(personOptional.get());
+        Client client = clientRepo.findById(id).orElseThrow();
+        ClientDto clientDto = entityToDtoMapper.convertClientToDto(client);
+        return clientDto;
     }
 
     public Long getNumberOfClients() {
@@ -155,21 +154,7 @@ public class ClientService {
         }
         clientPerson.setCreatedAt(LocalDateTime.now());
 
-        client.setEducation(clientForm.getEducation());
-        client.setKeyword(clientForm.getKeyword());
-        client.setHowHasThePersonHeardFromUs(clientForm.getHowHasThePersonHeardFromUs());
-        client.setInterpreterNecessary(clientForm.getInterpreterNecessary());
-        client.setVulnerableWhenAssertingRights(clientForm.getVulnerableWhenAssertingRights());
-        client.setMaritalStatus(clientForm.getMaritalStatus());
-        client.setCurrentResidentStatus(clientForm.getCurrentResidentStatus());
-        client.setLabourMarketAccess(clientForm.getLabourMarketAccess());
-        client.setLanguage(clientForm.getLanguage());
-        client.setUnion(clientForm.getUnion());
-        client.setMembership(clientForm.getMembership());
-        client.setNationality(clientForm.getNationality());
-        client.setSector(clientForm.getSector());
-        client.setOrganization(clientForm.getOrganization());
-        client.setPosition(clientForm.getPosition());
+        setClient(client, clientForm.getEducation(), clientForm.getKeyword(), clientForm.getHowHasThePersonHeardFromUs(), clientForm.getInterpreterNecessary(), clientForm.getVulnerableWhenAssertingRights(), clientForm.getMaritalStatus(), clientForm.getCurrentResidentStatus(), clientForm.getLabourMarketAccess(), clientForm.getLanguage(), clientForm.getUnion(), clientForm.getMembership(), clientForm.getNationality(), clientForm.getSector(), clientForm.getOrganization(), clientForm.getPosition());
         client.setCreatedAt(LocalDateTime.now());
         client.setSocialInsuranceNumber(clientForm.getSocialInsuranceNumber());
         client.setStatus(StatusService.STATUS_ACTIVE);
@@ -199,6 +184,24 @@ public class ClientService {
         return entityToDtoMapper.convertClientToDto(c);
     }
 
+    private void setClient(Client client, String education, String keyword, String howHasThePersonHeardFromUs, Boolean interpreterNecessary, Boolean vulnerableWhenAssertingRights, String maritalStatus, String currentResidentStatus, String labourMarketAccess, String language, String union, Boolean membership, String nationality, String sector, String organization, String position) {
+        client.setEducation(education);
+        client.setKeyword(keyword);
+        client.setHowHasThePersonHeardFromUs(howHasThePersonHeardFromUs);
+        client.setInterpreterNecessary(interpreterNecessary);
+        client.setVulnerableWhenAssertingRights(vulnerableWhenAssertingRights);
+        client.setMaritalStatus(maritalStatus);
+        client.setCurrentResidentStatus(currentResidentStatus);
+        client.setLabourMarketAccess(labourMarketAccess);
+        client.setLanguage(language);
+        client.setUnion(union);
+        client.setMembership(membership);
+        client.setNationality(nationality);
+        client.setSector(sector);
+        client.setOrganization(organization);
+        client.setPosition(position);
+    }
+
 
     private ClientDto updateClient(Person person, Client client, Address address, ClientDto cDto) {
         try {
@@ -224,21 +227,7 @@ public class ClientService {
         }
         person.setUpdatedAt(LocalDateTime.now());
 
-        client.setEducation(cDto.getEducation());
-        client.setKeyword(cDto.getKeyword());
-        client.setHowHasThePersonHeardFromUs(cDto.getHowHasThePersonHeardFromUs());
-        client.setInterpreterNecessary(cDto.getInterpreterNecessary());
-        client.setVulnerableWhenAssertingRights(cDto.getVulnerableWhenAssertingRights());
-        client.setMaritalStatus(cDto.getMaritalStatus());
-        client.setCurrentResidentStatus(cDto.getCurrentResidentStatus());
-        client.setLabourMarketAccess(cDto.getLabourMarketAccess());
-        client.setLanguage(cDto.getLanguage());
-        client.setUnion(cDto.getUnion());
-        client.setMembership(cDto.getMembership());
-        client.setNationality(cDto.getNationality());
-        client.setSector(cDto.getSector());
-        client.setOrganization(cDto.getOrganization());
-        client.setPosition(cDto.getPosition());
+        setClient(client, cDto.getEducation(), cDto.getKeyword(), cDto.getHowHasThePersonHeardFromUs(), cDto.getInterpreterNecessary(), cDto.getVulnerableWhenAssertingRights(), cDto.getMaritalStatus(), cDto.getCurrentResidentStatus(), cDto.getLabourMarketAccess(), cDto.getLanguage(), cDto.getUnion(), cDto.getMembership(), cDto.getNationality(), cDto.getSector(), cDto.getOrganization(), cDto.getPosition());
         client.setUpdatedAt(LocalDateTime.now());
         client.setSocialInsuranceNumber(cDto.getSocialInsuranceNumber());
 

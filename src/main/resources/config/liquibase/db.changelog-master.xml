@@ -5,8 +5,8 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
+  <include file="config/liquibase/changelog/set-pgcrypto.xml" />
   <include file="config/liquibase/changelog/create-user-table-changelog-1.0.xml"/>
-  <include file="config/liquibase/changelog/add_required_time.xml"/>
   <include file="config/liquibase/changelog/user_confirmation.xml" />
   <include file="config/liquibase/changelog/undok_client.xml" />
   <include file="config/liquibase/changelog/create-counseling.xml" />
@@ -23,4 +23,6 @@
   <include file="config/liquibase/changelog/change_id_of_join_category.xml" />
   <include file="config/liquibase/changelog/social_insurance_number.xml" />
   <include file="/config/liquibase/changelog/add-role-locked.xml" />
+  <include file="config/liquibase/changelog/add_required_time.xml"/>
+  <include file="config/liquibase/changelog/create-case.xml" />
 </databaseChangeLog> 

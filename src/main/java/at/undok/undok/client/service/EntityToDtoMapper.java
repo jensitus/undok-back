@@ -1,6 +1,9 @@
 package at.undok.undok.client.service;
 
-import at.undok.common.encryption.AttributeEncryptor;
+import at.undok.undok.client.mapper.impl.ClientMapperImpl;
+import at.undok.undok.client.mapper.inter.CaseMapper;
+import at.undok.undok.client.mapper.inter.ClientMapper;
+import at.undok.undok.client.mapper.inter.CounselingMapper;
 import at.undok.undok.client.model.dto.*;
 import at.undok.undok.client.model.entity.*;
 import at.undok.undok.client.util.CategoryType;
@@ -8,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +19,9 @@ import java.util.List;
 public class EntityToDtoMapper {
 
     private final ModelMapper modelMapper;
-    private final AttributeEncryptor attributeEncryptor;
     private final CategoryService categoryService;
+    private final CaseMapper caseMapper;
+    private final CounselingMapper counselingMapper;
 
     public List<EmployerDto> convertEmployerListToDto(List<Employer> employers) {
         List<EmployerDto> employerDtoList = new ArrayList<>();
@@ -45,14 +48,9 @@ public class EntityToDtoMapper {
     }
 
     public CounselingDto convertCounselingToDto(Counseling counseling) {
-        CounselingDto counselingDto = modelMapper.map(counseling, CounselingDto.class);
-        Client client = counseling.getClient();
-        counselingDto.setClientId(client.getId());
-        counselingDto.setKeyword(client.getKeyword());
-        if (client.getPerson().getFirstName() != null && client.getPerson().getLastName() != null) {
-            counselingDto.setClientFullName(client.getPerson().getFirstName()
-                    + " " + client.getPerson().getLastName());
-        }
+        CounselingDto counselingDto = counselingMapper.toDto(counseling);
+        CaseDto caseDto = caseMapper.toDto(counseling.getCounselingCase());
+        counselingDto.setCounselingCase(caseDto);
         return counselingDto;
     }
 
@@ -108,28 +106,8 @@ public class EntityToDtoMapper {
     }
 
     private ClientDto mapClientToDto(Client client) {
-        ClientDto clientDto = new ClientDto();
-
-        clientDto.setEducation(client.getEducation());
-        clientDto.setId(client.getId());
-        clientDto.setHowHasThePersonHeardFromUs(client.getHowHasThePersonHeardFromUs());
-        clientDto.setInterpreterNecessary(client.getInterpreterNecessary());
-        clientDto.setKeyword(client.getKeyword());
-        clientDto.setMaritalStatus(client.getMaritalStatus());
-        clientDto.setVulnerableWhenAssertingRights(client.getVulnerableWhenAssertingRights());
-
-        clientDto.setLanguage(client.getLanguage());
-        clientDto.setPosition(client.getPosition());
-        clientDto.setMembership(client.getMembership());
-        clientDto.setOrganization(client.getOrganization());
-        clientDto.setNationality(client.getNationality());
-        clientDto.setSector(client.getSector());
-        clientDto.setUnion(client.getUnion());
-        clientDto.setLabourMarketAccess(client.getLabourMarketAccess());
-        clientDto.setCurrentResidentStatus(client.getCurrentResidentStatus());
-        clientDto.setSocialInsuranceNumber(client.getSocialInsuranceNumber());
-
-        return clientDto;
+        ClientMapperImpl clientMapper = new ClientMapperImpl();
+        return clientMapper.toDto(client);
     }
 
     private PersonDto mapPersonToDto(Person person) {

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create_cases" author="jensitus">
+
+        <createTable tableName="cases">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP" />
+            <column name="updated_at" type="timestamp" />
+            <column name="name" type="varchar(255)" />
+            <column name="status" type="varchar(64)"/>
+            <column name="start_time" type="date"/>
+            <column name="end_time" type="date"/>
+            <column name="referred_to" type="varchar(255)" />
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="add_case_id_to_counselings" author="jensitus">
+        <addColumn tableName="counselings">
+            <column name="case_id" type="UUID" />
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

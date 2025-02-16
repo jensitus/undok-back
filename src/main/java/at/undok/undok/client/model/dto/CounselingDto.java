@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -18,9 +17,7 @@ public class CounselingDto {
     private String counselingStatus;
     private LocalDate entryDate;
     private String concern;
-    private String concernCategory;
     private String activity;
-    private Set<CategoryDto> activityCategories;
     private String registeredBy;
     private String counselingDate;
     private LocalDateTime createdAt;
@@ -29,15 +26,31 @@ public class CounselingDto {
     private String clientFullName;
     private String keyword;
     private Integer requiredTime;
+    private CaseDto counselingCase;
 
-    public CounselingDto(UUID id, String concern, String concernCategory, String activity, String counselingDate, String comment, UUID clientId, String keyword) {
+    public CounselingDto(UUID id, String concern, String activity, String counselingDate, String comment, UUID clientId, String keyword) {
         this.id = id;
         this.concern = concern;
-        this.concernCategory = concernCategory;
         this.activity = activity;
         this.counselingDate = counselingDate;
         this.comment = comment;
         this.clientId = clientId;
         this.keyword = keyword;
+    }
+
+    public CounselingDto(UUID id, String concern, String activity, String registeredBy, String counselingDate,
+                         LocalDateTime createdAt, String comment, UUID clientId, String clientFullName,
+                         String keyword, Integer requiredTime) {
+        this.id = id;
+        this.concern = concern;
+        this.activity = activity;
+        this.registeredBy = registeredBy;
+        this.counselingDate = counselingDate;
+        this.createdAt = createdAt;
+        this.comment = comment;
+        this.clientId = clientId;
+        this.clientFullName = clientFullName;
+        this.keyword = keyword;
+        this.requiredTime = requiredTime;
     }
 }

@@ -4,9 +4,11 @@ import at.undok.common.util.ToLocalDateService;
 import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.dto.CounselingForCsvResult;
+import at.undok.undok.client.model.entity.Case;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.entity.Counseling;
 import at.undok.undok.client.model.form.CounselingForm;
+import at.undok.undok.client.repository.CaseRepo;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.CounselingRepo;
 import at.undok.undok.client.repository.JoinCategoryRepo;
@@ -30,6 +32,7 @@ public class CounselingService {
     private final ToLocalDateService toLocalDateService;
     private final EntityToDtoMapper entityToDtoMapper;
     private final JoinCategoryRepo joinCategoryRepo;
+    private final CaseRepo caseRepo;
 
     public CounselingDto createCounseling(UUID clientId, CounselingForm counselingForm) {
         Counseling c = new Counseling();
@@ -37,17 +40,56 @@ public class CounselingService {
         c.setActivity(counselingForm.getActivity());
         c.setConcern(counselingForm.getConcern());
         c.setConcernCategory(counselingForm.getConcernCategory());
-        // c.setCounselingDate(toLocalDateService.formatStringToLocalDateTime(counselingForm.getCounselingDate()));
         c.setRegisteredBy(counselingForm.getRegisteredBy());
         c.setCreatedAt(LocalDateTime.now());
         c.setComment(counselingForm.getComment());
         c.setStatus(StatusService.STATUS_ACTIVE);
+        Client client = clientRepo.findById(counselingForm.getClientId()).orElseThrow();
 
-        Optional<Client> clientOptional = clientRepo.findById(counselingForm.getClientId());
-        c.setClient(clientOptional.get());
-        Counseling counsel = counselingRepo.save(c);
-        CounselingDto counselingDto = modelMapper.map(counsel, CounselingDto.class);
-        return counselingDto;
+        c.setClient(client);
+        Counseling counseling = counselingRepo.save(c);
+        setCase(counseling, clientId);
+        return modelMapper.map(counseling, CounselingDto.class);
+    }
+
+    private void setCase(Counseling c, UUID clientId) {
+        if (Boolean.FALSE.equals(countCase(clientId))) {
+            Case aCase = createCase(c);
+            c.setCounselingCase(aCase);
+            counselingRepo.save(c);
+        } else if (Boolean.TRUE.equals(countCase(clientId))) {
+            c.setCounselingCase(getCase(clientId));
+            counselingRepo.save(c);
+        } else if (countCase(clientId) == null) {
+            throw new RuntimeException("too much cases");
+        }
+    }
+
+    private Boolean countCase(UUID clientId) {
+        Integer countCase = counselingRepo.countCase(clientId);
+        if (countCase == 1) {
+            return true;
+        } else if (countCase >= 1) {
+            return null;
+        } else {
+            return false;
+        }
+    }
+
+    private Case createCase(Counseling counseling) {
+        Case c = new Case();
+        c.setCreatedAt(LocalDateTime.now());
+        c.setStartTime(LocalDateTime.now());
+        c.setStatus("open");
+        Client client = counseling.getClient();
+        String keyword = client.getKeyword();
+        c.setName(keyword);
+        return caseRepo.save(c);
+    }
+
+    private Case getCase(UUID clientId) {
+        UUID caseId = counselingRepo.findCaseId(clientId);
+        return caseRepo.findById(caseId).orElseThrow();
     }
 
     public Long numberOfCounselings() {
@@ -81,14 +123,13 @@ public class CounselingService {
     }
 
     public CounselingDto updateCounseling(CounselingDto counselingDto) {
-        Counseling counseling = counselingRepo.getById(counselingDto.getId());
+        Counseling counseling = counselingRepo.findById(counselingDto.getId()).orElseThrow();
         // counseling.setCounselingDate(toLocalDateService.formatStringToLocalDateTime(counselingDto.getCounselingDate()));
         counseling.setCounselingDate(LocalDateTime.parse(counselingDto.getCounselingDate()));
         counseling.setCounselingStatus(counselingDto.getCounselingStatus());
         counseling.setConcern(counselingDto.getConcern());
         counseling.setCreatedAt(counselingDto.getCreatedAt());
         counseling.setActivity(counselingDto.getActivity());
-        counseling.setConcernCategory(counselingDto.getConcernCategory());
         // counseling.setActivityCategory(counselingDto.getActivityCategory());
         counseling.setComment(counselingDto.getComment());
         counseling.setUpdatedAt(LocalDateTime.now());
