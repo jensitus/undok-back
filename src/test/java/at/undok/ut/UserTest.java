@@ -94,6 +94,17 @@ public class UserTest extends IntegrationTestBase {
         assertEquals("Hi du verdammter Mistkerl", forObject);
     }
 
+    @Test
+    public void getAllPersons() {
+        Person person = new Person();
+        person.setEmail("emil@kobold.at");
+        person.setFirstName("Emil");
+        person.setLastName("Kobold");
+        personRepo.save(person);
+        List<Person> people = personRepo.findAll();
+        log.info(people.toString());
+    }
+
     private String generateJwtToken() {
         String authorities = "";
         return Jwts.builder()

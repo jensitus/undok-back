@@ -1,6 +1,7 @@
 package at.undok.undok.client.service;
 
 import at.undok.common.util.ToLocalDateService;
+import at.undok.undok.client.exception.CounselingDateException;
 import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.dto.CounselingForCsvResult;
@@ -17,7 +18,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -78,12 +81,15 @@ public class CounselingService {
 
     private Case createCase(Counseling counseling) {
         Case c = new Case();
+        UUID clientId = counseling.getClient().getId();
         c.setCreatedAt(LocalDateTime.now());
-        c.setStartTime(LocalDateTime.now());
-        c.setStatus("open");
+        c.setStartDate(LocalDate.now());
+        c.setStatus("OPEN");
         Client client = counseling.getClient();
         String keyword = client.getKeyword();
-        c.setName(keyword);
+        String caseName = keyword + " - " + LocalDate.now();
+        c.setName(caseName);
+        c.setClientId(clientId);
         return caseRepo.save(c);
     }
 
@@ -124,13 +130,19 @@ public class CounselingService {
 
     public CounselingDto updateCounseling(CounselingDto counselingDto) {
         Counseling counseling = counselingRepo.findById(counselingDto.getId()).orElseThrow();
-        // counseling.setCounselingDate(toLocalDateService.formatStringToLocalDateTime(counselingDto.getCounselingDate()));
-        counseling.setCounselingDate(LocalDateTime.parse(counselingDto.getCounselingDate()));
+        try {
+            counseling.setCounselingDate(LocalDateTime.parse(counselingDto.getCounselingDate()));
+        } catch (NullPointerException | DateTimeParseException e) {
+            if (e.getClass().equals(NullPointerException.class)) {
+                throw new CounselingDateException("Counseling Date Required");
+            } else {
+                throw e;
+            }
+        }
         counseling.setCounselingStatus(counselingDto.getCounselingStatus());
         counseling.setConcern(counselingDto.getConcern());
         counseling.setCreatedAt(counselingDto.getCreatedAt());
         counseling.setActivity(counselingDto.getActivity());
-        // counseling.setActivityCategory(counselingDto.getActivityCategory());
         counseling.setComment(counselingDto.getComment());
         counseling.setUpdatedAt(LocalDateTime.now());
 
@@ -174,6 +186,10 @@ public class CounselingService {
         Counseling counseling = counselingRepo.findById(counselingId).orElseThrow();
         counseling.setRequiredTime(requiredTime);
         return modelMapper.map(counselingRepo.save(counseling), CounselingDto.class);
+    }
+
+    public int getTotalConsultationTime(UUID caseId) {
+        return counselingRepo.selectTotalConsultationTime(caseId);
     }
 
 }

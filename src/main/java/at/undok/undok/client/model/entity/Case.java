@@ -3,12 +3,17 @@ package at.undok.undok.client.model.entity;
 import at.undok.common.model.AbstractCrud;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "cases")
+@NoArgsConstructor
+@Data
 public class Case extends AbstractCrud {
 
     @Column(name = "name")
@@ -21,60 +26,24 @@ public class Case extends AbstractCrud {
     @Column(name = "status")
     private String status;
 
-    @Column(name = "start_time")
-    private LocalDateTime startTime;
+    @Column(name = "start_date")
+    private LocalDate startDate;
 
-    @Column(name = "end_time")
-    private LocalDateTime endTime;
+    @Column(name = "end_date")
+    private LocalDate endDate;
 
     @Column(name = "referred_to")
     private String referredTo;
 
-    public String getName() {
-        return name;
-    }
+    @Column(name = "client_id")
+    private UUID clientId;
 
-    public void setName(String name) {
+    @Column(name = "total_consultation_time")
+    private Integer totalConsultationTime;
+
+    public Case(String name, String status, UUID clientId) {
         this.name = name;
-    }
-
-    public List<Counseling> getCounselings() {
-        return counselings;
-    }
-
-    public void setCounselings(List<Counseling> counselings) {
-        this.counselings = counselings;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
         this.status = status;
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public LocalDateTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getReferredTo() {
-        return referredTo;
-    }
-
-    public void setReferredTo(String referredTo) {
-        this.referredTo = referredTo;
+        this.clientId = clientId;
     }
 }

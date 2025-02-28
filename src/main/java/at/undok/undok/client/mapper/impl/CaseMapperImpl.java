@@ -15,14 +15,18 @@ public class CaseMapperImpl implements CaseMapper {
                            entity.getUpdatedAt() != null ? entity.getUpdatedAt().toString() : null,
                            entity.getName(),
                            entity.getStatus(),
-                           entity.getStartTime(),
-                           entity.getEndTime(),
-                           entity.getReferredTo());
+                           entity.getStartDate(),
+                           entity.getEndDate(),
+                           entity.getReferredTo(),
+                           entity.getClientId(),
+                           entity.getTotalConsultationTime());
     }
 
     @Override
     public Case toEntity(CaseDto dto) {
-        return null;
+        return new Case(dto.getName(),
+                        dto.getStatus(),
+                        dto.getClientId());
     }
 
 }

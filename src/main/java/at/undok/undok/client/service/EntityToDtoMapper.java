@@ -32,7 +32,7 @@ public class EntityToDtoMapper {
         return employerDtoList;
     }
 
-    public ClientDto convertClientToDto(Client client) {
+    public ClientDto  convertClientToDto(Client client) {
         ClientDto clientDto = mapClientToDto(client);
         PersonDto personDto = mapPersonToDto(client.getPerson());
         clientDto.setPerson(personDto);
@@ -49,8 +49,8 @@ public class EntityToDtoMapper {
 
     public CounselingDto convertCounselingToDto(Counseling counseling) {
         CounselingDto counselingDto = counselingMapper.toDto(counseling);
-        CaseDto caseDto = caseMapper.toDto(counseling.getCounselingCase());
-        counselingDto.setCounselingCase(caseDto);
+//        CaseDto caseDto = caseMapper.toDto(counseling.getCounselingCase());
+//        counselingDto.setCounselingCase(caseDto);
         return counselingDto;
     }
 

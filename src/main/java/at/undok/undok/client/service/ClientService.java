@@ -2,6 +2,7 @@ package at.undok.undok.client.service;
 
 import at.undok.common.util.ToLocalDateService;
 import at.undok.undok.client.model.dto.AllClientDto;
+import at.undok.undok.client.model.dto.CaseDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.entity.Address;
 import at.undok.undok.client.model.entity.Client;
@@ -13,7 +14,6 @@ import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.PersonRepo;
 import at.undok.undok.client.util.StatusService;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,14 +34,16 @@ public class ClientService {
     private final AddressRepo addressRepo;
     private final ToLocalDateService toLocalDateService;
     private final CounselingService counselingService;
+    private final CaseService caseService;
 
-    public ClientService(EntityToDtoMapper entityToDtoMapper, ClientRepo clientRepo, PersonRepo personRepo, AddressRepo addressRepo, ToLocalDateService toLocalDateService, CounselingService counselingService) {
+    public ClientService(EntityToDtoMapper entityToDtoMapper, ClientRepo clientRepo, PersonRepo personRepo, AddressRepo addressRepo, ToLocalDateService toLocalDateService, CounselingService counselingService, CaseService caseService) {
         this.entityToDtoMapper = entityToDtoMapper;
         this.clientRepo = clientRepo;
         this.personRepo = personRepo;
         this.addressRepo = addressRepo;
         this.toLocalDateService = toLocalDateService;
         this.counselingService = counselingService;
+        this.caseService = caseService;
     }
 
     public boolean checkIfKeywordAlreadyExists(String keyword) {
@@ -84,6 +86,10 @@ public class ClientService {
     public ClientDto getClientById(UUID id) {
         Client client = clientRepo.findById(id).orElseThrow();
         ClientDto clientDto = entityToDtoMapper.convertClientToDto(client);
+        List<CaseDto> openCaseList = caseService.getCaseByClientIdAndStatus(client.getId(), "OPEN");
+        clientDto.setOpenCase(openCaseList.size() == 1 ? openCaseList.get(0) : null);
+        List<CaseDto> closeCaseList = caseService.getCaseByClientIdAndStatus(client.getId(), "CLOSED");
+        clientDto.setClosedCases(!closeCaseList.isEmpty() ? closeCaseList : null);
         return clientDto;
     }
 

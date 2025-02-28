@@ -3,7 +3,7 @@ package at.undok.undok.client.model.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,20 +16,23 @@ public class CaseDto {
     private String name;
     private List<CounselingDto> counselings;
     private String status;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private String referredTo;
+    private UUID clientId;
+    private Integer totalConsultationTime;
 
     public CaseDto(UUID id, String createdAt, String updatedAt, String name, String status,
-                   LocalDateTime startTime,
-                   LocalDateTime endTime, String referredTo) {
+                   LocalDate startDate, LocalDate endDate, String referredTo, UUID clientId, Integer totalConsultationTime) {
         this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.name = name;
         this.status = status;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.referredTo = referredTo;
+        this.clientId = clientId;
+        this.totalConsultationTime = totalConsultationTime;
     }
 }

@@ -5,7 +5,9 @@ import at.undok.undok.client.model.entity.Address;
 import at.undok.undok.client.model.entity.Person;
 import at.undok.undok.client.repository.AddressRepo;
 import at.undok.undok.client.repository.PersonRepo;
+
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,13 +15,19 @@ import java.util.UUID;
 
 @Service
 @Slf4j
-public class DecryptService {
+public class KeyService {
 
     private final AddressRepo addressRepo;
     private final PersonRepo personRepo;
     private final AttributeEncryptor attributeEncryptor;
+    @Value("${undok.key}")
+    private String secretKey;
 
-    public DecryptService(AddressRepo addressRepo, PersonRepo personRepo, AttributeEncryptor attributeEncryptor) {
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public KeyService(AddressRepo addressRepo, PersonRepo personRepo, AttributeEncryptor attributeEncryptor) {
         this.addressRepo = addressRepo;
         this.personRepo = personRepo;
         this.attributeEncryptor = attributeEncryptor;

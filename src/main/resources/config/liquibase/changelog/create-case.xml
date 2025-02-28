@@ -14,11 +14,13 @@
             <column name="updated_at" type="timestamp" />
             <column name="name" type="varchar(255)" />
             <column name="status" type="varchar(64)"/>
-            <column name="start_time" type="date"/>
-            <column name="end_time" type="date"/>
+            <column name="start_date" type="date"/>
+            <column name="end_date" type="date"/>
             <column name="referred_to" type="varchar(255)" />
+            <column name="client_id" type="UUID" />
+            <column name="total_consultation_time" type="int" />
         </createTable>
-
+        <addUniqueConstraint tableName="cases" columnNames="name" />
     </changeSet>
 
     <changeSet id="add_case_id_to_counselings" author="jensitus">

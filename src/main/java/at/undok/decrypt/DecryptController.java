@@ -6,15 +6,15 @@ import org.springframework.http.ResponseEntity;
 //@RequestMapping("decrypt")
 public class DecryptController {
 
-    private final DecryptService decryptService;
+    private final KeyService keyService;
 
-    public DecryptController(DecryptService decryptService) {
-        this.decryptService = decryptService;
+    public DecryptController(KeyService keyService) {
+        this.keyService = keyService;
     }
 
 //    @GetMapping
     public ResponseEntity<Void> getDecryption() {
-        decryptService.getAddresses();
+        // decryptService.getAddresses();
         return ResponseEntity.ok().build();
     }
 

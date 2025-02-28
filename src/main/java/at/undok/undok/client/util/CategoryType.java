@@ -7,4 +7,5 @@ public abstract class CategoryType {
     public static final String AUFENTHALTSTITEL = "Aufenthaltstitel";
     public static final String SECTOR = "Branche";
     public static final String LEGAL = "LEGAL";
+    public static final String REFERRED_TO = "REFERRED_TO";
 }

@@ -1,9 +1,9 @@
 package at.undok.undok.client.mapper.inter;
 
-public interface Mapper<T, R> {
+public interface Mapper<E, D> {
 
-    R toDto(T t);
+    D toDto(E e);
 
-    T toEntity(R dto);
+    E toEntity(D dto);
 
 }
