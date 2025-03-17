@@ -42,4 +42,7 @@ public interface CounselingApi {
     @PutMapping("/{id}/set-required-time")
     ResponseEntity<CounselingDto> setRequiredTime(@PathVariable("id") UUID counselingId, @RequestBody Integer requiredTime);
 
+    @GetMapping("by-client/{client-id}")
+    ResponseEntity<List<CounselingDto>> getCounselingByClientId(@PathVariable("client-id") UUID clientId);
+
 }

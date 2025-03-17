@@ -147,18 +147,18 @@ public class CounselingService {
         counseling.setUpdatedAt(LocalDateTime.now());
 
         Counseling savedCounseling = counselingRepo.save(counseling);
-        return modelMapper.map(savedCounseling, CounselingDto.class);
+        return entityToDtoMapper.convertCounselingToDto(savedCounseling);
     }
 
     public CounselingDto setCommentOnCounseling(UUID counselingId, String comment) {
-        Counseling counseling = counselingRepo.findById(counselingId).get();
+        Counseling counseling = counselingRepo.findById(counselingId).orElseThrow();
         if ("null".equals(comment)) {
             counseling.setComment(null);
         } else {
             counseling.setComment(comment);
         }
         Counseling savedCounseling = counselingRepo.save(counseling);
-        return modelMapper.map(savedCounseling, CounselingDto.class);
+        return entityToDtoMapper.convertCounselingToDto(savedCounseling);
     }
 
     public void deleteCounseling(UUID counselingId) {
@@ -168,7 +168,7 @@ public class CounselingService {
     public CounselingDto getSingleCounseling(UUID counselingId) {
         Optional<Counseling> counseling = counselingRepo.findById(counselingId);
         if (counseling.isPresent()) {
-           return entityToDtoMapper.convertCounselingToDto(counseling.get());
+            return entityToDtoMapper.convertCounselingToDto(counseling.get());
         } else {
             throw new RuntimeException("counseling is not present, sorry");
         }
@@ -185,11 +185,17 @@ public class CounselingService {
     public CounselingDto setRequiredTime(UUID counselingId, Integer requiredTime) {
         Counseling counseling = counselingRepo.findById(counselingId).orElseThrow();
         counseling.setRequiredTime(requiredTime);
-        return modelMapper.map(counselingRepo.save(counseling), CounselingDto.class);
+        Counseling saved = counselingRepo.save(counseling);
+        return entityToDtoMapper.convertCounselingToDto(saved);
     }
 
     public int getTotalConsultationTime(UUID caseId) {
         return counselingRepo.selectTotalConsultationTime(caseId);
+    }
+
+    public List<CounselingDto> findByClient(UUID clientId) {
+        List<Counseling> counselings = counselingRepo.findByClientId(clientId);
+        return entityToDtoMapper.convertCounselingListToDtoList(counselings);
     }
 
 }
