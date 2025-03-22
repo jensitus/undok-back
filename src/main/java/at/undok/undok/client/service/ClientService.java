@@ -3,6 +3,7 @@ package at.undok.undok.client.service;
 import at.undok.common.util.ToLocalDateService;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.CaseDto;
+import at.undok.undok.client.model.dto.CategoryDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.entity.Address;
 import at.undok.undok.client.model.entity.Client;
@@ -12,6 +13,7 @@ import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.repository.AddressRepo;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.PersonRepo;
+import at.undok.undok.client.util.CategoryType;
 import at.undok.undok.client.util.StatusService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,8 +37,9 @@ public class ClientService {
     private final ToLocalDateService toLocalDateService;
     private final CounselingService counselingService;
     private final CaseService caseService;
+    private final CategoryService categoryService;
 
-    public ClientService(EntityToDtoMapper entityToDtoMapper, ClientRepo clientRepo, PersonRepo personRepo, AddressRepo addressRepo, ToLocalDateService toLocalDateService, CounselingService counselingService, CaseService caseService) {
+    public ClientService(EntityToDtoMapper entityToDtoMapper, ClientRepo clientRepo, PersonRepo personRepo, AddressRepo addressRepo, ToLocalDateService toLocalDateService, CounselingService counselingService, CaseService caseService, CategoryService categoryService) {
         this.entityToDtoMapper = entityToDtoMapper;
         this.clientRepo = clientRepo;
         this.personRepo = personRepo;
@@ -44,6 +47,7 @@ public class ClientService {
         this.toLocalDateService = toLocalDateService;
         this.counselingService = counselingService;
         this.caseService = caseService;
+        this.categoryService = categoryService;
     }
 
     public boolean checkIfKeywordAlreadyExists(String keyword) {
@@ -90,6 +94,8 @@ public class ClientService {
         clientDto.setOpenCase(openCaseList.size() == 1 ? openCaseList.get(0) : null);
         List<CaseDto> closeCaseList = caseService.getCaseByClientIdAndStatus(client.getId(), "CLOSED");
         clientDto.setClosedCases(!closeCaseList.isEmpty() ? closeCaseList : null);
+        List<CategoryDto> jobFunctionList = categoryService.getCategoryListByTypeAndEntity(CategoryType.JOB_FUNCTION, client.getId());
+        clientDto.setJobFunctions(jobFunctionList);
         return clientDto;
     }
 

@@ -55,6 +55,7 @@ public class ClientDto {
     private String socialInsuranceNumber;
     private List<CaseDto> closedCases;
     private CaseDto openCase;
+    private List<CategoryDto> jobFunctions;
 
     public ClientDto(UUID id, LocalDateTime createdAt, LocalDateTime updatedAt, String keyword, String education,
                      String maritalStatus, String nationality, String language, Boolean interpreterNecessary,
