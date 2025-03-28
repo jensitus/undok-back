@@ -35,7 +35,7 @@ public interface CounselingRepo extends JpaRepository<Counseling, UUID> {
                                         and ca.status = 'OPEN'
                                         and cl.id = :client_id
             """, nativeQuery = true)
-    Integer countCase(UUID client_id);
+    Integer countOpenCases(UUID client_id);
 
     @Query(value = """
             select distinct ca.id from cases ca, counselings co, clients cl
@@ -50,7 +50,7 @@ public interface CounselingRepo extends JpaRepository<Counseling, UUID> {
             select SUM(c.required_time) from counselings c where c.case_id = :caseId
             """,
             nativeQuery = true)
-    int selectTotalConsultationTime(UUID caseId);
+    Integer selectTotalConsultationTime(UUID caseId);
 
     List<Counseling> findByClientId(UUID clientId);
 }

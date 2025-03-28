@@ -3,6 +3,7 @@ package at.undok.undok.client.service;
 import at.undok.undok.client.mapper.inter.CaseMapper;
 import at.undok.undok.client.model.dto.CaseDto;
 import at.undok.undok.client.model.entity.Case;
+import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.repository.CaseRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -31,6 +32,10 @@ public class CaseService {
         return caseMapper.toDto(savedCase);
     }
 
+    public CaseDto getLastClosedCase(UUID clientId) {
+        return caseMapper.toDto(caseRepo.findFirstByClientIdOrderByEndDateAsc(clientId));
+    }
+
     public CaseDto getCase(UUID id) {
         return modelMapper.map(caseRepo.findById(id), CaseDto.class);
     }
@@ -41,6 +46,7 @@ public class CaseService {
         aCase.setReferredTo(caseDto.getReferredTo());
         aCase.setUpdatedAt(LocalDateTime.now());
         aCase.setTotalConsultationTime(Objects.equals(caseDto.getStatus(), "CLOSED") ? counselingService.getTotalConsultationTime(aCase.getId()) : null);
+        aCase.setEndDate(Objects.equals(caseDto.getStatus(), "CLOSED") ? LocalDate.now() : null);
         return caseMapper.toDto(caseRepo.save(aCase));
     }
 

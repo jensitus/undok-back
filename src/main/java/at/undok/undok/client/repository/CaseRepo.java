@@ -10,4 +10,7 @@ public interface CaseRepo extends JpaRepository<Case, UUID> {
 
     List<Case> findByClientIdAndStatus(UUID clientId, String status);
 
+    Case findFirstByClientIdOrderByEndDateAsc(UUID clientId);
+
+
 }

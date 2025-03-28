@@ -2,7 +2,10 @@ package at.undok.undok.client.service;
 
 import at.undok.common.util.ToLocalDateService;
 import at.undok.undok.client.exception.CounselingDateException;
+import at.undok.undok.client.mapper.inter.CaseMapper;
+import at.undok.undok.client.mapper.inter.CounselingMapper;
 import at.undok.undok.client.model.dto.AllCounselingDto;
+import at.undok.undok.client.model.dto.CaseDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.dto.CounselingForCsvResult;
 import at.undok.undok.client.model.entity.Case;
@@ -34,7 +37,8 @@ public class CounselingService {
     private final ModelMapper modelMapper;
     private final ToLocalDateService toLocalDateService;
     private final EntityToDtoMapper entityToDtoMapper;
-    private final JoinCategoryRepo joinCategoryRepo;
+    private final CounselingMapper counselingMapper;
+    private final CaseMapper caseMapper;
     private final CaseRepo caseRepo;
 
     public CounselingDto createCounseling(UUID clientId, CounselingForm counselingForm) {
@@ -51,25 +55,41 @@ public class CounselingService {
 
         c.setClient(client);
         Counseling counseling = counselingRepo.save(c);
-        setCase(counseling, clientId);
-        return modelMapper.map(counseling, CounselingDto.class);
+        Case aCase = setCase(counseling, clientId);
+        CounselingDto counselingDto = counselingMapper.toDto(counseling);
+        CaseDto caseDto = caseMapper.toDto(aCase);
+        counselingDto.setCounselingCase(caseDto);
+        return counselingDto;
+
     }
 
-    private void setCase(Counseling c, UUID clientId) {
-        if (Boolean.FALSE.equals(countCase(clientId))) {
-            Case aCase = createCase(c);
-            c.setCounselingCase(aCase);
+    private Case setCase(Counseling c, UUID clientId) {
+        if (Boolean.FALSE.equals(countOpenCases(clientId))) {
+            // Case aCase = createCase(c);
+            Case lastClosedCase = caseRepo.findFirstByClientIdOrderByEndDateAsc(clientId);
+
+            // reopen case:
+            lastClosedCase.setEndDate(null);
+            lastClosedCase.setStatus(StatusService.STATUS_OPEN);
+            Case savedCase = caseRepo.save(lastClosedCase);
+
+            c.setCounselingCase(lastClosedCase);
             counselingRepo.save(c);
-        } else if (Boolean.TRUE.equals(countCase(clientId))) {
-            c.setCounselingCase(getCase(clientId));
+            return savedCase;
+        } else if (Boolean.TRUE.equals(countOpenCases(clientId))) {
+            Case currentCase = getCase(clientId);
+            c.setCounselingCase(currentCase);
             counselingRepo.save(c);
-        } else if (countCase(clientId) == null) {
+            return currentCase;
+        } else if (countOpenCases(clientId) == null) {
             throw new RuntimeException("too much cases");
+        } else {
+            return null;
         }
     }
 
-    private Boolean countCase(UUID clientId) {
-        Integer countCase = counselingRepo.countCase(clientId);
+    private Boolean countOpenCases(UUID clientId) {
+        Integer countCase = counselingRepo.countOpenCases(clientId);
         if (countCase == 1) {
             return true;
         } else if (countCase >= 1) {
@@ -84,7 +104,7 @@ public class CounselingService {
         UUID clientId = counseling.getClient().getId();
         c.setCreatedAt(LocalDateTime.now());
         c.setStartDate(LocalDate.now());
-        c.setStatus("OPEN");
+        c.setStatus(StatusService.STATUS_OPEN);
         Client client = counseling.getClient();
         String keyword = client.getKeyword();
         String caseName = keyword + " - " + LocalDate.now();
@@ -189,7 +209,7 @@ public class CounselingService {
         return entityToDtoMapper.convertCounselingToDto(saved);
     }
 
-    public int getTotalConsultationTime(UUID caseId) {
+    public Integer getTotalConsultationTime(UUID caseId) {
         return counselingRepo.selectTotalConsultationTime(caseId);
     }
 
