@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.ToString;
 import at.undok.auth.validation.annotation.ValidEmail;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 @ToString

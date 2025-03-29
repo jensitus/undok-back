@@ -58,11 +58,13 @@ public class AuthRestApiClient {
         return testRestTemplate.postForEntity(url, secondFactorFormHttpEntity, JwtResponse.class);
     }
 
-    public ResponseEntity<Client> createClient(ClientForm clientForm, String accessToken) {
+    public ResponseEntity<ClientDto> createClient(ClientForm clientForm, String accessToken) {
         HttpHeaders httpHeaders = getHeaders(accessToken);
         String url = HOST + serverPort + UNDOK_CLIENTS_PATH + "/create";
         HttpEntity<ClientForm> clientFormHttpEntity = new HttpEntity<>(clientForm, httpHeaders);
-        return this.testRestTemplate.postForEntity(url, clientFormHttpEntity, Client.class);
+        ResponseEntity<ClientDto> clientDtoResponseEntity = this.testRestTemplate.postForEntity(url, clientFormHttpEntity, ClientDto.class);
+
+        return clientDtoResponseEntity;
     }
 
     public ResponseEntity<CounselingDto> createCounseling(CounselingForm counselingForm, String accessToken, UUID clientId) {

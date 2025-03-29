@@ -22,4 +22,5 @@ public class AllCounselingDto {
     private UUID clientId;
     private String clientFullName;
     private String keyword;
+    private Integer requiredTime;
 }

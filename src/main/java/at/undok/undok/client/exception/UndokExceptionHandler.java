@@ -14,4 +14,9 @@ public class UndokExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message(e.getMessage()));
     }
 
+    @ExceptionHandler(CounselingDateException.class)
+    public ResponseEntity<Message> handleCounselingDateException(CounselingDateException e) {
+        return ResponseEntity.status(HttpStatus.PRECONDITION_REQUIRED).body(new Message(e.getMessage()));
+    }
+
 }

@@ -1,8 +1,9 @@
 package at.undok.undok.client.service;
 
-import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.common.util.ToLocalDateService;
 import at.undok.undok.client.model.dto.AllClientDto;
+import at.undok.undok.client.model.dto.CaseDto;
+import at.undok.undok.client.model.dto.CategoryDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.entity.Address;
 import at.undok.undok.client.model.entity.Client;
@@ -12,6 +13,7 @@ import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.repository.AddressRepo;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.PersonRepo;
+import at.undok.undok.client.util.CategoryType;
 import at.undok.undok.client.util.StatusService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,17 +35,19 @@ public class ClientService {
     private final PersonRepo personRepo;
     private final AddressRepo addressRepo;
     private final ToLocalDateService toLocalDateService;
-    private final AttributeEncryptor attributeEncryptor;
     private final CounselingService counselingService;
+    private final CaseService caseService;
+    private final CategoryService categoryService;
 
-    public ClientService(EntityToDtoMapper entityToDtoMapper, ClientRepo clientRepo, PersonRepo personRepo, AddressRepo addressRepo, ToLocalDateService toLocalDateService, AttributeEncryptor attributeEncryptor, CounselingService counselingService) {
+    public ClientService(EntityToDtoMapper entityToDtoMapper, ClientRepo clientRepo, PersonRepo personRepo, AddressRepo addressRepo, ToLocalDateService toLocalDateService, CounselingService counselingService, CaseService caseService, CategoryService categoryService) {
         this.entityToDtoMapper = entityToDtoMapper;
         this.clientRepo = clientRepo;
         this.personRepo = personRepo;
         this.addressRepo = addressRepo;
         this.toLocalDateService = toLocalDateService;
-        this.attributeEncryptor = attributeEncryptor;
         this.counselingService = counselingService;
+        this.caseService = caseService;
+        this.categoryService = categoryService;
     }
 
     public boolean checkIfKeywordAlreadyExists(String keyword) {
@@ -84,8 +88,15 @@ public class ClientService {
     }
 
     public ClientDto getClientById(UUID id) {
-        Optional<Client> personOptional = clientRepo.findById(id);
-        return entityToDtoMapper.convertClientToDto(personOptional.get());
+        Client client = clientRepo.findById(id).orElseThrow();
+        ClientDto clientDto = entityToDtoMapper.convertClientToDto(client);
+        List<CaseDto> openCaseList = caseService.getCaseByClientIdAndStatus(client.getId(), "OPEN");
+        clientDto.setOpenCase(openCaseList.size() == 1 ? openCaseList.get(0) : null);
+        List<CaseDto> closeCaseList = caseService.getCaseByClientIdAndStatus(client.getId(), "CLOSED");
+        clientDto.setClosedCases(!closeCaseList.isEmpty() ? closeCaseList : null);
+        List<CategoryDto> jobFunctionList = categoryService.getCategoryListByTypeAndEntity(CategoryType.JOB_FUNCTION, client.getId());
+        clientDto.setJobFunctions(jobFunctionList);
+        return clientDto;
     }
 
     public Long getNumberOfClients() {
@@ -139,53 +150,39 @@ public class ClientService {
         }
 
         if (clientForm.getFirstName() != null) {
-            clientPerson.setFirstName(attributeEncryptor.convertToDatabaseColumn(clientForm.getFirstName()));
+            clientPerson.setFirstName(clientForm.getFirstName());
         }
         if (clientForm.getLastName() != null) {
-            clientPerson.setLastName(attributeEncryptor.convertToDatabaseColumn(clientForm.getLastName()));
+            clientPerson.setLastName(clientForm.getLastName());
         }
         if (clientForm.getEmail() != null) {
-            clientPerson.setEmail(attributeEncryptor.convertToDatabaseColumn(clientForm.getEmail()));
+            clientPerson.setEmail(clientForm.getEmail());
         }
         if (clientForm.getTelephone() != null) {
-            clientPerson.setTelephone(attributeEncryptor.convertToDatabaseColumn(clientForm.getTelephone()));
+            clientPerson.setTelephone(clientForm.getTelephone());
         }
         if (clientForm.getGender() != null) {
-            clientPerson.setGender(attributeEncryptor.convertToDatabaseColumn(clientForm.getGender()));
+            clientPerson.setGender(clientForm.getGender());
         }
         clientPerson.setCreatedAt(LocalDateTime.now());
 
-        client.setEducation(clientForm.getEducation());
-        client.setKeyword(clientForm.getKeyword());
-        client.setHowHasThePersonHeardFromUs(clientForm.getHowHasThePersonHeardFromUs());
-        client.setInterpreterNecessary(clientForm.getInterpreterNecessary());
-        client.setVulnerableWhenAssertingRights(clientForm.getVulnerableWhenAssertingRights());
-        client.setMaritalStatus(clientForm.getMaritalStatus());
-        client.setCurrentResidentStatus(clientForm.getCurrentResidentStatus());
-        client.setLabourMarketAccess(clientForm.getLabourMarketAccess());
-        client.setLanguage(clientForm.getLanguage());
-        client.setUnion(clientForm.getUnion());
-        client.setMembership(clientForm.getMembership());
-        client.setNationality(clientForm.getNationality());
-        client.setSector(clientForm.getSector());
-        client.setOrganization(clientForm.getOrganization());
-        client.setPosition(clientForm.getPosition());
+        setClient(client, clientForm.getEducation(), clientForm.getKeyword(), clientForm.getHowHasThePersonHeardFromUs(), clientForm.getInterpreterNecessary(), clientForm.getVulnerableWhenAssertingRights(), clientForm.getMaritalStatus(), clientForm.getCurrentResidentStatus(), clientForm.getLabourMarketAccess(), clientForm.getLanguage(), clientForm.getUnion(), clientForm.getMembership(), clientForm.getNationality(), clientForm.getSector(), clientForm.getOrganization(), clientForm.getPosition());
         client.setCreatedAt(LocalDateTime.now());
         client.setSocialInsuranceNumber(clientForm.getSocialInsuranceNumber());
         client.setStatus(StatusService.STATUS_ACTIVE);
         Client saveAndFlush = clientRepo.saveAndFlush(client);
 
         if (clientForm.getStreet() != null) {
-            clientAddress.setStreet(attributeEncryptor.convertToDatabaseColumn(clientForm.getStreet()));
+            clientAddress.setStreet(clientForm.getStreet());
         }
         if (clientForm.getZipCode() != null) {
-            clientAddress.setZipCode(attributeEncryptor.convertToDatabaseColumn(clientForm.getZipCode()));
+            clientAddress.setZipCode(clientForm.getZipCode());
         }
         if (clientForm.getCity() != null) {
-            clientAddress.setCity(attributeEncryptor.convertToDatabaseColumn(clientForm.getCity()));
+            clientAddress.setCity(clientForm.getCity());
         }
         if (clientForm.getCountry() != null) {
-            clientAddress.setCountry(attributeEncryptor.convertToDatabaseColumn(clientForm.getCountry()));
+            clientAddress.setCountry(clientForm.getCountry());
         }
         Address savedAddress = addressRepo.save(clientAddress);
 
@@ -196,7 +193,26 @@ public class ClientService {
         client.setPerson(savedPerson);
 
         Client c = clientRepo.save(client);
-        return entityToDtoMapper.convertClientToDto(c);
+        ClientDto clientDto = entityToDtoMapper.convertClientToDto(c);
+        return clientDto;
+    }
+
+    private void setClient(Client client, String education, String keyword, String howHasThePersonHeardFromUs, Boolean interpreterNecessary, Boolean vulnerableWhenAssertingRights, String maritalStatus, String currentResidentStatus, String labourMarketAccess, String language, String union, Boolean membership, String nationality, String sector, String organization, String position) {
+        client.setEducation(education);
+        client.setKeyword(keyword);
+        client.setHowHasThePersonHeardFromUs(howHasThePersonHeardFromUs);
+        client.setInterpreterNecessary(interpreterNecessary);
+        client.setVulnerableWhenAssertingRights(vulnerableWhenAssertingRights);
+        client.setMaritalStatus(maritalStatus);
+        client.setCurrentResidentStatus(currentResidentStatus);
+        client.setLabourMarketAccess(labourMarketAccess);
+        client.setLanguage(language);
+        client.setUnion(union);
+        client.setMembership(membership);
+        client.setNationality(nationality);
+        client.setSector(sector);
+        client.setOrganization(organization);
+        client.setPosition(position);
     }
 
 
@@ -208,51 +224,37 @@ public class ClientService {
         }
 
         if (cDto.getPerson().getFirstName() != null) {
-            person.setFirstName(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getFirstName()));
+            person.setFirstName(cDto.getPerson().getFirstName());
         }
         if (cDto.getPerson().getLastName() != null) {
-            person.setLastName(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getLastName()));
+            person.setLastName(cDto.getPerson().getLastName());
         }
         if (cDto.getPerson().getEmail() != null) {
-            person.setEmail(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getEmail()));
+            person.setEmail(cDto.getPerson().getEmail());
         }
         if (cDto.getPerson().getTelephone() != null) {
-            person.setTelephone(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getTelephone()));
+            person.setTelephone(cDto.getPerson().getTelephone());
         }
         if (cDto.getPerson().getGender() != null) {
-            person.setGender(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getGender()));
+            person.setGender(cDto.getPerson().getGender());
         }
         person.setUpdatedAt(LocalDateTime.now());
 
-        client.setEducation(cDto.getEducation());
-        client.setKeyword(cDto.getKeyword());
-        client.setHowHasThePersonHeardFromUs(cDto.getHowHasThePersonHeardFromUs());
-        client.setInterpreterNecessary(cDto.getInterpreterNecessary());
-        client.setVulnerableWhenAssertingRights(cDto.getVulnerableWhenAssertingRights());
-        client.setMaritalStatus(cDto.getMaritalStatus());
-        client.setCurrentResidentStatus(cDto.getCurrentResidentStatus());
-        client.setLabourMarketAccess(cDto.getLabourMarketAccess());
-        client.setLanguage(cDto.getLanguage());
-        client.setUnion(cDto.getUnion());
-        client.setMembership(cDto.getMembership());
-        client.setNationality(cDto.getNationality());
-        client.setSector(cDto.getSector());
-        client.setOrganization(cDto.getOrganization());
-        client.setPosition(cDto.getPosition());
+        setClient(client, cDto.getEducation(), cDto.getKeyword(), cDto.getHowHasThePersonHeardFromUs(), cDto.getInterpreterNecessary(), cDto.getVulnerableWhenAssertingRights(), cDto.getMaritalStatus(), cDto.getCurrentResidentStatus(), cDto.getLabourMarketAccess(), cDto.getLanguage(), cDto.getUnion(), cDto.getMembership(), cDto.getNationality(), cDto.getSector(), cDto.getOrganization(), cDto.getPosition());
         client.setUpdatedAt(LocalDateTime.now());
         client.setSocialInsuranceNumber(cDto.getSocialInsuranceNumber());
 
         if (cDto.getPerson().getAddress().getStreet() != null) {
-            address.setStreet(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getStreet()));
+            address.setStreet(cDto.getPerson().getAddress().getStreet());
         }
         if (cDto.getPerson().getAddress().getZipCode() != null) {
-            address.setZipCode(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getZipCode()));
+            address.setZipCode(cDto.getPerson().getAddress().getZipCode());
         }
         if (cDto.getPerson().getAddress().getCity() != null) {
-            address.setCity(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getCity()));
+            address.setCity(cDto.getPerson().getAddress().getCity());
         }
         if (cDto.getPerson().getAddress().getCountry() != null) {
-            address.setCountry(attributeEncryptor.convertToDatabaseColumn(cDto.getPerson().getAddress().getCountry()));
+            address.setCountry(cDto.getPerson().getAddress().getCountry());
         }
 
         person.setAddress(address);

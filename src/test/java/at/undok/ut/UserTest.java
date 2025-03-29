@@ -1,9 +1,5 @@
 package at.undok.ut;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import at.undok.auth.model.entity.User;
 import at.undok.auth.service.AuthService;
 import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.common.util.ToLocalDateService;
@@ -24,32 +20,24 @@ import at.undok.undok.client.repository.EmployerRepo;
 import at.undok.undok.client.repository.PersonRepo;
 import at.undok.undok.client.service.ClientService;
 import at.undok.undok.client.service.CounselingService;
-import at.undok.undok.client.service.CsvService;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.Base64Codec;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // @TestPropertySource(properties = {"undok.secretKey=abcTestKey"})
 // @Disabled
@@ -106,6 +94,17 @@ public class UserTest extends IntegrationTestBase {
         assertEquals("Hi du verdammter Mistkerl", forObject);
     }
 
+    @Test
+    public void getAllPersons() {
+        Person person = new Person();
+        person.setEmail("emil@kobold.at");
+        person.setFirstName("Emil");
+        person.setLastName("Kobold");
+        personRepo.save(person);
+        List<Person> people = personRepo.findAll();
+        log.info(people.toString());
+    }
+
     private String generateJwtToken() {
         String authorities = "";
         return Jwts.builder()
@@ -125,16 +124,6 @@ public class UserTest extends IntegrationTestBase {
         String emailEncoded = Base64Codec.BASE64.encode(email);
         String tokenEncoded = Base64Codec.BASE64.encode(token);
         log.info(emailEncoded + " , " + tokenEncoded);
-    }
-
-    @Test
-    public void encryptUserName() {
-        User user = new User();
-        String toEncrypted = attributeEncryptor.convertToDatabaseColumn(USERNAME);
-        user.setUsername(toEncrypted);
-        log.info(user.toString());
-        String toDecrypted = attributeEncryptor.convertToEntityAttribute(user.getUsername());
-        log.info(toDecrypted);
     }
 
     @Test

@@ -1,5 +1,7 @@
 package at.undok.common.encryption;
 
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,21 +10,18 @@ import org.springframework.stereotype.Component;
 import javax.crypto.*;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.persistence.AttributeConverter;
 import java.security.InvalidKeyException;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
 
 @Slf4j
 @Component
+@Converter
 public class AttributeEncryptor implements AttributeConverter<String, String> {
 
     private static final String AES = "AES";
 
-    private static final String ALGORITHMO = "AES/ECB/PKCS5Padding";
     private static final String INSTANCE = "PBKDF2WithHmacSHA256";
     private static final int ITERATIONS = 65536;
     private static final int LENGTH = 128;

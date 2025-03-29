@@ -1,10 +1,11 @@
 package at.undok.undok.client.model.entity;
 
 import at.undok.common.model.AbstractCrud;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -28,7 +29,8 @@ public class Client extends AbstractCrud {
     @Column(name = "language")
     private String language;
 
-    @OneToOne(mappedBy = "client", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "client")
+    @JsonIgnore
     private Person person;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -78,16 +80,4 @@ public class Client extends AbstractCrud {
     @Column(name = "social_insurance_number")
     private String socialInsuranceNumber;
 
-    @Override
-    public String toString() {
-        return "Client{" +
-                "id=" + id +
-                ", keyword='" + keyword + '\'' +
-                ", education='" + education + '\'' +
-                ", maritalStatus='" + maritalStatus + '\'' +
-                ", interpreterNecessary=" + interpreterNecessary +
-                ", howHasThePersonHeardFromUs='" + howHasThePersonHeardFromUs + '\'' +
-                ", vulnerableWhenAssertingRights=" + vulnerableWhenAssertingRights +
-                '}';
-    }
 }

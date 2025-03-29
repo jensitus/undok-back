@@ -1,16 +1,14 @@
 package at.undok.undok.client.model.dto;
 
-import at.undok.undok.client.model.entity.Counseling;
-import at.undok.undok.client.model.enumeration.MaritalStatus;
-import at.undok.undok.client.model.enumeration.ResidentStatus;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.OneToOne;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Data
+@NoArgsConstructor
 public class ClientDto {
 
     private UUID id;
@@ -55,5 +53,34 @@ public class ClientDto {
     private List<CounselingDto> counselings;
 
     private String socialInsuranceNumber;
+    private List<CaseDto> closedCases;
+    private CaseDto openCase;
+    private List<CategoryDto> jobFunctions;
 
+    public ClientDto(UUID id, LocalDateTime createdAt, LocalDateTime updatedAt, String keyword, String education,
+                     String maritalStatus, String nationality, String language, Boolean interpreterNecessary,
+                     String howHasThePersonHeardFromUs, String currentResidentStatus, Boolean vulnerableWhenAssertingRights,
+                     String formerResidentStatus, String labourMarketAccess, String position, String sector, String union,
+                     Boolean membership, String organization, String socialInsuranceNumber) {
+        this.id = id;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.keyword = keyword;
+        this.education = education;
+        this.maritalStatus = maritalStatus;
+        this.nationality = nationality;
+        this.language = language;
+        this.interpreterNecessary = interpreterNecessary;
+        this.howHasThePersonHeardFromUs = howHasThePersonHeardFromUs;
+        this.currentResidentStatus = currentResidentStatus;
+        this.vulnerableWhenAssertingRights = vulnerableWhenAssertingRights;
+        this.formerResidentStatus = formerResidentStatus;
+        this.labourMarketAccess = labourMarketAccess;
+        this.position = position;
+        this.sector = sector;
+        this.union = union;
+        this.membership = membership;
+        this.organization = organization;
+        this.socialInsuranceNumber = socialInsuranceNumber;
+    }
 }

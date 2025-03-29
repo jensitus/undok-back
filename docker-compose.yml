@@ -3,7 +3,7 @@ services:
 
   postgres:
     container_name: dev-undok-postgres
-    image: postgres:14.5-alpine
+    image: postgres:15.10-alpine
     ports:
       - "5431:5432"
     environment:

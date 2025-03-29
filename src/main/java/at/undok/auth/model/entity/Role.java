@@ -3,7 +3,7 @@ package at.undok.auth.model.entity;
 import lombok.Data;
 import org.hibernate.annotations.NaturalId;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Data
 @Entity

@@ -19,4 +19,5 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
     long countByStatus(String status);
 
 
+
 }

@@ -2,8 +2,8 @@ package at.undok.auth.validation;
 
 import at.undok.auth.validation.annotation.PasswordMatches;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class PasswordMatchesValidator implements ConstraintValidator<PasswordMatches, Object> {
 

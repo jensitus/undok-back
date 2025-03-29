@@ -68,4 +68,14 @@ public class CounselingController implements CounselingApi {
                              .contentType(MediaType.parseMediaType("application/csv"))
                              .body(file);
     }
+
+    @Override
+    public ResponseEntity<CounselingDto> setRequiredTime(UUID counselingId, Integer requiredTime) {
+        return ResponseEntity.ok(counselingService.setRequiredTime(counselingId, requiredTime));
+    }
+
+    @Override
+    public ResponseEntity<List<CounselingDto>> getCounselingByClientId(UUID clientId) {
+        return ResponseEntity.ok(counselingService.findByClient(clientId));
+    }
 }

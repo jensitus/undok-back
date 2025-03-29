@@ -6,12 +6,9 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-<!--    <changeSet id="create_table_relationship" author="jensitus">
-        <createTable tableName="relationships">
-            <column name="user_id" type="BIGINT" />
-            <column name="friend_id" type="BIGINT" />
-        </createTable>
-        <addUniqueConstraint tableName="relationships" columnNames="user_id, friend_id" constraintName="user_friend_unique" />
-    </changeSet>-->
-
+    <changeSet id="set_pgcrypto" author="jensitus">
+        <sql>
+            CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+        </sql>
+    </changeSet>
 </databaseChangeLog>

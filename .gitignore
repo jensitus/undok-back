@@ -32,3 +32,8 @@ HELP.md
 *.csv
 /csv/
 /csv/clients.csv
+
+#### dump ####
+*.dump
+*.sql
+

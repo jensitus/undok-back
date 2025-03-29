@@ -2,8 +2,8 @@ package at.undok.auth.validation;
 
 import at.undok.auth.validation.annotation.ValidEmail;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

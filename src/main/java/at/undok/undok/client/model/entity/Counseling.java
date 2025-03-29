@@ -2,15 +2,13 @@ package at.undok.undok.client.model.entity;
 
 import at.undok.common.model.AbstractCrud;
 import at.undok.undok.client.model.dto.CounselingForCsvResult;
-import lombok.Data;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
 @NoArgsConstructor
 @Entity
 @Table(name = "counselings")
@@ -65,7 +63,7 @@ public class Counseling extends AbstractCrud {
     @Column(name = "registered_by")
     private String registeredBy;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id")
     private Client client;
 
@@ -78,17 +76,114 @@ public class Counseling extends AbstractCrud {
     @Column(name = "status")
     private String status;
 
-    @Override
-    public String toString() {
-        return "Counseling{" +
-                "id=" + id +
-                ", counselingStatus='" + counselingStatus + '\'' +
-                ", entryDate=" + entryDate +
-                ", concern='" + concern + '\'' +
-                ", concernCategory='" + concernCategory + '\'' +
-                ", activity='" + activity + '\'' +
-                ", activityCategory='" + activityCategory + '\'' +
-                ", registeredBy='" + registeredBy + '\'' +
-                '}';
+    @Column(name = "required_time")
+    private Integer requiredTime;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_id")
+    private Case counselingCase;
+
+    public String getCounselingStatus() {
+        return counselingStatus;
+    }
+
+    public void setCounselingStatus(String counselingStatus) {
+        this.counselingStatus = counselingStatus;
+    }
+
+    public LocalDate getEntryDate() {
+        return entryDate;
+    }
+
+    public void setEntryDate(LocalDate entryDate) {
+        this.entryDate = entryDate;
+    }
+
+    public String getConcern() {
+        return concern;
+    }
+
+    public void setConcern(String concern) {
+        this.concern = concern;
+    }
+
+    public String getConcernCategory() {
+        return concernCategory;
+    }
+
+    public void setConcernCategory(String concernCategory) {
+        this.concernCategory = concernCategory;
+    }
+
+    public String getActivity() {
+        return activity;
+    }
+
+    public void setActivity(String activity) {
+        this.activity = activity;
+    }
+
+    public String getActivityCategory() {
+        return activityCategory;
+    }
+
+    public void setActivityCategory(String activityCategory) {
+        this.activityCategory = activityCategory;
+    }
+
+    public String getRegisteredBy() {
+        return registeredBy;
+    }
+
+    public void setRegisteredBy(String registeredBy) {
+        this.registeredBy = registeredBy;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public LocalDateTime getCounselingDate() {
+        return counselingDate;
+    }
+
+    public void setCounselingDate(LocalDateTime counselingDate) {
+        this.counselingDate = counselingDate;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Integer getRequiredTime() {
+        return requiredTime;
+    }
+
+    public void setRequiredTime(Integer requiredTime) {
+        this.requiredTime = requiredTime;
+    }
+
+    public Case getCounselingCase() {
+        return counselingCase;
+    }
+
+    public void setCounselingCase(Case counselingCase) {
+        this.counselingCase = counselingCase;
     }
 }
