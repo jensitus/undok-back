@@ -193,7 +193,8 @@ public class ClientService {
         client.setPerson(savedPerson);
 
         Client c = clientRepo.save(client);
-        return entityToDtoMapper.convertClientToDto(c);
+        ClientDto clientDto = entityToDtoMapper.convertClientToDto(c);
+        return clientDto;
     }
 
     private void setClient(Client client, String education, String keyword, String howHasThePersonHeardFromUs, Boolean interpreterNecessary, Boolean vulnerableWhenAssertingRights, String maritalStatus, String currentResidentStatus, String labourMarketAccess, String language, String union, Boolean membership, String nationality, String sector, String organization, String position) {

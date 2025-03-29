@@ -11,6 +11,7 @@ import at.undok.it.cucumber.UndokTestData;
 import at.undok.it.cucumber.auth.*;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.AllCounselingDto;
+import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.form.ClientForm;
@@ -62,7 +63,7 @@ public class ClientIntegrationTest extends IntegrationTestBase {
     public void testCreateOnlyOneClient() {
         ClientForm clientForm = new ClientForm();
         clientForm.setKeyword("test_the_shit");
-        ResponseEntity<Client> clientResponseEntity = authRestApiClient.createClient(clientForm, accessToken);
+        ResponseEntity<ClientDto> clientResponseEntity = authRestApiClient.createClient(clientForm, accessToken);
         assertTrue(clientResponseEntity.getStatusCode().is2xxSuccessful(), "super");
     }
 
@@ -70,9 +71,9 @@ public class ClientIntegrationTest extends IntegrationTestBase {
     public void testCreateMoreClients() {
         ClientForm secondClientForm = createClientForm("second_client");
         ClientForm thirdClientForm = createClientForm("third_client");
-        ResponseEntity<Client> secondClient = authRestApiClient.createClient(secondClientForm, accessToken);
+        ResponseEntity<ClientDto> secondClient = authRestApiClient.createClient(secondClientForm, accessToken);
         clientId = Objects.requireNonNull(secondClient.getBody()).getPerson().getId();
-        ResponseEntity<Client> thirdClient = authRestApiClient.createClient(thirdClientForm, accessToken);
+        ResponseEntity<ClientDto> thirdClient = authRestApiClient.createClient(thirdClientForm, accessToken);
         CounselingForm counselingFormSecondClient = createCounselingForm(Objects.requireNonNull(secondClient.getBody()).getId());
         CounselingForm counselingFormThirdClient = createCounselingForm(Objects.requireNonNull(Objects.requireNonNull(thirdClient.getBody()).getId()));
         ResponseEntity<CounselingDto> counseling_02 = authRestApiClient.createCounseling(counselingFormSecondClient,
