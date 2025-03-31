@@ -75,7 +75,8 @@ public class CounselingController implements CounselingApi {
     }
 
     @Override
-    public ResponseEntity<List<CounselingDto>> getCounselingByClientId(UUID clientId) {
-        return ResponseEntity.ok(counselingService.findByClient(clientId));
+    public ResponseEntity<List<CounselingDto>> getCounselingByClientId(UUID clientId, String order) {
+        return ResponseEntity.ok(counselingService.findByClient(clientId, order));
     }
+
 }

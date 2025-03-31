@@ -2,7 +2,6 @@ package at.undok.undok.client.api;
 
 import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CounselingDto;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,7 +41,7 @@ public interface CounselingApi {
     @PutMapping("/{id}/set-required-time")
     ResponseEntity<CounselingDto> setRequiredTime(@PathVariable("id") UUID counselingId, @RequestBody Integer requiredTime);
 
-    @GetMapping("by-client/{client-id}")
-    ResponseEntity<List<CounselingDto>> getCounselingByClientId(@PathVariable("client-id") UUID clientId);
+    @GetMapping("by-client/{client-id}/order/{order}")
+    ResponseEntity<List<CounselingDto>> getCounselingByClientId(@PathVariable("client-id") UUID clientId, @PathVariable("order") String order);
 
 }

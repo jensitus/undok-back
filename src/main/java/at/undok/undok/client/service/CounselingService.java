@@ -15,7 +15,6 @@ import at.undok.undok.client.model.form.CounselingForm;
 import at.undok.undok.client.repository.CaseRepo;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.CounselingRepo;
-import at.undok.undok.client.repository.JoinCategoryRepo;
 import at.undok.undok.client.util.StatusService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -25,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -213,8 +213,13 @@ public class CounselingService {
         return counselingRepo.selectTotalConsultationTime(caseId);
     }
 
-    public List<CounselingDto> findByClient(UUID clientId) {
-        List<Counseling> counselings = counselingRepo.findByClientId(clientId);
+    public List<CounselingDto> findByClient(UUID clientId, String order) {
+        List<Counseling> counselings;
+        if (Objects.equals(order, "Desc")) {
+            counselings = counselingRepo.findByClientIdOrderByCounselingDateDesc(clientId);
+        } else {
+            counselings = counselingRepo.findByClientIdOrderByCounselingDateAsc(clientId);
+        }
         return entityToDtoMapper.convertCounselingListToDtoList(counselings);
     }
 

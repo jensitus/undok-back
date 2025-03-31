@@ -52,5 +52,6 @@ public interface CounselingRepo extends JpaRepository<Counseling, UUID> {
             nativeQuery = true)
     Integer selectTotalConsultationTime(UUID caseId);
 
-    List<Counseling> findByClientId(UUID clientId);
+    List<Counseling> findByClientIdOrderByCounselingDateDesc(UUID clientId);
+    List<Counseling> findByClientIdOrderByCounselingDateAsc(UUID clientId);
 }
