@@ -65,15 +65,16 @@ public class CounselingService {
 
     private Case setCase(Counseling c, UUID clientId) {
         if (Boolean.FALSE.equals(countOpenCases(clientId))) {
-            // Case aCase = createCase(c);
-            Case lastClosedCase = caseRepo.findFirstByClientIdOrderByEndDateAsc(clientId);
-
-            // reopen case:
-            lastClosedCase.setEndDate(null);
-            lastClosedCase.setStatus(StatusService.STATUS_OPEN);
-            Case savedCase = caseRepo.save(lastClosedCase);
-
-            c.setCounselingCase(lastClosedCase);
+            Case aCase = caseRepo.findFirstByClientIdOrderByEndDateAsc(clientId);
+            if (aCase != null) {
+                // reopen case:
+                aCase.setEndDate(null);
+                aCase.setStatus(StatusService.STATUS_OPEN);
+            } else {
+                aCase = createCase(c);
+            }
+            Case savedCase = caseRepo.save(aCase);
+            c.setCounselingCase(aCase);
             counselingRepo.save(c);
             return savedCase;
         } else if (Boolean.TRUE.equals(countOpenCases(clientId))) {
