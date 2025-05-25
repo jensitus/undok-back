@@ -1,5 +1,6 @@
 package at.undok.undok.client.exception;
 
+import at.undok.common.exception.UndokException;
 import at.undok.common.message.Message;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,16 @@ public class UndokExceptionHandler {
     @ExceptionHandler(CounselingDateException.class)
     public ResponseEntity<Message> handleCounselingDateException(CounselingDateException e) {
         return ResponseEntity.status(HttpStatus.PRECONDITION_REQUIRED).body(new Message(e.getMessage()));
+    }
+
+    @ExceptionHandler(TooMuchCaseException.class)
+    public ResponseEntity<Message> handleTooMuchCaseException(TooMuchCaseException e) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new Message(e.getMessage()));
+    }
+
+    @ExceptionHandler(KeywordException.class)
+    public ResponseEntity<Message> handleKeywordException(KeywordException e) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new Message(e.getMessage()));
     }
 
 }

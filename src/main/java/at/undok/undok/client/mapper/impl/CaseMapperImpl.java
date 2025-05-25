@@ -19,7 +19,9 @@ public class CaseMapperImpl implements CaseMapper {
                            entity.getEndDate(),
                            entity.getReferredTo(),
                            entity.getClientId(),
-                           entity.getTotalConsultationTime());
+                           entity.getTotalConsultationTime(),
+                           entity.getTargetGroup()
+        );
     }
 
     @Override

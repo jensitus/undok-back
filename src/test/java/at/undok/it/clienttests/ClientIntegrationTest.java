@@ -64,6 +64,7 @@ public class ClientIntegrationTest extends IntegrationTestBase {
         ClientForm clientForm = new ClientForm();
         clientForm.setKeyword("test_the_shit");
         ResponseEntity<ClientDto> clientResponseEntity = authRestApiClient.createClient(clientForm, accessToken);
+        UUID id = clientResponseEntity.getBody().getId();
         assertTrue(clientResponseEntity.getStatusCode().is2xxSuccessful(), "super");
     }
 

@@ -25,4 +25,5 @@
   <include file="/config/liquibase/changelog/add-role-locked.xml" />
   <include file="config/liquibase/changelog/add_required_time.xml"/>
   <include file="config/liquibase/changelog/create-case.xml" />
+  <include file="config/liquibase/changelog/add-target-group.xml" />
 </databaseChangeLog> 

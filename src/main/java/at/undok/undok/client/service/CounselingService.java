@@ -2,6 +2,7 @@ package at.undok.undok.client.service;
 
 import at.undok.common.util.ToLocalDateService;
 import at.undok.undok.client.exception.CounselingDateException;
+import at.undok.undok.client.exception.TooMuchCaseException;
 import at.undok.undok.client.mapper.inter.CaseMapper;
 import at.undok.undok.client.mapper.inter.CounselingMapper;
 import at.undok.undok.client.model.dto.AllCounselingDto;
@@ -40,6 +41,7 @@ public class CounselingService {
     private final CounselingMapper counselingMapper;
     private final CaseMapper caseMapper;
     private final CaseRepo caseRepo;
+    private final CaseService caseService;
 
     public CounselingDto createCounseling(UUID clientId, CounselingForm counselingForm) {
         Counseling c = new Counseling();
@@ -55,7 +57,7 @@ public class CounselingService {
 
         c.setClient(client);
         Counseling counseling = counselingRepo.save(c);
-        Case aCase = setCase(counseling, clientId);
+        Case aCase = setCase(counseling, clientId, client.getKeyword());
         CounselingDto counselingDto = counselingMapper.toDto(counseling);
         CaseDto caseDto = caseMapper.toDto(aCase);
         counselingDto.setCounselingCase(caseDto);
@@ -63,61 +65,33 @@ public class CounselingService {
 
     }
 
-    private Case setCase(Counseling c, UUID clientId) {
-        if (Boolean.FALSE.equals(countOpenCases(clientId))) {
+    private Case setCase(Counseling counseling, UUID clientId, String keyword) {
+        if (Boolean.FALSE.equals(caseService.countOpenCases(clientId))) {
             Case aCase = caseRepo.findFirstByClientIdOrderByEndDateAsc(clientId);
             if (aCase != null) {
                 // reopen case:
                 aCase.setEndDate(null);
                 aCase.setStatus(StatusService.STATUS_OPEN);
             } else {
-                aCase = createCase(c);
+                aCase = caseService.createCase(clientId, keyword, null);
             }
-            Case savedCase = caseRepo.save(aCase);
-            c.setCounselingCase(aCase);
-            counselingRepo.save(c);
-            return savedCase;
-        } else if (Boolean.TRUE.equals(countOpenCases(clientId))) {
-            Case currentCase = getCase(clientId);
-            c.setCounselingCase(currentCase);
-            counselingRepo.save(c);
-            return currentCase;
-        } else if (countOpenCases(clientId) == null) {
-            throw new RuntimeException("too much cases");
+            // Case savedCase = caseRepo.save(aCase);
+            counseling.setCounselingCase(aCase);
+            counselingRepo.save(counseling);
+            return aCase;
+        } else if (Boolean.TRUE.equals(caseService.countOpenCases(clientId))) {
+            CaseDto currentCase = caseService.getCaseByClientId(clientId);
+            counseling.setCounselingCase(modelMapper.map(currentCase, Case.class));
+            counselingRepo.save(counseling);
+            return modelMapper.map(currentCase, Case.class);
+        } else if (caseService.countOpenCases(clientId) == null) {
+            throw new TooMuchCaseException("there are too much open cases, please contact your administrator");
         } else {
             return null;
         }
     }
 
-    private Boolean countOpenCases(UUID clientId) {
-        Integer countCase = counselingRepo.countOpenCases(clientId);
-        if (countCase == 1) {
-            return true;
-        } else if (countCase >= 1) {
-            return null;
-        } else {
-            return false;
-        }
-    }
 
-    private Case createCase(Counseling counseling) {
-        Case c = new Case();
-        UUID clientId = counseling.getClient().getId();
-        c.setCreatedAt(LocalDateTime.now());
-        c.setStartDate(LocalDate.now());
-        c.setStatus(StatusService.STATUS_OPEN);
-        Client client = counseling.getClient();
-        String keyword = client.getKeyword();
-        String caseName = keyword + " - " + LocalDate.now();
-        c.setName(caseName);
-        c.setClientId(clientId);
-        return caseRepo.save(c);
-    }
-
-    private Case getCase(UUID clientId) {
-        UUID caseId = counselingRepo.findCaseId(clientId);
-        return caseRepo.findById(caseId).orElseThrow();
-    }
 
     public Long numberOfCounselings() {
         return counselingRepo.countByStatus(StatusService.STATUS_ACTIVE);

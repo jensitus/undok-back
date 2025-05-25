@@ -43,4 +43,6 @@ public class ClientForm {
     private String organization;
     private String socialInsuranceNumber;
 
+    private String targetGroup;
+
 }

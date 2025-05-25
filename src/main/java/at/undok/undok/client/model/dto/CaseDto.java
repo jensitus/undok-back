@@ -21,9 +21,10 @@ public class CaseDto {
     private String referredTo;
     private UUID clientId;
     private Integer totalConsultationTime;
+    private String targetGroup;
 
     public CaseDto(UUID id, String createdAt, String updatedAt, String name, String status,
-                   LocalDate startDate, LocalDate endDate, String referredTo, UUID clientId, Integer totalConsultationTime) {
+                   LocalDate startDate, LocalDate endDate, String referredTo, UUID clientId, Integer totalConsultationTime, String targetGroup) {
         this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -34,5 +35,6 @@ public class CaseDto {
         this.referredTo = referredTo;
         this.clientId = clientId;
         this.totalConsultationTime = totalConsultationTime;
+        this.targetGroup = targetGroup;
     }
 }

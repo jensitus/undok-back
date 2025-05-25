@@ -194,6 +194,9 @@ public class ClientService {
 
         Client c = clientRepo.save(client);
         ClientDto clientDto = entityToDtoMapper.convertClientToDto(c);
+        CaseDto caseDto = new CaseDto();
+        caseDto.setClientId(clientDto.getId());
+        caseService.createCase(clientDto.getId(), clientDto.getKeyword(), clientForm.getTargetGroup());
         return clientDto;
     }
 

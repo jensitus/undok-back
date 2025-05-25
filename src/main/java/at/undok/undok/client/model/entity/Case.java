@@ -41,6 +41,9 @@ public class Case extends AbstractCrud {
     @Column(name = "total_consultation_time")
     private Integer totalConsultationTime;
 
+    @Column(name = "target_group")
+    private String targetGroup;
+
     public Case(String name, String status, UUID clientId) {
         this.name = name;
         this.status = status;
