@@ -26,4 +26,5 @@
   <include file="config/liquibase/changelog/add_required_time.xml"/>
   <include file="config/liquibase/changelog/create-case.xml" />
   <include file="config/liquibase/changelog/add-target-group.xml" />
+  <include file="config/liquibase/changelog/add-working-relationship.xml" />
 </databaseChangeLog> 
