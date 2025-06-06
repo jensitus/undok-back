@@ -5,10 +5,7 @@ import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.CaseDto;
 import at.undok.undok.client.model.dto.CategoryDto;
 import at.undok.undok.client.model.dto.ClientDto;
-import at.undok.undok.client.model.entity.Address;
-import at.undok.undok.client.model.entity.Client;
-import at.undok.undok.client.model.entity.Counseling;
-import at.undok.undok.client.model.entity.Person;
+import at.undok.undok.client.model.entity.*;
 import at.undok.undok.client.model.form.ClientForm;
 import at.undok.undok.client.repository.AddressRepo;
 import at.undok.undok.client.repository.ClientRepo;
@@ -103,13 +100,13 @@ public class ClientService {
         return clientRepo.countByStatus(StatusService.STATUS_ACTIVE);
     }
 
-    public ClientDto updateClient(UUID clientId, ClientDto clientDto) {
+    public ClientDto updateClient(UUID clientId, ClientForm clientForm) {
 
         Optional<Client> client = clientRepo.findById(clientId);
         if (client.isPresent()) {
             Person person = client.get().getPerson();
             Address address = person.getAddress();
-            return updateClient(person, client.get(), address, clientDto);
+            return updateClient(person, client.get(), address, clientForm, clientId);
         } else {
             throw new RuntimeException("Sorry");
         }
@@ -196,7 +193,7 @@ public class ClientService {
         ClientDto clientDto = entityToDtoMapper.convertClientToDto(c);
         CaseDto caseDto = new CaseDto();
         caseDto.setClientId(clientDto.getId());
-        caseService.createCase(clientDto.getId(), clientDto.getKeyword(), clientForm.getTargetGroup());
+        caseService.createCase(clientDto.getId(), clientDto.getKeyword(), clientForm.getTargetGroup(), clientForm.getHumanTrafficking(), clientForm.getJobCenterBlock(), clientForm.getWorkingRelationship());
         return clientDto;
     }
 
@@ -219,52 +216,48 @@ public class ClientService {
     }
 
 
-    private ClientDto updateClient(Person person, Client client, Address address, ClientDto cDto) {
-        try {
-            person.setDateOfBirth(cDto.getPerson().getDateOfBirth());
-        } catch (Exception e) {
-            person.setDateOfBirth(null);
-        }
+    private ClientDto updateClient(Person person, Client client, Address address, ClientForm clientForm, UUID clientId) {
 
-        if (cDto.getPerson().getFirstName() != null) {
-            person.setFirstName(cDto.getPerson().getFirstName());
+        if (clientForm.getFirstName() != null) {
+            person.setFirstName(clientForm.getFirstName());
         }
-        if (cDto.getPerson().getLastName() != null) {
-            person.setLastName(cDto.getPerson().getLastName());
+        if (clientForm.getLastName() != null) {
+            person.setLastName(clientForm.getLastName());
         }
-        if (cDto.getPerson().getEmail() != null) {
-            person.setEmail(cDto.getPerson().getEmail());
+        if (clientForm.getEmail() != null) {
+            person.setEmail(clientForm.getEmail());
         }
-        if (cDto.getPerson().getTelephone() != null) {
-            person.setTelephone(cDto.getPerson().getTelephone());
+        if (clientForm.getTelephone() != null) {
+            person.setTelephone(clientForm.getTelephone());
         }
-        if (cDto.getPerson().getGender() != null) {
-            person.setGender(cDto.getPerson().getGender());
+        if (clientForm.getGender() != null) {
+            person.setGender(clientForm.getGender());
         }
         person.setUpdatedAt(LocalDateTime.now());
 
-        setClient(client, cDto.getEducation(), cDto.getKeyword(), cDto.getHowHasThePersonHeardFromUs(), cDto.getInterpreterNecessary(), cDto.getVulnerableWhenAssertingRights(), cDto.getMaritalStatus(), cDto.getCurrentResidentStatus(), cDto.getLabourMarketAccess(), cDto.getLanguage(), cDto.getUnion(), cDto.getMembership(), cDto.getNationality(), cDto.getSector(), cDto.getOrganization(), cDto.getPosition());
+        setClient(client, clientForm.getEducation(), clientForm.getKeyword(), clientForm.getHowHasThePersonHeardFromUs(), clientForm.getInterpreterNecessary(), clientForm.getVulnerableWhenAssertingRights(), clientForm.getMaritalStatus(), clientForm.getCurrentResidentStatus(), clientForm.getLabourMarketAccess(), clientForm.getLanguage(), clientForm.getUnion(), clientForm.getMembership(), clientForm.getNationality(), clientForm.getSector(), clientForm.getOrganization(), clientForm.getPosition());
         client.setUpdatedAt(LocalDateTime.now());
-        client.setSocialInsuranceNumber(cDto.getSocialInsuranceNumber());
+        client.setSocialInsuranceNumber(clientForm.getSocialInsuranceNumber());
 
-        if (cDto.getPerson().getAddress().getStreet() != null) {
-            address.setStreet(cDto.getPerson().getAddress().getStreet());
+        if (clientForm.getStreet() != null) {
+            address.setStreet(clientForm.getStreet());
         }
-        if (cDto.getPerson().getAddress().getZipCode() != null) {
-            address.setZipCode(cDto.getPerson().getAddress().getZipCode());
+        if (clientForm.getZipCode() != null) {
+            address.setZipCode(clientForm.getZipCode());
         }
-        if (cDto.getPerson().getAddress().getCity() != null) {
-            address.setCity(cDto.getPerson().getAddress().getCity());
+        if (clientForm.getCity() != null) {
+            address.setCity(clientForm.getCity());
         }
-        if (cDto.getPerson().getAddress().getCountry() != null) {
-            address.setCountry(cDto.getPerson().getAddress().getCountry());
+        if (clientForm.getCountry() != null) {
+            address.setCountry(clientForm.getCountry());
         }
 
         person.setAddress(address);
-
         client.setPerson(person);
-
         Client c = clientRepo.save(client);
+        CaseDto caseDto = caseService.updateCase(clientId, clientForm.getWorkingRelationship(),
+                                                 clientForm.getHumanTrafficking(), clientForm.getJobCenterBlock(),
+                                                 clientForm.getTargetGroup());
         return entityToDtoMapper.convertClientToDto(c);
     }
 

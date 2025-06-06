@@ -1,5 +1,6 @@
 package at.undok.undok.client.model.dto;
 
+import jakarta.persistence.Column;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,9 +23,13 @@ public class CaseDto {
     private UUID clientId;
     private Integer totalConsultationTime;
     private String targetGroup;
+    private Boolean humanTrafficking;
+    private Boolean jobCenterBlock;
+    private String workingRelationship;
 
     public CaseDto(UUID id, String createdAt, String updatedAt, String name, String status,
-                   LocalDate startDate, LocalDate endDate, String referredTo, UUID clientId, Integer totalConsultationTime, String targetGroup) {
+                   LocalDate startDate, LocalDate endDate, String referredTo, UUID clientId, Integer totalConsultationTime,
+                   String targetGroup, Boolean humanTrafficking, Boolean jobCenterBlock, String workingRelationship) {
         this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -36,5 +41,8 @@ public class CaseDto {
         this.clientId = clientId;
         this.totalConsultationTime = totalConsultationTime;
         this.targetGroup = targetGroup;
+        this.jobCenterBlock = jobCenterBlock;
+        this.humanTrafficking = humanTrafficking;
+        this.workingRelationship = workingRelationship;
     }
 }

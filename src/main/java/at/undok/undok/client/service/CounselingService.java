@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -73,17 +72,18 @@ public class CounselingService {
                 aCase.setEndDate(null);
                 aCase.setStatus(StatusService.STATUS_OPEN);
             } else {
-                aCase = caseService.createCase(clientId, keyword, null);
+                aCase = caseService.createCase(clientId, keyword, null, null, null, null);
             }
             // Case savedCase = caseRepo.save(aCase);
             counseling.setCounselingCase(aCase);
             counselingRepo.save(counseling);
             return aCase;
         } else if (Boolean.TRUE.equals(caseService.countOpenCases(clientId))) {
-            CaseDto currentCase = caseService.getCaseByClientId(clientId);
-            counseling.setCounselingCase(modelMapper.map(currentCase, Case.class));
+//            CaseDto currentCase = caseService.getCaseDtoByClientId(clientId);
+            Case aCase = caseService.getCaseByClientId(clientId);
+            counseling.setCounselingCase(aCase);
             counselingRepo.save(counseling);
-            return modelMapper.map(currentCase, Case.class);
+            return aCase;
         } else if (caseService.countOpenCases(clientId) == null) {
             throw new TooMuchCaseException("there are too much open cases, please contact your administrator");
         } else {

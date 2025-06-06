@@ -3,8 +3,6 @@ package at.undok.undok.client.service;
 import at.undok.undok.client.mapper.inter.CaseMapper;
 import at.undok.undok.client.model.dto.CaseDto;
 import at.undok.undok.client.model.entity.Case;
-import at.undok.undok.client.model.entity.Client;
-import at.undok.undok.client.model.entity.Counseling;
 import at.undok.undok.client.repository.CaseRepo;
 import at.undok.undok.client.repository.CounselingRepo;
 import at.undok.undok.client.util.StatusService;
@@ -40,7 +38,8 @@ public class CaseService {
     }
 
     public CaseDto getCaseById(UUID id) {
-        return modelMapper.map(caseRepo.findById(id), CaseDto.class);
+        Case aCase = caseRepo.findById(id).orElseThrow();
+        return modelMapper.map(aCase, CaseDto.class);
     }
 
     public CaseDto updateStatus(CaseDto caseDto) {
@@ -51,6 +50,20 @@ public class CaseService {
         aCase.setTotalConsultationTime(Objects.equals(caseDto.getStatus(), "CLOSED") ? counselingRepo.selectTotalConsultationTime(aCase.getId()) : null);
         aCase.setEndDate(Objects.equals(caseDto.getStatus(), "CLOSED") ? LocalDate.now() : null);
         return caseMapper.toDto(caseRepo.save(aCase));
+    }
+
+    public CaseDto updateCase(UUID clientId,
+                              String workingRelationship,
+                              Boolean humanTrafficking,
+                              Boolean jobCenterBlock,
+                              String targetGroup) {
+        Case aCase = caseRepo.findByClientId(clientId);
+        aCase.setWorkingRelationship(workingRelationship);
+        aCase.setHumanTrafficking(humanTrafficking);
+        aCase.setJobCenterBlock(jobCenterBlock);
+        aCase.setTargetGroup(targetGroup);
+        Case saved = caseRepo.save(aCase);
+        return caseMapper.toDto(saved);
     }
 
     public List<CaseDto> getCaseByClientIdAndStatus(UUID clientId, String status) {
@@ -69,7 +82,7 @@ public class CaseService {
         }
     }
 
-    public Case createCase(UUID clientId, String keyword, String targetGroup) {
+    public Case createCase(UUID clientId, String keyword, String targetGroup, Boolean humanTrafficking, Boolean jobCenterBlock, String workingRelationship) {
         Case c = new Case();
         c.setCreatedAt(LocalDateTime.now());
         c.setStartDate(LocalDate.now());
@@ -78,12 +91,20 @@ public class CaseService {
         c.setName(caseName);
         c.setClientId(clientId);
         c.setTargetGroup(targetGroup);
+        c.setHumanTrafficking(humanTrafficking);
+        c.setJobCenterBlock(jobCenterBlock);
+        c.setWorkingRelationship(workingRelationship);
         return caseRepo.save(c);
     }
 
-    public CaseDto getCaseByClientId(UUID clientId) {
+    public CaseDto getCaseDtoByClientId(UUID clientId) {
         UUID caseId = counselingRepo.findCaseId(clientId);
         return getCaseById(caseId);
+    }
+
+    public Case getCaseByClientId(UUID clientId) {
+        UUID caseId = counselingRepo.findCaseId(clientId);
+        return caseRepo.findById(caseId).orElseThrow();
     }
 
 }

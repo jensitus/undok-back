@@ -69,8 +69,15 @@ public class ClientController implements ClientApi {
     }
 
     @Override
-    public ClientDto updateClient(UUID clientId, ClientDto clientDto) {
-        return clientService.updateClient(clientId, clientDto);
+    public ResponseEntity<Message> updateClient(UUID clientId, ClientForm clientForm) {
+        clientService.updateClient(clientId, clientForm);
+        return ResponseEntity.ok(new Message("Client updated"));
+    }
+
+    @Override
+    public ResponseEntity<Message> updateAttemptClient(UUID clientId, ClientForm clientForm) {
+        clientService.updateClient(clientId, clientForm);
+        return ResponseEntity.ok(new Message("Client updated"));
     }
 
     @Override

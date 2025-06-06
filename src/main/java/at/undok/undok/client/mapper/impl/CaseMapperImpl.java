@@ -20,7 +20,10 @@ public class CaseMapperImpl implements CaseMapper {
                            entity.getReferredTo(),
                            entity.getClientId(),
                            entity.getTotalConsultationTime(),
-                           entity.getTargetGroup()
+                           entity.getTargetGroup(),
+                           entity.getHumanTrafficking(),
+                           entity.getJobCenterBlock(),
+                           entity.getWorkingRelationship()
         );
     }
 

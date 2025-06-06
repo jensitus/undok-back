@@ -1,5 +1,6 @@
 package at.undok.undok.client.api;
 
+import at.undok.common.message.Message;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.CounselingDto;
@@ -34,7 +35,12 @@ public interface ClientApi {
     Long getNumberOfClients();
 
     @PutMapping("/{id}/update")
-    ClientDto updateClient(@PathVariable("id") UUID clientId, @RequestBody ClientDto clientDto);
+    ResponseEntity<Message> updateClient(@PathVariable("id") UUID clientId,
+                                         @RequestBody ClientForm clientForm);
+
+    @PostMapping("/{id}/update")
+    ResponseEntity<Message> updateAttemptClient(@PathVariable("id") UUID clientId,
+                                         @RequestBody ClientForm clientForm);
 
     @GetMapping("/all")
     List<AllClientDto> getAll();

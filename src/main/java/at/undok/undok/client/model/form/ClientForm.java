@@ -44,5 +44,8 @@ public class ClientForm {
     private String socialInsuranceNumber;
 
     private String targetGroup;
+    private Boolean humanTrafficking;
+    private Boolean jobCenterBlock;
+    private String workingRelationship;
 
 }
