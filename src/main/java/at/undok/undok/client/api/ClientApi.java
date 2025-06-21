@@ -40,7 +40,7 @@ public interface ClientApi {
 
     @PostMapping("/{id}/update")
     ResponseEntity<Message> updateAttemptClient(@PathVariable("id") UUID clientId,
-                                         @RequestBody ClientForm clientForm);
+                                                @RequestBody ClientForm clientForm);
 
     @GetMapping("/all")
     List<AllClientDto> getAll();

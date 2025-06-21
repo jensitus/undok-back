@@ -3,6 +3,8 @@ package at.undok.undok.client.model.form;
 import lombok.Data;
 import lombok.ToString;
 
+import java.util.List;
+
 @Data
 @ToString
 public class ClientForm {
@@ -47,5 +49,10 @@ public class ClientForm {
     private Boolean humanTrafficking;
     private Boolean jobCenterBlock;
     private String workingRelationship;
+
+    private List<JoinCategoryForm> jobMarketAccessSelected;
+    private List<JoinCategoryForm> jobMarketAccessDeSelected;
+    private List<JoinCategoryForm> counselingLanguageSelected;
+    private List<JoinCategoryForm> counselingLanguageDeSelected;
 
 }

@@ -5,6 +5,7 @@ import at.undok.undok.client.model.dto.CaseDto;
 import at.undok.undok.client.model.entity.Case;
 import at.undok.undok.client.repository.CaseRepo;
 import at.undok.undok.client.repository.CounselingRepo;
+import at.undok.undok.client.util.CategoryType;
 import at.undok.undok.client.util.StatusService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -24,6 +25,7 @@ public class CaseService {
     private final ModelMapper modelMapper;
     private final CaseMapper caseMapper;
     private final CounselingRepo counselingRepo;
+    private final CategoryService categoryService;
 
     public CaseDto createCase(CaseDto caseDto) {
         Case entity = caseMapper.toEntity(caseDto);
@@ -68,7 +70,12 @@ public class CaseService {
 
     public List<CaseDto> getCaseByClientIdAndStatus(UUID clientId, String status) {
         List<Case> caseList = caseRepo.findByClientIdAndStatus(clientId, status);
-        return caseList.stream().map(caseMapper::toDto).toList();
+        List<CaseDto> caseDtoList = caseList.stream().map(caseMapper::toDto).toList();
+        for (CaseDto caseDto : caseDtoList) {
+            caseDto.setCounselingLanguages(categoryService.getCategoryListByTypeAndEntity(CategoryType.COUNSELING_LANGUAGE, caseDto.getId()));
+            caseDto.setJobMarketAccess(categoryService.getCategoryListByTypeAndEntity(CategoryType.JOB_MARKET_ACCESS, caseDto.getId()));
+        }
+        return caseDtoList;
     }
 
     public Boolean countOpenCases(UUID clientId) {

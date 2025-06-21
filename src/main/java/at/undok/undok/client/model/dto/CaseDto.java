@@ -26,6 +26,8 @@ public class CaseDto {
     private Boolean humanTrafficking;
     private Boolean jobCenterBlock;
     private String workingRelationship;
+    private List<CategoryDto> counselingLanguages;
+    private List<CategoryDto> jobMarketAccess;
 
     public CaseDto(UUID id, String createdAt, String updatedAt, String name, String status,
                    LocalDate startDate, LocalDate endDate, String referredTo, UUID clientId, Integer totalConsultationTime,

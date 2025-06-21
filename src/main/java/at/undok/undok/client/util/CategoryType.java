@@ -9,4 +9,6 @@ public abstract class CategoryType {
     public static final String LEGAL = "LEGAL";
     public static final String REFERRED_TO = "REFERRED_TO";
     public static final String JOB_FUNCTION = "JOB_FUNCTION";
+    public static final String COUNSELING_LANGUAGE = "Beratungssprache";
+    public static final String JOB_MARKET_ACCESS = "job_market_access";
 }

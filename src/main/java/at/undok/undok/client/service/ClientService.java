@@ -7,6 +7,7 @@ import at.undok.undok.client.model.dto.CategoryDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.entity.*;
 import at.undok.undok.client.model.form.ClientForm;
+import at.undok.undok.client.model.form.JoinCategoryForm;
 import at.undok.undok.client.repository.AddressRepo;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.PersonRepo;
@@ -258,6 +259,8 @@ public class ClientService {
         CaseDto caseDto = caseService.updateCase(clientId, clientForm.getWorkingRelationship(),
                                                  clientForm.getHumanTrafficking(), clientForm.getJobCenterBlock(),
                                                  clientForm.getTargetGroup());
+        categoryService.sortOutDeselected(clientForm.getCounselingLanguageSelected());
+        categoryService.sortOutDeselected(clientForm.getJobMarketAccessSelected());
         return entityToDtoMapper.convertClientToDto(c);
     }
 
