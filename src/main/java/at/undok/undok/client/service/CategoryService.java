@@ -10,6 +10,7 @@ import at.undok.undok.client.model.form.CategoryForm;
 import at.undok.undok.client.model.form.JoinCategoryForm;
 import at.undok.undok.client.repository.CategoryRepo;
 import at.undok.undok.client.repository.JoinCategoryRepo;
+import at.undok.undok.client.util.CategoryType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -84,11 +85,9 @@ public class CategoryService {
         }
     }
 
-    public void sortOutDeselected(List<JoinCategoryForm> joinCategoryFormList) {
+    public void sortOutDeselected(List<JoinCategoryForm> joinCategoryFormList, String categoryType, UUID entityId) {
 
-        List<JoinCategory> joinCategoryList =
-                joinCategoryRepo.findByEntityIdAndCategoryType(joinCategoryFormList.get(0).getEntityId(),
-                                                               joinCategoryFormList.get(0).getCategoryType());
+        List<JoinCategory> joinCategoryList = joinCategoryRepo.findByEntityIdAndCategoryType(entityId, categoryType);
         List<JoinCategoryForm> formsSoFar = new ArrayList<>(List.of());
         for (JoinCategory joinCategory : joinCategoryList) {
             JoinCategoryForm jcf = new JoinCategoryForm();

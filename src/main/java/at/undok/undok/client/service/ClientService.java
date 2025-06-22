@@ -256,11 +256,20 @@ public class ClientService {
         person.setAddress(address);
         client.setPerson(person);
         Client c = clientRepo.save(client);
-        CaseDto caseDto = caseService.updateCase(clientId, clientForm.getWorkingRelationship(),
-                                                 clientForm.getHumanTrafficking(), clientForm.getJobCenterBlock(),
+        CaseDto caseDto = caseService.updateCase(clientId,
+                                                 clientForm.getWorkingRelationship(),
+                                                 clientForm.getHumanTrafficking(),
+                                                 clientForm.getJobCenterBlock(),
                                                  clientForm.getTargetGroup());
-        categoryService.sortOutDeselected(clientForm.getCounselingLanguageSelected());
-        categoryService.sortOutDeselected(clientForm.getJobMarketAccessSelected());
+        categoryService.sortOutDeselected(clientForm.getCounselingLanguageSelected(),
+                                          CategoryType.COUNSELING_LANGUAGE,
+                                          caseDto.getId());
+        categoryService.sortOutDeselected(clientForm.getJobMarketAccessSelected(),
+                                          CategoryType.JOB_MARKET_ACCESS,
+                                          caseDto.getId());
+        categoryService.sortOutDeselected(clientForm.getOriginOfAttentionSelected(),
+                                          CategoryType.ORIGIN_OF_ATTENTION,
+                                          caseDto.getId());
         return entityToDtoMapper.convertClientToDto(c);
     }
 

@@ -54,5 +54,6 @@ public class ClientForm {
     private List<JoinCategoryForm> jobMarketAccessDeSelected;
     private List<JoinCategoryForm> counselingLanguageSelected;
     private List<JoinCategoryForm> counselingLanguageDeSelected;
+    private List<JoinCategoryForm> originOfAttentionSelected;
 
 }

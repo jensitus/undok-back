@@ -74,6 +74,7 @@ public class CaseService {
         for (CaseDto caseDto : caseDtoList) {
             caseDto.setCounselingLanguages(categoryService.getCategoryListByTypeAndEntity(CategoryType.COUNSELING_LANGUAGE, caseDto.getId()));
             caseDto.setJobMarketAccess(categoryService.getCategoryListByTypeAndEntity(CategoryType.JOB_MARKET_ACCESS, caseDto.getId()));
+            caseDto.setOriginOfAttention(categoryService.getCategoryListByTypeAndEntity(CategoryType.ORIGIN_OF_ATTENTION, caseDto.getId()));
         }
         return caseDtoList;
     }
