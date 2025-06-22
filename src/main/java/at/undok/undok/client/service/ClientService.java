@@ -270,6 +270,9 @@ public class ClientService {
         categoryService.sortOutDeselected(clientForm.getOriginOfAttentionSelected(),
                                           CategoryType.ORIGIN_OF_ATTENTION,
                                           caseDto.getId());
+        categoryService.sortOutDeselected(clientForm.getUndocumentedWorkSelected(),
+                                          CategoryType.UNDOCUMENTED_WORK,
+                                          caseDto.getId());
         return entityToDtoMapper.convertClientToDto(c);
     }
 

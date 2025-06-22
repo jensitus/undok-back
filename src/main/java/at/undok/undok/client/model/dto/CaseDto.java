@@ -29,6 +29,7 @@ public class CaseDto {
     private List<CategoryDto> counselingLanguages;
     private List<CategoryDto> jobMarketAccess;
     private List<CategoryDto> originOfAttention;
+    private List<CategoryDto> undocumentedWork;
 
     public CaseDto(UUID id, String createdAt, String updatedAt, String name, String status,
                    LocalDate startDate, LocalDate endDate, String referredTo, UUID clientId, Integer totalConsultationTime,

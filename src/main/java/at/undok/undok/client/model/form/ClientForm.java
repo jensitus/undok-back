@@ -55,5 +55,6 @@ public class ClientForm {
     private List<JoinCategoryForm> counselingLanguageSelected;
     private List<JoinCategoryForm> counselingLanguageDeSelected;
     private List<JoinCategoryForm> originOfAttentionSelected;
+    private List<JoinCategoryForm> undocumentedWorkSelected;
 
 }
