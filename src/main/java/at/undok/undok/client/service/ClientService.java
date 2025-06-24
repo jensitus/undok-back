@@ -273,6 +273,9 @@ public class ClientService {
         categoryService.sortOutDeselected(clientForm.getUndocumentedWorkSelected(),
                                           CategoryType.UNDOCUMENTED_WORK,
                                           caseDto.getId());
+        categoryService.sortOutDeselected(clientForm.getComplaintsSelected(),
+                                          CategoryType.COMPLAINT,
+                                          caseDto.getId());
         return entityToDtoMapper.convertClientToDto(c);
     }
 

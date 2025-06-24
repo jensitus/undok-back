@@ -1,6 +1,5 @@
 package at.undok.undok.client.model.dto;
 
-import jakarta.persistence.Column;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -30,6 +29,7 @@ public class CaseDto {
     private List<CategoryDto> jobMarketAccess;
     private List<CategoryDto> originOfAttention;
     private List<CategoryDto> undocumentedWork;
+    private List<CategoryDto> complaints;
 
     public CaseDto(UUID id, String createdAt, String updatedAt, String name, String status,
                    LocalDate startDate, LocalDate endDate, String referredTo, UUID clientId, Integer totalConsultationTime,
