@@ -57,5 +57,6 @@ public class ClientForm {
     private List<JoinCategoryForm> originOfAttentionSelected;
     private List<JoinCategoryForm> undocumentedWorkSelected;
     private List<JoinCategoryForm> complaintsSelected;
+    private List<JoinCategoryForm> industryUnionSelected;
 
 }

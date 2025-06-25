@@ -30,6 +30,7 @@ public class CaseDto {
     private List<CategoryDto> originOfAttention;
     private List<CategoryDto> undocumentedWork;
     private List<CategoryDto> complaints;
+    private List<CategoryDto> industryUnion;
 
     public CaseDto(UUID id, String createdAt, String updatedAt, String name, String status,
                    LocalDate startDate, LocalDate endDate, String referredTo, UUID clientId, Integer totalConsultationTime,

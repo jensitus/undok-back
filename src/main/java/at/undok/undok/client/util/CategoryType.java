@@ -15,4 +15,5 @@ public abstract class CategoryType {
     public static final String TARGET_GROUP = "TARGET_GROUP";
     public static final String UNDOCUMENTED_WORK = "UNDOCUMENTED_WORK";
     public static final String COMPLAINT = "COMPLAINT";
+    public static final String INDUSTRY_UNION = "INDUSTRY_UNION";
 }

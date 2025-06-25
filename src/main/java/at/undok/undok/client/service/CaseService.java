@@ -77,6 +77,7 @@ public class CaseService {
             caseDto.setOriginOfAttention(categoryService.getCategoryListByTypeAndEntity(CategoryType.ORIGIN_OF_ATTENTION, caseDto.getId()));
             caseDto.setUndocumentedWork(categoryService.getCategoryListByTypeAndEntity(CategoryType.UNDOCUMENTED_WORK, caseDto.getId()));
             caseDto.setComplaints(categoryService.getCategoryListByTypeAndEntity(CategoryType.COMPLAINT, caseDto.getId()));
+            caseDto.setIndustryUnion(categoryService.getCategoryListByTypeAndEntity(CategoryType.INDUSTRY_UNION, caseDto.getId()));
         }
         return caseDtoList;
     }

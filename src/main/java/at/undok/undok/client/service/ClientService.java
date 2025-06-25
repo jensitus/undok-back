@@ -276,6 +276,9 @@ public class ClientService {
         categoryService.sortOutDeselected(clientForm.getComplaintsSelected(),
                                           CategoryType.COMPLAINT,
                                           caseDto.getId());
+        categoryService.sortOutDeselected(clientForm.getIndustryUnionSelected(),
+                                          CategoryType.INDUSTRY_UNION,
+                                          caseDto.getId());
         return entityToDtoMapper.convertClientToDto(c);
     }
 
