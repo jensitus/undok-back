@@ -1,5 +1,6 @@
 package at.undok.undok.client.model.dto;
 
+import jakarta.persistence.Column;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -57,11 +58,15 @@ public class ClientDto {
     private CaseDto openCase;
     private List<CategoryDto> jobFunctions;
 
+    private String furtherContact;
+    private String comment;
+
     public ClientDto(UUID id, LocalDateTime createdAt, LocalDateTime updatedAt, String keyword, String education,
                      String maritalStatus, String nationality, String language, Boolean interpreterNecessary,
                      String howHasThePersonHeardFromUs, String currentResidentStatus, Boolean vulnerableWhenAssertingRights,
                      String formerResidentStatus, String labourMarketAccess, String position, String sector, String union,
-                     Boolean membership, String organization, String socialInsuranceNumber) {
+                     Boolean membership, String organization, String socialInsuranceNumber, String furtherContact,
+                     String comment) {
         this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -82,5 +87,7 @@ public class ClientDto {
         this.membership = membership;
         this.organization = organization;
         this.socialInsuranceNumber = socialInsuranceNumber;
+        this.furtherContact = furtherContact;
+        this.comment = comment;
     }
 }

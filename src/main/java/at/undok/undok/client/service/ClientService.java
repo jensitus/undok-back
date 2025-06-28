@@ -234,6 +234,8 @@ public class ClientService {
         if (clientForm.getGender() != null) {
             person.setGender(clientForm.getGender());
         }
+        client.setFurtherContact(clientForm.getFurtherContact());
+        client.setComment(clientForm.getComment());
         person.setUpdatedAt(LocalDateTime.now());
 
         setClient(client, clientForm.getEducation(), clientForm.getKeyword(), clientForm.getHowHasThePersonHeardFromUs(), clientForm.getInterpreterNecessary(), clientForm.getVulnerableWhenAssertingRights(), clientForm.getMaritalStatus(), clientForm.getCurrentResidentStatus(), clientForm.getLabourMarketAccess(), clientForm.getLanguage(), clientForm.getUnion(), clientForm.getMembership(), clientForm.getNationality(), clientForm.getSector(), clientForm.getOrganization(), clientForm.getPosition());

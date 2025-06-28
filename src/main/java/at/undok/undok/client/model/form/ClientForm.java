@@ -59,4 +59,7 @@ public class ClientForm {
     private List<JoinCategoryForm> complaintsSelected;
     private List<JoinCategoryForm> industryUnionSelected;
 
+    private String furtherContact;
+    private String comment;
+
 }
