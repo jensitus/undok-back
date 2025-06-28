@@ -22,10 +22,7 @@ public class CategoryController implements CategoryApi {
     private final CategoryService categoryService;
 
     @Override
-    public ResponseEntity createCategory(CategoryForm categoryForm) {
-        if (categoryService.checkIfCategoryAlreadyExists(categoryForm.getName())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Category already exists");
-        }
+    public ResponseEntity<CategoryDto> createCategory(CategoryForm categoryForm) {
         return ResponseEntity.ok(categoryService.createCategory(categoryForm));
     }
 

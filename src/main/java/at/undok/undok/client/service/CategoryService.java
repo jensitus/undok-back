@@ -1,6 +1,7 @@
 package at.undok.undok.client.service;
 
 import at.undok.undok.client.exception.CategoryNotFoundException;
+import at.undok.undok.client.exception.UniqueCategoryException;
 import at.undok.undok.client.mapper.inter.JoinCategoryMapper;
 import at.undok.undok.client.model.dto.CategoryDto;
 import at.undok.undok.client.model.dto.JoinCategoryDto;
@@ -43,8 +44,12 @@ public class CategoryService {
         category.setName(categoryForm.getName());
         category.setType(categoryForm.getType());
         category.setCreatedAt(LocalDateTime.now());
-        Category c = categoryRepo.save(category);
-        return modelMapper.map(c, CategoryDto.class);
+        try {
+            Category c = categoryRepo.save(category);
+            return modelMapper.map(c, CategoryDto.class);
+        } catch (DataIntegrityViolationException e) {
+            throw new UniqueCategoryException("Category already exists for this topic");
+        }
     }
 
     public List<CategoryDto> getCategoryListByType(String type) {

@@ -19,7 +19,7 @@ import java.util.Locale;
 
 @TestConfiguration
 public class IntegrationTestConfiguration {
-    private static final int DEFAULT_SERVER_PORT = 8080;
+    private static final int DEFAULT_SERVER_PORT = 1200;
 
     @Bean
     Faker faker() {

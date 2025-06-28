@@ -30,4 +30,9 @@ public class UndokExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new Message(e.getMessage()));
     }
 
+    @ExceptionHandler(UniqueCategoryException.class)
+    public ResponseEntity<Message> handleUniqueCategoryException(UniqueCategoryException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new Message(e.getMessage()));
+    }
+
 }
