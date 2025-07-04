@@ -58,6 +58,8 @@ public class ClientForm {
     private List<JoinCategoryForm> undocumentedWorkSelected;
     private List<JoinCategoryForm> complaintsSelected;
     private List<JoinCategoryForm> industryUnionSelected;
+    private List<JoinCategoryForm> jobFunctionSelected;
+    private List<JoinCategoryForm> sectorSelected;
 
     private String furtherContact;
     private String comment;

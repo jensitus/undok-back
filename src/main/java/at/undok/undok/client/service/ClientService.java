@@ -92,8 +92,8 @@ public class ClientService {
         clientDto.setOpenCase(openCaseList.size() == 1 ? openCaseList.get(0) : null);
         List<CaseDto> closeCaseList = caseService.getCaseByClientIdAndStatus(client.getId(), "CLOSED");
         clientDto.setClosedCases(!closeCaseList.isEmpty() ? closeCaseList : null);
-        List<CategoryDto> jobFunctionList = categoryService.getCategoryListByTypeAndEntity(CategoryType.JOB_FUNCTION, client.getId());
-        clientDto.setJobFunctions(jobFunctionList);
+        // List<CategoryDto> jobFunctionList = categoryService.getCategoryListByTypeAndEntity(CategoryType.JOB_FUNCTION, client.getId());
+        // clientDto.setJobFunctions(jobFunctionList);
         return clientDto;
     }
 
@@ -280,6 +280,12 @@ public class ClientService {
                                           caseDto.getId());
         categoryService.sortOutDeselected(clientForm.getIndustryUnionSelected(),
                                           CategoryType.INDUSTRY_UNION,
+                                          caseDto.getId());
+        categoryService.sortOutDeselected(clientForm.getJobFunctionSelected(),
+                                          CategoryType.JOB_FUNCTION,
+                                          caseDto.getId());
+        categoryService.sortOutDeselected(clientForm.getSectorSelected(),
+                                          CategoryType.SECTOR,
                                           caseDto.getId());
         return entityToDtoMapper.convertClientToDto(c);
     }

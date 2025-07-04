@@ -78,6 +78,8 @@ public class CaseService {
             caseDto.setUndocumentedWork(categoryService.getCategoryListByTypeAndEntity(CategoryType.UNDOCUMENTED_WORK, caseDto.getId()));
             caseDto.setComplaints(categoryService.getCategoryListByTypeAndEntity(CategoryType.COMPLAINT, caseDto.getId()));
             caseDto.setIndustryUnion(categoryService.getCategoryListByTypeAndEntity(CategoryType.INDUSTRY_UNION, caseDto.getId()));
+            caseDto.setJobFunction(categoryService.getCategoryListByTypeAndEntity(CategoryType.JOB_FUNCTION, caseDto.getId()));
+            caseDto.setSector(categoryService.getCategoryListByTypeAndEntity(CategoryType.SECTOR, caseDto.getId()));
         }
         return caseDtoList;
     }
