@@ -2,7 +2,7 @@ package at.undok.undok.client.service;
 
 import at.undok.common.util.ToLocalDateService;
 import at.undok.undok.client.exception.CounselingDateException;
-import at.undok.undok.client.exception.TooMuchCaseException;
+import at.undok.undok.client.exception.TooMuchCasesException;
 import at.undok.undok.client.mapper.inter.CaseMapper;
 import at.undok.undok.client.mapper.inter.CounselingMapper;
 import at.undok.undok.client.model.dto.AllCounselingDto;
@@ -85,7 +85,7 @@ public class CounselingService {
             counselingRepo.save(counseling);
             return aCase;
         } else if (caseService.countOpenCases(clientId) == null) {
-            throw new TooMuchCaseException("there are too much open cases, please contact your administrator");
+            throw new TooMuchCasesException("there are too much open cases, please contact your administrator");
         } else {
             return null;
         }

@@ -1,5 +1,6 @@
 package at.undok.undok.client.service;
 
+import at.undok.undok.client.exception.TooMuchCasesException;
 import at.undok.undok.client.mapper.inter.CaseMapper;
 import at.undok.undok.client.model.dto.CaseDto;
 import at.undok.undok.client.model.entity.Case;
@@ -20,6 +21,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class CaseService {
+
+    private static final String OPEN = "OPEN";
 
     private final CaseRepo caseRepo;
     private final ModelMapper modelMapper;
@@ -59,13 +62,19 @@ public class CaseService {
                               Boolean humanTrafficking,
                               Boolean jobCenterBlock,
                               String targetGroup) {
-        Case aCase = caseRepo.findByClientId(clientId);
-        aCase.setWorkingRelationship(workingRelationship);
-        aCase.setHumanTrafficking(humanTrafficking);
-        aCase.setJobCenterBlock(jobCenterBlock);
-        aCase.setTargetGroup(targetGroup);
-        Case saved = caseRepo.save(aCase);
-        return caseMapper.toDto(saved);
+        List<Case> caseList = caseRepo.findByClientIdAndStatus(clientId, OPEN);
+        if (caseList.size() > 1) {
+            throw new TooMuchCasesException("too many open cases");
+        } else if (caseList.size() == 1) {
+            Case aCase = caseList.get(0);
+            aCase.setWorkingRelationship(workingRelationship);
+            aCase.setHumanTrafficking(humanTrafficking);
+            aCase.setJobCenterBlock(jobCenterBlock);
+            aCase.setTargetGroup(targetGroup);
+            Case saved = caseRepo.save(aCase);
+            return caseMapper.toDto(saved);
+        }
+        return null;
     }
 
     public List<CaseDto> getCaseByClientIdAndStatus(UUID clientId, String status) {

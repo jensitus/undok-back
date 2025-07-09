@@ -2,8 +2,8 @@ package at.undok.undok.client.exception;
 
 import at.undok.common.exception.UndokException;
 
-public class TooMuchCaseException extends UndokException {
-    public TooMuchCaseException(String message) {
+public class TooMuchCasesException extends UndokException {
+    public TooMuchCasesException(String message) {
         super(message);
     }
 }

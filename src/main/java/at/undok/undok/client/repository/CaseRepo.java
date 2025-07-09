@@ -22,6 +22,5 @@ public interface CaseRepo extends JpaRepository<Case, UUID> {
             """, nativeQuery = true)
     Integer countOpenCases(UUID client_id);
 
-    Case findByClientId(UUID clientId);
 
 }

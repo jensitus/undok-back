@@ -1,6 +1,5 @@
 package at.undok.undok.client.exception;
 
-import at.undok.common.exception.UndokException;
 import at.undok.common.message.Message;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +19,8 @@ public class UndokExceptionHandler {
         return ResponseEntity.status(HttpStatus.PRECONDITION_REQUIRED).body(new Message(e.getMessage()));
     }
 
-    @ExceptionHandler(TooMuchCaseException.class)
-    public ResponseEntity<Message> handleTooMuchCaseException(TooMuchCaseException e) {
+    @ExceptionHandler(TooMuchCasesException.class)
+    public ResponseEntity<Message> handleTooMuchCaseException(TooMuchCasesException e) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new Message(e.getMessage()));
     }
 
