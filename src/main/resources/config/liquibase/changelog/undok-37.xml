@@ -36,4 +36,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="add-to-delete-boolean-to-categories" author="jensitus">
+        <addColumn tableName="categories">
+            <column name="to_be_deleted" type="boolean" defaultValue="false" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
