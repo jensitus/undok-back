@@ -21,9 +21,22 @@ public class CaseDto {
     private String referredTo;
     private UUID clientId;
     private Integer totalConsultationTime;
+    private String targetGroup;
+    private Boolean humanTrafficking;
+    private Boolean jobCenterBlock;
+    private String workingRelationship;
+    private List<CategoryDto> counselingLanguages;
+    private List<CategoryDto> jobMarketAccess;
+    private List<CategoryDto> originOfAttention;
+    private List<CategoryDto> undocumentedWork;
+    private List<CategoryDto> complaints;
+    private List<CategoryDto> industryUnion;
+    private List<CategoryDto> jobFunction;
+    private List<CategoryDto> sector;
 
     public CaseDto(UUID id, String createdAt, String updatedAt, String name, String status,
-                   LocalDate startDate, LocalDate endDate, String referredTo, UUID clientId, Integer totalConsultationTime) {
+                   LocalDate startDate, LocalDate endDate, String referredTo, UUID clientId, Integer totalConsultationTime,
+                   String targetGroup, Boolean humanTrafficking, Boolean jobCenterBlock, String workingRelationship) {
         this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -34,5 +47,9 @@ public class CaseDto {
         this.referredTo = referredTo;
         this.clientId = clientId;
         this.totalConsultationTime = totalConsultationTime;
+        this.targetGroup = targetGroup;
+        this.jobCenterBlock = jobCenterBlock;
+        this.humanTrafficking = humanTrafficking;
+        this.workingRelationship = workingRelationship;
     }
 }

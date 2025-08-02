@@ -19,4 +19,19 @@ public class UndokExceptionHandler {
         return ResponseEntity.status(HttpStatus.PRECONDITION_REQUIRED).body(new Message(e.getMessage()));
     }
 
+    @ExceptionHandler(TooMuchCasesException.class)
+    public ResponseEntity<Message> handleTooMuchCaseException(TooMuchCasesException e) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new Message(e.getMessage()));
+    }
+
+    @ExceptionHandler(KeywordException.class)
+    public ResponseEntity<Message> handleKeywordException(KeywordException e) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new Message(e.getMessage()));
+    }
+
+    @ExceptionHandler(UniqueCategoryException.class)
+    public ResponseEntity<Message> handleUniqueCategoryException(UniqueCategoryException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new Message(e.getMessage()));
+    }
+
 }

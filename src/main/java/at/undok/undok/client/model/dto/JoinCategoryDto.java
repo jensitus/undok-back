@@ -11,4 +11,11 @@ public class JoinCategoryDto {
     private UUID entityId;
     private String categoryType;
     private String entityType;
+
+    public JoinCategoryDto(UUID categoryId, UUID entityId, String categoryType, String entityType) {
+        this.categoryId = categoryId;
+        this.entityId = entityId;
+        this.categoryType = categoryType;
+        this.entityType = entityType;
+    }
 }

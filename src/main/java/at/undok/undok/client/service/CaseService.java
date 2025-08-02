@@ -1,10 +1,13 @@
 package at.undok.undok.client.service;
 
+import at.undok.undok.client.exception.TooMuchCasesException;
 import at.undok.undok.client.mapper.inter.CaseMapper;
 import at.undok.undok.client.model.dto.CaseDto;
 import at.undok.undok.client.model.entity.Case;
-import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.repository.CaseRepo;
+import at.undok.undok.client.repository.CounselingRepo;
+import at.undok.undok.client.util.CategoryType;
+import at.undok.undok.client.util.StatusService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -19,10 +22,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CaseService {
 
+    private static final String OPEN = "OPEN";
+
     private final CaseRepo caseRepo;
     private final ModelMapper modelMapper;
     private final CaseMapper caseMapper;
-    private final CounselingService counselingService;
+    private final CounselingRepo counselingRepo;
+    private final CategoryService categoryService;
 
     public CaseDto createCase(CaseDto caseDto) {
         Case entity = caseMapper.toEntity(caseDto);
@@ -36,8 +42,9 @@ public class CaseService {
         return caseMapper.toDto(caseRepo.findFirstByClientIdOrderByEndDateAsc(clientId));
     }
 
-    public CaseDto getCase(UUID id) {
-        return modelMapper.map(caseRepo.findById(id), CaseDto.class);
+    public CaseDto getCaseById(UUID id) {
+        Case aCase = caseRepo.findById(id).orElseThrow();
+        return modelMapper.map(aCase, CaseDto.class);
     }
 
     public CaseDto updateStatus(CaseDto caseDto) {
@@ -45,14 +52,81 @@ public class CaseService {
         aCase.setStatus(caseDto.getStatus());
         aCase.setReferredTo(caseDto.getReferredTo());
         aCase.setUpdatedAt(LocalDateTime.now());
-        aCase.setTotalConsultationTime(Objects.equals(caseDto.getStatus(), "CLOSED") ? counselingService.getTotalConsultationTime(aCase.getId()) : null);
+        aCase.setTotalConsultationTime(Objects.equals(caseDto.getStatus(), "CLOSED") ? counselingRepo.selectTotalConsultationTime(aCase.getId()) : null);
         aCase.setEndDate(Objects.equals(caseDto.getStatus(), "CLOSED") ? LocalDate.now() : null);
         return caseMapper.toDto(caseRepo.save(aCase));
     }
 
+    public CaseDto updateCase(UUID clientId,
+                              String workingRelationship,
+                              Boolean humanTrafficking,
+                              Boolean jobCenterBlock,
+                              String targetGroup) {
+        List<Case> caseList = caseRepo.findByClientIdAndStatus(clientId, OPEN);
+        if (caseList.size() > 1) {
+            throw new TooMuchCasesException("too many open cases");
+        } else if (caseList.size() == 1) {
+            Case aCase = caseList.get(0);
+            aCase.setWorkingRelationship(workingRelationship);
+            aCase.setHumanTrafficking(humanTrafficking);
+            aCase.setJobCenterBlock(jobCenterBlock);
+            aCase.setTargetGroup(targetGroup);
+            Case saved = caseRepo.save(aCase);
+            return caseMapper.toDto(saved);
+        }
+        return null;
+    }
+
     public List<CaseDto> getCaseByClientIdAndStatus(UUID clientId, String status) {
         List<Case> caseList = caseRepo.findByClientIdAndStatus(clientId, status);
-        return caseList.stream().map(caseMapper::toDto).toList();
+        List<CaseDto> caseDtoList = caseList.stream().map(caseMapper::toDto).toList();
+        for (CaseDto caseDto : caseDtoList) {
+            caseDto.setCounselingLanguages(categoryService.getCategoryListByTypeAndEntity(CategoryType.COUNSELING_LANGUAGE, caseDto.getId()));
+            caseDto.setJobMarketAccess(categoryService.getCategoryListByTypeAndEntity(CategoryType.JOB_MARKET_ACCESS, caseDto.getId()));
+            caseDto.setOriginOfAttention(categoryService.getCategoryListByTypeAndEntity(CategoryType.ORIGIN_OF_ATTENTION, caseDto.getId()));
+            caseDto.setUndocumentedWork(categoryService.getCategoryListByTypeAndEntity(CategoryType.UNDOCUMENTED_WORK, caseDto.getId()));
+            caseDto.setComplaints(categoryService.getCategoryListByTypeAndEntity(CategoryType.COMPLAINT, caseDto.getId()));
+            caseDto.setIndustryUnion(categoryService.getCategoryListByTypeAndEntity(CategoryType.INDUSTRY_UNION, caseDto.getId()));
+            caseDto.setJobFunction(categoryService.getCategoryListByTypeAndEntity(CategoryType.JOB_FUNCTION, caseDto.getId()));
+            caseDto.setSector(categoryService.getCategoryListByTypeAndEntity(CategoryType.SECTOR, caseDto.getId()));
+        }
+        return caseDtoList;
+    }
+
+    public Boolean countOpenCases(UUID clientId) {
+        Integer countCase = caseRepo.countOpenCases(clientId);
+        if (countCase == 1) {
+            return true;
+        } else if (countCase >= 1) {
+            return null;
+        } else {
+            return false;
+        }
+    }
+
+    public Case createCase(UUID clientId, String keyword, String targetGroup, Boolean humanTrafficking, Boolean jobCenterBlock, String workingRelationship) {
+        Case c = new Case();
+        c.setCreatedAt(LocalDateTime.now());
+        c.setStartDate(LocalDate.now());
+        c.setStatus(StatusService.STATUS_OPEN);
+        String caseName = keyword + " - " + LocalDate.now();
+        c.setName(caseName);
+        c.setClientId(clientId);
+        c.setTargetGroup(targetGroup);
+        c.setHumanTrafficking(humanTrafficking);
+        c.setJobCenterBlock(jobCenterBlock);
+        c.setWorkingRelationship(workingRelationship);
+        return caseRepo.save(c);
+    }
+
+    public CaseDto getCaseDtoByClientId(UUID clientId) {
+        UUID caseId = counselingRepo.findCaseId(clientId);
+        return getCaseById(caseId);
+    }
+
+    public Case getCaseByClientId(UUID clientId) {
+        UUID caseId = counselingRepo.findCaseId(clientId);
+        return caseRepo.findById(caseId).orElseThrow();
     }
 
 }

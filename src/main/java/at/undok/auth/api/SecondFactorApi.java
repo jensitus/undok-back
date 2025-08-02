@@ -14,6 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public interface SecondFactorApi {
 
     @PostMapping("/second-factor")
-    public ResponseEntity<JwtResponse> secondFactor(@RequestBody SecondFactorForm secondFactorForm);
+    ResponseEntity<JwtResponse> secondFactor(@RequestBody SecondFactorForm secondFactorForm);
 
 }

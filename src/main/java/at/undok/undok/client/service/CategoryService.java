@@ -1,6 +1,8 @@
 package at.undok.undok.client.service;
 
 import at.undok.undok.client.exception.CategoryNotFoundException;
+import at.undok.undok.client.exception.UniqueCategoryException;
+import at.undok.undok.client.mapper.inter.JoinCategoryMapper;
 import at.undok.undok.client.model.dto.CategoryDto;
 import at.undok.undok.client.model.dto.JoinCategoryDto;
 import at.undok.undok.client.model.entity.Category;
@@ -9,6 +11,7 @@ import at.undok.undok.client.model.form.CategoryForm;
 import at.undok.undok.client.model.form.JoinCategoryForm;
 import at.undok.undok.client.repository.CategoryRepo;
 import at.undok.undok.client.repository.JoinCategoryRepo;
+import at.undok.undok.client.util.CategoryType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -30,6 +33,7 @@ public class CategoryService {
     private final CategoryRepo categoryRepo;
     private final ModelMapper modelMapper;
     private final JoinCategoryRepo joinCategoryRepo;
+    private final JoinCategoryMapper joinCategoryMapper;
 
     public boolean checkIfCategoryAlreadyExists(String name) {
         return categoryRepo.existsByName(name);
@@ -40,20 +44,31 @@ public class CategoryService {
         category.setName(categoryForm.getName());
         category.setType(categoryForm.getType());
         category.setCreatedAt(LocalDateTime.now());
-        Category c = categoryRepo.save(category);
-        return modelMapper.map(c, CategoryDto.class);
+        try {
+            Category c = categoryRepo.save(category);
+            return modelMapper.map(c, CategoryDto.class);
+        } catch (DataIntegrityViolationException e) {
+            throw new UniqueCategoryException("Category already exists for this topic");
+        }
     }
 
     public List<CategoryDto> getCategoryListByType(String type) {
         List<Category> categories = categoryRepo.getCategoriesByType(type);
-        return mapList(categories, CategoryDto.class);
+        return mapListModelMapper(categories, CategoryDto.class);
     }
 
-    private <S, T> List<T> mapList(List<S> source, Class<T> targetClass) {
+    private <S, T> List<T> mapListModelMapper(List<S> source, Class<T> targetClass) {
         return source.stream()
                      .map(element -> modelMapper.map(element, targetClass))
                      .collect(Collectors.toList());
     }
+
+    private List<JoinCategoryDto> mapJoinCategoryList(List<JoinCategoryForm> source) {
+        return source.stream()
+                     .map(joinCategoryMapper::toDto)
+                     .collect(Collectors.toList());
+    }
+
 
     public void addJoinCategory(List<JoinCategoryForm> joinCategoryFormList) {
         for (JoinCategoryForm joinCategoryForm : joinCategoryFormList) {
@@ -75,9 +90,33 @@ public class CategoryService {
         }
     }
 
+    public void sortOutDeselected(List<JoinCategoryForm> joinCategoryFormList, String categoryType, UUID entityId) {
+
+        List<JoinCategory> joinCategoryList = joinCategoryRepo.findByEntityIdAndCategoryType(entityId, categoryType);
+        List<JoinCategoryForm> formsSoFar = new ArrayList<>(List.of());
+        for (JoinCategory joinCategory : joinCategoryList) {
+            JoinCategoryForm jcf = new JoinCategoryForm();
+            jcf.setCategoryId(joinCategory.getCategoryId());
+            jcf.setEntityId(joinCategory.getEntityId());
+            jcf.setCategoryType(joinCategory.getCategoryType());
+            jcf.setEntityType(joinCategory.getEntityType());
+            formsSoFar.add(jcf);
+        }
+        List<JoinCategoryForm> categoriesToBeDeleted = formsSoFar.stream()
+                                                                 .filter(item -> !joinCategoryFormList.contains(item))
+                                                                 .toList();
+        List<JoinCategoryForm> categoriesToBeAdded = joinCategoryFormList.stream()
+                                                                         .filter(item -> !formsSoFar.contains(item))
+                                                                         .toList();
+        log.info("formsUpdated size: {}", categoriesToBeDeleted.size());
+        addJoinCategory(categoriesToBeAdded);
+        List<JoinCategoryDto> joinCategoryDtos = mapJoinCategoryList(categoriesToBeDeleted);
+        deleteJoinCategories(joinCategoryDtos);
+    }
+
     public List<CategoryDto> getCategoryListByTypeAndEntity(String categoryType, UUID entityId) {
         List<Category> categoryList = categoryRepo.getCategoryByTypeAndEntity(categoryType, entityId);
-        List<CategoryDto> categoryDtoList = mapList(categoryList, CategoryDto.class);
+        List<CategoryDto> categoryDtoList = mapListModelMapper(categoryList, CategoryDto.class);
         return categoryDtoList;
     }
 
@@ -91,7 +130,7 @@ public class CategoryService {
     }
 
     public List<CategoryDto> getAllCategories() {
-        return mapList(categoryRepo.findAll(), CategoryDto.class);
+        return mapListModelMapper(categoryRepo.findAll(), CategoryDto.class);
     }
 
     public CategoryDto updateCategory(UUID id, String name) {

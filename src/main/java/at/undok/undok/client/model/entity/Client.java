@@ -80,4 +80,10 @@ public class Client extends AbstractCrud {
     @Column(name = "social_insurance_number")
     private String socialInsuranceNumber;
 
+    @Column(name = "further_contact")
+    private String furtherContact;
+
+    @Column(name = "comment")
+    private String comment;
+
 }

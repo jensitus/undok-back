@@ -37,3 +37,7 @@ HELP.md
 *.dump
 *.sql
 
+####ansible#####
+copy_jar.yml
+inventory.ini
+

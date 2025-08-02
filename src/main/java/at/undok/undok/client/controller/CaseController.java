@@ -17,7 +17,7 @@ public class CaseController implements CaseApi {
 
     @Override
     public ResponseEntity<CaseDto> getCase(UUID id) {
-        return ResponseEntity.ok(caseService.getCase(id));
+        return ResponseEntity.ok(caseService.getCaseById(id));
     }
 
     @Override

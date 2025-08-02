@@ -49,5 +49,6 @@ public class AllClientDto {
     private String country;
 
     private List<CounselingDto> counselings;
-
+    private String furtherContact;
+    private String comment;
 }

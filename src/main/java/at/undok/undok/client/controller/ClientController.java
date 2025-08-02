@@ -2,6 +2,7 @@ package at.undok.undok.client.controller;
 
 import at.undok.common.message.Message;
 import at.undok.undok.client.api.ClientApi;
+import at.undok.undok.client.exception.KeywordException;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.dto.CounselingDto;
@@ -36,11 +37,11 @@ public class ClientController implements ClientApi {
     private final CsvService csvService;
 
     @Override
-    public ResponseEntity createClient(ClientForm clientForm) {
+    public ResponseEntity<ClientDto> createClient(ClientForm clientForm) {
         if (clientForm.getKeyword() == null) {
-            return ResponseEntity.unprocessableEntity().body("Keyword must not be null");
+            throw new KeywordException("Keyword must not be empty");
         } else if (clientService.checkIfKeywordAlreadyExists(clientForm.getKeyword())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Keyword already exists");
+            throw new KeywordException("Keyword already exists");
         } else {
             return ResponseEntity.ok(this.clientService.createClient(clientForm));
         }
@@ -68,8 +69,15 @@ public class ClientController implements ClientApi {
     }
 
     @Override
-    public ClientDto updateClient(UUID clientId, ClientDto clientDto) {
-        return clientService.updateClient(clientId, clientDto);
+    public ResponseEntity<Message> updateClient(UUID clientId, ClientForm clientForm) {
+        clientService.updateClient(clientId, clientForm);
+        return ResponseEntity.ok(new Message("Client updated"));
+    }
+
+    @Override
+    public ResponseEntity<Message> updateAttemptClient(UUID clientId, ClientForm clientForm) {
+        clientService.updateClient(clientId, clientForm);
+        return ResponseEntity.ok(new Message("Client updated"));
     }
 
     @Override

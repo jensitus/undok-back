@@ -27,7 +27,9 @@ public class ClientMapperImpl implements ClientMapper {
                              client.getUnion(),
                              client.getMembership(),
                              client.getOrganization(),
-                             client.getSocialInsuranceNumber());
+                             client.getSocialInsuranceNumber(),
+                             client.getFurtherContact(),
+                             client.getComment());
     }
 
     @Override

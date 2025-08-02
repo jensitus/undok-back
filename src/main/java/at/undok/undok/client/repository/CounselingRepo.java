@@ -28,14 +28,7 @@ public interface CounselingRepo extends JpaRepository<Counseling, UUID> {
     @Query(name = "getCounselingsForCsv", nativeQuery = true)
     List<CounselingForCsvResult> getCounselingForCsv();
 
-    @Query(value = """
-            select count(distinct ca.id) from cases ca, counselings co, clients cl
-                                      where cl.id = co.client_id
-                                        and co.case_id = ca.id
-                                        and ca.status = 'OPEN'
-                                        and cl.id = :client_id
-            """, nativeQuery = true)
-    Integer countOpenCases(UUID client_id);
+
 
     @Query(value = """
             select distinct ca.id from cases ca, counselings co, clients cl
