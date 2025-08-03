@@ -12,4 +12,5 @@ public class CategoryDto {
     private String type;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private boolean toBeDeleted;
 }

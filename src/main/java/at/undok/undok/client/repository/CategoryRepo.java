@@ -9,8 +9,8 @@ import java.util.UUID;
 
 public interface CategoryRepo extends JpaRepository<Category, UUID> {
 
-    @Query("select c from Category c where c.type = :type order by c.name asc")
-    List<Category> getCategoriesByType(String type);
+    @Query("select c from Category c where c.type = :type and c.toBeDeleted = :toBeDeleted order by c.name asc")
+    List<Category> getCategoriesByType(String type, Boolean toBeDeleted);
 
     boolean existsByName(String name);
 
@@ -19,5 +19,7 @@ public interface CategoryRepo extends JpaRepository<Category, UUID> {
             "and jc.entityId = :entityId " +
             "and c.id = jc.categoryId ")
     List<Category> getCategoryByTypeAndEntity(String categoryType, UUID entityId);
+
+    List<Category> findCategoryByToBeDeleted(Boolean toBeDeleted);
 
 }

@@ -53,7 +53,7 @@ public class CategoryService {
     }
 
     public List<CategoryDto> getCategoryListByType(String type) {
-        List<Category> categories = categoryRepo.getCategoriesByType(type);
+        List<Category> categories = categoryRepo.getCategoriesByType(type, false);
         return mapListModelMapper(categories, CategoryDto.class);
     }
 
@@ -130,7 +130,8 @@ public class CategoryService {
     }
 
     public List<CategoryDto> getAllCategories() {
-        return mapListModelMapper(categoryRepo.findAll(), CategoryDto.class);
+        List<Category> categoryByToBeDeleted = categoryRepo.findCategoryByToBeDeleted(false);
+        return mapListModelMapper(categoryByToBeDeleted, CategoryDto.class);
     }
 
     public CategoryDto updateCategory(UUID id, String name) {
