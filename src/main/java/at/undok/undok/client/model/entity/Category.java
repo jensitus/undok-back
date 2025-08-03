@@ -22,4 +22,7 @@ public class Category extends AbstractCrud {
     @Column(name = "type")
     private String type;
 
+    @Column(name = "to_be_deleted")
+    private boolean toBeDeleted;
+
 }
