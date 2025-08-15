@@ -30,4 +30,5 @@
   <include file="config/liquibase/changelog/add-human-trafficking-to-case.xml" />
   <include file="config/liquibase/changelog/add_further_contact.xml" />
   <include file="config/liquibase/changelog/add-constraint-to-cagegories.xml" />
+  <include file="config/liquibase/changelog/add-not-null-to-join-category.xml" />
 </databaseChangeLog> 
