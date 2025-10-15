@@ -70,22 +70,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Message createPasswordResetTokenForUser(String email) {
-        User user = userRepo.findByEmail(email.toLowerCase());
+        User user = findUserByEmail(email);
         if (user == null) {
-            log.info("no user with email: " + email + " found");
+            log.info("No user found with email: {}", email);
             return new Message("Die Emailadresse gibt es nicht", false);
         }
-        String token = UUID.randomUUID().toString();
-        String base64token = Base64Codec.BASE64.encode(token);
-        LocalDateTime localDateTime = LocalDateTime.now();
-        PasswordResetToken passwordResetToken = new PasswordResetToken(user, token, localDateTime);
-        passwordResetTokenRepo.save(passwordResetToken);
-        String encryptedEmail = attributeEncryptor.encodeWithUrlEncoder(user.getEmail());
-        String url = applicationBaseUrl + "/auth/reset_password/" + base64token + "/edit?email=" + encryptedEmail;
-        log.info(url);
-        String subject = EmailStuff.SUBJECT_PREFIX + " reset instructions";
-        String text = "click the link below within the next 2 hours, after this it will expire";
-        undokMailer.getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), url);
+
+        PasswordResetToken resetToken = createAndSaveResetToken(user);
+        String resetUrl = buildPasswordResetUrl(resetToken.getToken(), user.getEmail());
+
+        log.info("Password reset URL generated: {}", resetUrl);
+        sendPasswordResetEmail(user, resetUrl);
+
         return new Message("We've sent you a message with reset instructions", true);
     }
 
@@ -224,6 +220,29 @@ public class UserServiceImpl implements UserService {
         user.setRoles(roleSet);
         User saved = userRepo.save(user);
         return saved.isLocked();
+    }
+
+    private User findUserByEmail(String email) {
+        return userRepo.findByEmail(email.toLowerCase());
+    }
+
+    private PasswordResetToken createAndSaveResetToken(User user) {
+        String token = UUID.randomUUID().toString();
+        PasswordResetToken passwordResetToken = new PasswordResetToken(user, token, LocalDateTime.now());
+        return passwordResetTokenRepo.save(passwordResetToken);
+    }
+
+    private String buildPasswordResetUrl(String token, String email) {
+        String base64Token = Base64Codec.BASE64.encode(token);
+        String encryptedEmail = attributeEncryptor.encodeWithUrlEncoder(email);
+        return String.format("%s/auth/reset_password/%s/edit?email=%s",
+                             applicationBaseUrl, base64Token, encryptedEmail);
+    }
+
+    private void sendPasswordResetEmail(User user, String resetUrl) {
+        String subject = EmailStuff.SUBJECT_PREFIX + " reset instructions";
+        String text = "click the link below within the next 2 hours, after this it will expire";
+        undokMailer.getTheMailDetails(user.getEmail(), subject, text, user.getUsername(), resetUrl);
     }
 
 }
