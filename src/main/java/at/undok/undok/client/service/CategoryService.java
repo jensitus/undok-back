@@ -93,25 +93,33 @@ public class CategoryService {
     public void sortOutDeselected(List<JoinCategoryForm> joinCategoryFormList, String categoryType, UUID entityId) {
 
         List<JoinCategory> joinCategoryList = joinCategoryRepo.findByEntityIdAndCategoryType(entityId, categoryType);
-        List<JoinCategoryForm> formsSoFar = new ArrayList<>(List.of());
-        for (JoinCategory joinCategory : joinCategoryList) {
-            JoinCategoryForm jcf = new JoinCategoryForm();
-            jcf.setCategoryId(joinCategory.getCategoryId());
-            jcf.setEntityId(joinCategory.getEntityId());
-            jcf.setCategoryType(joinCategory.getCategoryType());
-            jcf.setEntityType(joinCategory.getEntityType());
-            formsSoFar.add(jcf);
-        }
-        List<JoinCategoryForm> categoriesToBeDeleted = formsSoFar.stream()
-                                                                 .filter(item -> !joinCategoryFormList.contains(item))
-                                                                 .toList();
+
+        List<JoinCategoryForm> existingForms = joinCategoryList.stream()
+                                                               .map(this::mapToJoinCategoryForm)
+                                                               .toList();
+
+        List<JoinCategoryForm> categoriesToBeDeleted = existingForms.stream()
+                                                                    .filter(item -> !joinCategoryFormList.contains(item))
+                                                                    .toList();
+
         List<JoinCategoryForm> categoriesToBeAdded = joinCategoryFormList.stream()
-                                                                         .filter(item -> !formsSoFar.contains(item))
+                                                                         .filter(item -> !existingForms.contains(item))
                                                                          .toList();
-        log.info("formsUpdated size: {}", categoriesToBeDeleted.size());
+
+        log.info("Categories to be deleted: {}", categoriesToBeDeleted.size());
         addJoinCategory(categoriesToBeAdded);
+
         List<JoinCategoryDto> joinCategoryDtos = mapJoinCategoryList(categoriesToBeDeleted);
         deleteJoinCategories(joinCategoryDtos);
+    }
+
+    private JoinCategoryForm mapToJoinCategoryForm(JoinCategory joinCategory) {
+        JoinCategoryForm form = new JoinCategoryForm();
+        form.setCategoryId(joinCategory.getCategoryId());
+        form.setEntityId(joinCategory.getEntityId());
+        form.setCategoryType(joinCategory.getCategoryType());
+        form.setEntityType(joinCategory.getEntityType());
+        return form;
     }
 
     public List<CategoryDto> getCategoryListByTypeAndEntity(String categoryType, UUID entityId) {
