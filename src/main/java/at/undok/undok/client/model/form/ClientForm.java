@@ -64,4 +64,6 @@ public class ClientForm {
     private String furtherContact;
     private String comment;
 
+    private Boolean alert;
+
 }

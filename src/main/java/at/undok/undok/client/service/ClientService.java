@@ -93,8 +93,6 @@ public class ClientService {
         clientDto.setOpenCase(openCaseList.size() == 1 ? openCaseList.get(0) : null);
         List<CaseDto> closeCaseList = caseService.getCaseByClientIdAndStatus(client.getId(), "CLOSED");
         clientDto.setClosedCases(!closeCaseList.isEmpty() ? closeCaseList : null);
-        // List<CategoryDto> jobFunctionList = categoryService.getCategoryListByTypeAndEntity(CategoryType.JOB_FUNCTION, client.getId());
-        // clientDto.setJobFunctions(jobFunctionList);
         return clientDto;
     }
 
@@ -175,6 +173,7 @@ public class ClientService {
         client.setSector(clientForm.getSector());
         client.setOrganization(clientForm.getOrganization());
         client.setPosition(clientForm.getPosition());
+        client.setAlert(clientForm.getAlert());
     }
 
 

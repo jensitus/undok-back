@@ -14,4 +14,10 @@
         <modifyDataType tableName="counselings" columnName="activity" newDataType="varchar(4096)" />
     </changeSet>
 
+    <changeSet id="add-alert" author="jensitus">
+        <addColumn tableName="clients">
+            <column name="alert" type="boolean" defaultValue="false" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
