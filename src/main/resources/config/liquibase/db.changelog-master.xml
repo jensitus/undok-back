@@ -1,34 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?> 
+<?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
-  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-  <include file="config/liquibase/changelog/set-pgcrypto.xml" />
-  <include file="config/liquibase/changelog/create-user-table-changelog-1.0.xml"/>
-  <include file="config/liquibase/changelog/user_confirmation.xml" />
-  <include file="config/liquibase/changelog/undok_client.xml" />
-  <include file="config/liquibase/changelog/create-counseling.xml" />
-  <include file="config/liquibase/changelog/employer.xml" />
-  <include file="config/liquibase/changelog/add-admin.xml" />
-  <include file="config/liquibase/changelog/add_email_tel_person.xml" />
-  <include file="config/liquibase/changelog/undok-29.xml" />
-  <include file="config/liquibase/changelog/undok-31.xml" />
-  <include file="config/liquibase/changelog/undok-37.xml" />
-  <include file="config/liquibase/changelog/undok-9-twofact.xml" />
-  <include file="config/liquibase/changelog/UNDOK-27_increase_concern.xml" />
-  <include file="config/liquibase/changelog/undok-39.xml" />
-  <include file="config/liquibase/changelog/undok-34.xml" />
-  <include file="config/liquibase/changelog/change_id_of_join_category.xml" />
-  <include file="config/liquibase/changelog/social_insurance_number.xml" />
-  <include file="/config/liquibase/changelog/add-role-locked.xml" />
-  <include file="config/liquibase/changelog/add_required_time.xml"/>
-  <include file="config/liquibase/changelog/create-case.xml" />
-  <include file="config/liquibase/changelog/add-target-group.xml" />
-  <include file="/config/liquibase/changelog/add-working-relationship_to_case.xml" />
-  <include file="config/liquibase/changelog/add-human-trafficking-to-case.xml" />
-  <include file="config/liquibase/changelog/add_further_contact.xml" />
-  <include file="config/liquibase/changelog/add-constraint-to-cagegories.xml" />
-  <include file="config/liquibase/changelog/add-not-null-to-join-category.xml" />
+    <include file="config/liquibase/changelog/set-pgcrypto.xml"/>
+    <include file="config/liquibase/changelog/create-user-table-changelog-1.0.xml"/>
+    <include file="config/liquibase/changelog/user_confirmation.xml"/>
+    <include file="config/liquibase/changelog/undok_client.xml"/>
+    <include file="config/liquibase/changelog/create-counseling.xml"/>
+    <include file="config/liquibase/changelog/employer.xml"/>
+    <include file="config/liquibase/changelog/add-admin.xml"/>
+    <include file="config/liquibase/changelog/add_email_tel_person.xml"/>
+    <include file="config/liquibase/changelog/undok-29.xml"/>
+    <include file="config/liquibase/changelog/undok-31.xml"/>
+    <include file="config/liquibase/changelog/undok-37.xml"/>
+    <include file="config/liquibase/changelog/undok-9-twofact.xml"/>
+    <include file="config/liquibase/changelog/UNDOK-27_increase_concern.xml"/>
+    <include file="config/liquibase/changelog/undok-39.xml"/>
+    <include file="config/liquibase/changelog/undok-34.xml"/>
+    <include file="config/liquibase/changelog/change_id_of_join_category.xml"/>
+    <include file="config/liquibase/changelog/social_insurance_number.xml"/>
+    <include file="/config/liquibase/changelog/add-role-locked.xml"/>
+    <include file="config/liquibase/changelog/add_required_time.xml"/>
+    <include file="config/liquibase/changelog/create-case.xml"/>
+    <include file="config/liquibase/changelog/add-target-group.xml"/>
+    <include file="/config/liquibase/changelog/add-working-relationship_to_case.xml"/>
+    <include file="config/liquibase/changelog/add-human-trafficking-to-case.xml"/>
+    <include file="config/liquibase/changelog/add_further_contact.xml"/>
+    <include file="config/liquibase/changelog/add-constraint-to-cagegories.xml"/>
+    <include file="config/liquibase/changelog/add-not-null-to-join-category.xml"/>
+    <include file="config/liquibase/changelog/undok.xml"/>
 </databaseChangeLog> 
