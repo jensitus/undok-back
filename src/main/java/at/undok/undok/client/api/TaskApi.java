@@ -24,6 +24,9 @@ public interface TaskApi {
     @GetMapping("/api/tasks/case/{caseId}")
     ResponseEntity<List<TaskDto>> getTasksByCaseId(@PathVariable UUID caseId);
 
+    @GetMapping("/api/tasks/active")
+    ResponseEntity<List<TaskDto>> getActiveTasks();
+
     @PutMapping("/api/tasks/{id}")
     ResponseEntity<TaskDto> updateTask(@PathVariable UUID id, @RequestBody TaskDto taskDto);
 

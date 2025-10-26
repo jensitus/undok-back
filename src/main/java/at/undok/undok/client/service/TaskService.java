@@ -84,6 +84,14 @@ public class TaskService {
                     .collect(Collectors.toList());
     }
 
+    public List<TaskDto> getActiveTasks() {
+        List<String> activeStatuses = List.of("Open", "In Progress");
+        List<Task> tasks = taskRepo.findByStatusIn(activeStatuses);
+        return tasks.stream()
+                    .map(taskMapper::toDto)
+                    .collect(Collectors.toList());
+    }
+
     public void deleteTask(UUID id) {
         if (!taskRepo.existsById(id)) {
             throw new RuntimeException("Task not found with id: " + id);

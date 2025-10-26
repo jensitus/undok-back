@@ -9,5 +9,6 @@ import java.util.UUID;
 public interface TaskRepo extends JpaRepository<Task, UUID>  {
 
     List<Task> findByCaseEntity_Id(UUID caseId);
+    List<Task> findByStatusIn(List<String> statuses);
 
 }

@@ -42,6 +42,11 @@ public class TaskController implements TaskApi {
     }
 
     @Override
+    public ResponseEntity<List<TaskDto>> getActiveTasks() {
+        return ResponseEntity.ok(taskService.getActiveTasks());
+    }
+
+    @Override
     public ResponseEntity<TaskDto> updateTask(UUID id, TaskDto taskDto) {
         TaskDto updatedTask = taskService.updateTask(id, taskDto);
         return ResponseEntity.ok(updatedTask);
