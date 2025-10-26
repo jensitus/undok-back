@@ -86,4 +86,7 @@ public class Client extends AbstractCrud {
     @Column(name = "comment")
     private String comment;
 
+    @Column(name = "alert")
+    private Boolean alert;
+
 }

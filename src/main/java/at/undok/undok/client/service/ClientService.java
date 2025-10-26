@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -92,8 +93,6 @@ public class ClientService {
         clientDto.setOpenCase(openCaseList.size() == 1 ? openCaseList.get(0) : null);
         List<CaseDto> closeCaseList = caseService.getCaseByClientIdAndStatus(client.getId(), "CLOSED");
         clientDto.setClosedCases(!closeCaseList.isEmpty() ? closeCaseList : null);
-        // List<CategoryDto> jobFunctionList = categoryService.getCategoryListByTypeAndEntity(CategoryType.JOB_FUNCTION, client.getId());
-        // clientDto.setJobFunctions(jobFunctionList);
         return clientDto;
     }
 
@@ -137,157 +136,61 @@ public class ClientService {
 
     private ClientDto createTheCompleteClient(ClientForm clientForm) {
 
-        Person clientPerson = new Person();
-        Client client = new Client();
-        Address clientAddress = new Address();
+        Address savedAddress = createAndSaveAddress(clientForm);
+        Client savedClient = createAndSaveClient(clientForm);
+        Person savedPerson = createAndSavePerson(clientForm, savedAddress, savedClient);
 
-        try {
-            clientPerson.setDateOfBirth(toLocalDateService.formatStringToLocalDate(clientForm.getDateOfBirth()));
-        } catch (Exception e) {
-            clientPerson.setDateOfBirth(null);
-        }
+        savedClient.setPerson(savedPerson);
+        Client finalClient = clientRepo.save(savedClient);
 
-        if (clientForm.getFirstName() != null) {
-            clientPerson.setFirstName(clientForm.getFirstName());
-        }
-        if (clientForm.getLastName() != null) {
-            clientPerson.setLastName(clientForm.getLastName());
-        }
-        if (clientForm.getEmail() != null) {
-            clientPerson.setEmail(clientForm.getEmail());
-        }
-        if (clientForm.getTelephone() != null) {
-            clientPerson.setTelephone(clientForm.getTelephone());
-        }
-        if (clientForm.getGender() != null) {
-            clientPerson.setGender(clientForm.getGender());
-        }
-        clientPerson.setCreatedAt(LocalDateTime.now());
+        ClientDto clientDto = entityToDtoMapper.convertClientToDto(finalClient);
 
-        setClient(client, clientForm.getEducation(), clientForm.getKeyword(), clientForm.getHowHasThePersonHeardFromUs(), clientForm.getInterpreterNecessary(), clientForm.getVulnerableWhenAssertingRights(), clientForm.getMaritalStatus(), clientForm.getCurrentResidentStatus(), clientForm.getLabourMarketAccess(), clientForm.getLanguage(), clientForm.getUnion(), clientForm.getMembership(), clientForm.getNationality(), clientForm.getSector(), clientForm.getOrganization(), clientForm.getPosition());
-        client.setCreatedAt(LocalDateTime.now());
-        client.setSocialInsuranceNumber(clientForm.getSocialInsuranceNumber());
-        client.setStatus(StatusService.STATUS_ACTIVE);
-        Client saveAndFlush = clientRepo.saveAndFlush(client);
+        caseService.createCase(
+                clientDto.getId(),
+                clientDto.getKeyword(),
+                clientForm.getTargetGroup(),
+                clientForm.getHumanTrafficking(),
+                clientForm.getJobCenterBlock(),
+                clientForm.getWorkingRelationship()
+        );
 
-        if (clientForm.getStreet() != null) {
-            clientAddress.setStreet(clientForm.getStreet());
-        }
-        if (clientForm.getZipCode() != null) {
-            clientAddress.setZipCode(clientForm.getZipCode());
-        }
-        if (clientForm.getCity() != null) {
-            clientAddress.setCity(clientForm.getCity());
-        }
-        if (clientForm.getCountry() != null) {
-            clientAddress.setCountry(clientForm.getCountry());
-        }
-        Address savedAddress = addressRepo.save(clientAddress);
-
-        clientPerson.setAddress(savedAddress);
-        clientPerson.setClient(saveAndFlush);
-        Person savedPerson = personRepo.save(clientPerson);
-
-        client.setPerson(savedPerson);
-
-        Client c = clientRepo.save(client);
-        ClientDto clientDto = entityToDtoMapper.convertClientToDto(c);
-        CaseDto caseDto = new CaseDto();
-        caseDto.setClientId(clientDto.getId());
-        caseService.createCase(clientDto.getId(), clientDto.getKeyword(), clientForm.getTargetGroup(), clientForm.getHumanTrafficking(), clientForm.getJobCenterBlock(), clientForm.getWorkingRelationship());
         return clientDto;
     }
 
-    private void setClient(Client client, String education, String keyword, String howHasThePersonHeardFromUs, Boolean interpreterNecessary, Boolean vulnerableWhenAssertingRights, String maritalStatus, String currentResidentStatus, String labourMarketAccess, String language, String union, Boolean membership, String nationality, String sector, String organization, String position) {
-        client.setEducation(education);
-        client.setKeyword(keyword);
-        client.setHowHasThePersonHeardFromUs(howHasThePersonHeardFromUs);
-        client.setInterpreterNecessary(interpreterNecessary);
-        client.setVulnerableWhenAssertingRights(vulnerableWhenAssertingRights);
-        client.setMaritalStatus(maritalStatus);
-        client.setCurrentResidentStatus(currentResidentStatus);
-        client.setLabourMarketAccess(labourMarketAccess);
-        client.setLanguage(language);
-        client.setUnion(union);
-        client.setMembership(membership);
-        client.setNationality(nationality);
-        client.setSector(sector);
-        client.setOrganization(organization);
-        client.setPosition(position);
+    private void setClient(Client client, ClientForm clientForm) {
+        client.setEducation(clientForm.getEducation());
+        client.setKeyword(clientForm.getKeyword());
+        client.setHowHasThePersonHeardFromUs(clientForm.getHowHasThePersonHeardFromUs());
+        client.setInterpreterNecessary(clientForm.getInterpreterNecessary());
+        client.setVulnerableWhenAssertingRights(clientForm.getVulnerableWhenAssertingRights());
+        client.setMaritalStatus(clientForm.getMaritalStatus());
+        client.setCurrentResidentStatus(clientForm.getCurrentResidentStatus());
+        client.setLabourMarketAccess(clientForm.getLabourMarketAccess());
+        client.setLanguage(clientForm.getLanguage());
+        client.setUnion(clientForm.getUnion());
+        client.setMembership(clientForm.getMembership());
+        client.setNationality(clientForm.getNationality());
+        client.setSector(clientForm.getSector());
+        client.setOrganization(clientForm.getOrganization());
+        client.setPosition(clientForm.getPosition());
+        client.setAlert(clientForm.getAlert());
     }
 
 
     private ClientDto updateClient(Person person, Client client, Address address, ClientForm clientForm, UUID clientId) {
 
-        if (clientForm.getFirstName() != null) {
-            person.setFirstName(clientForm.getFirstName());
-        }
-        if (clientForm.getLastName() != null) {
-            person.setLastName(clientForm.getLastName());
-        }
-        if (clientForm.getEmail() != null) {
-            person.setEmail(clientForm.getEmail());
-        }
-        if (clientForm.getTelephone() != null) {
-            person.setTelephone(clientForm.getTelephone());
-        }
-        if (clientForm.getGender() != null) {
-            person.setGender(clientForm.getGender());
-        }
-        client.setFurtherContact(clientForm.getFurtherContact());
-        client.setComment(clientForm.getComment());
-        person.setUpdatedAt(LocalDateTime.now());
-
-        setClient(client, clientForm.getEducation(), clientForm.getKeyword(), clientForm.getHowHasThePersonHeardFromUs(), clientForm.getInterpreterNecessary(), clientForm.getVulnerableWhenAssertingRights(), clientForm.getMaritalStatus(), clientForm.getCurrentResidentStatus(), clientForm.getLabourMarketAccess(), clientForm.getLanguage(), clientForm.getUnion(), clientForm.getMembership(), clientForm.getNationality(), clientForm.getSector(), clientForm.getOrganization(), clientForm.getPosition());
-        client.setUpdatedAt(LocalDateTime.now());
-        client.setSocialInsuranceNumber(clientForm.getSocialInsuranceNumber());
-
-        if (clientForm.getStreet() != null) {
-            address.setStreet(clientForm.getStreet());
-        }
-        if (clientForm.getZipCode() != null) {
-            address.setZipCode(clientForm.getZipCode());
-        }
-        if (clientForm.getCity() != null) {
-            address.setCity(clientForm.getCity());
-        }
-        if (clientForm.getCountry() != null) {
-            address.setCountry(clientForm.getCountry());
-        }
+        updatePersonFromForm(person, clientForm);
+        updateClientFromForm(client, clientForm);
+        updateAddressFromForm(address, clientForm);
 
         person.setAddress(address);
         client.setPerson(person);
-        Client c = clientRepo.save(client);
-        CaseDto caseDto = caseService.updateCase(clientId,
-                                                 clientForm.getWorkingRelationship(),
-                                                 clientForm.getHumanTrafficking(),
-                                                 clientForm.getJobCenterBlock(),
-                                                 clientForm.getTargetGroup());
-        categoryService.sortOutDeselected(clientForm.getCounselingLanguageSelected(),
-                                          CategoryType.COUNSELING_LANGUAGE,
-                                          caseDto.getId());
-        categoryService.sortOutDeselected(clientForm.getJobMarketAccessSelected(),
-                                          CategoryType.JOB_MARKET_ACCESS,
-                                          caseDto.getId());
-        categoryService.sortOutDeselected(clientForm.getOriginOfAttentionSelected(),
-                                          CategoryType.ORIGIN_OF_ATTENTION,
-                                          caseDto.getId());
-        categoryService.sortOutDeselected(clientForm.getUndocumentedWorkSelected(),
-                                          CategoryType.UNDOCUMENTED_WORK,
-                                          caseDto.getId());
-        categoryService.sortOutDeselected(clientForm.getComplaintsSelected(),
-                                          CategoryType.COMPLAINT,
-                                          caseDto.getId());
-        categoryService.sortOutDeselected(clientForm.getIndustryUnionSelected(),
-                                          CategoryType.INDUSTRY_UNION,
-                                          caseDto.getId());
-        categoryService.sortOutDeselected(clientForm.getJobFunctionSelected(),
-                                          CategoryType.JOB_FUNCTION,
-                                          caseDto.getId());
-        categoryService.sortOutDeselected(clientForm.getSectorSelected(),
-                                          CategoryType.SECTOR,
-                                          caseDto.getId());
-        return entityToDtoMapper.convertClientToDto(c);
+        Client savedClient = clientRepo.save(client);
+
+        CaseDto caseDto = updateCaseFromForm(clientId, clientForm);
+        updateCategorySelections(clientForm, caseDto.getId());
+
+        return entityToDtoMapper.convertClientToDto(savedClient);
     }
 
     private List<AllClientDto> turnClientDtoListToAllClientDtoList(List<ClientDto> clientDtoList) {
@@ -330,6 +233,113 @@ public class ClientService {
         }
 
         return allClientDtoList;
+    }
+
+    private Address createAndSaveAddress(ClientForm clientForm) {
+        Address address = new Address();
+        address.setStreet(clientForm.getStreet());
+        address.setZipCode(clientForm.getZipCode());
+        address.setCity(clientForm.getCity());
+        address.setCountry(clientForm.getCountry());
+        return addressRepo.save(address);
+    }
+
+    private Client createAndSaveClient(ClientForm clientForm) {
+        Client client = new Client();
+        setClient(client, clientForm);
+        client.setCreatedAt(LocalDateTime.now());
+        client.setSocialInsuranceNumber(clientForm.getSocialInsuranceNumber());
+        client.setStatus(StatusService.STATUS_ACTIVE);
+        return clientRepo.saveAndFlush(client);
+    }
+
+    private Person createAndSavePerson(ClientForm clientForm, Address address, Client client) {
+        Person person = new Person();
+        person.setFirstName(clientForm.getFirstName());
+        person.setLastName(clientForm.getLastName());
+        person.setEmail(clientForm.getEmail());
+        person.setTelephone(clientForm.getTelephone());
+        person.setGender(clientForm.getGender());
+        person.setDateOfBirth(parseDate(clientForm.getDateOfBirth()));
+        person.setCreatedAt(LocalDateTime.now());
+        person.setAddress(address);
+        person.setClient(client);
+        return personRepo.save(person);
+    }
+
+    private LocalDate parseDate(String dateString) {
+        try {
+            return toLocalDateService.formatStringToLocalDate(dateString);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private void updatePersonFromForm(Person person, ClientForm clientForm) {
+        if (clientForm.getFirstName() != null) {
+            person.setFirstName(clientForm.getFirstName());
+        }
+        if (clientForm.getLastName() != null) {
+            person.setLastName(clientForm.getLastName());
+        }
+        if (clientForm.getEmail() != null) {
+            person.setEmail(clientForm.getEmail());
+        }
+        if (clientForm.getTelephone() != null) {
+            person.setTelephone(clientForm.getTelephone());
+        }
+        if (clientForm.getGender() != null) {
+            person.setGender(clientForm.getGender());
+        }
+        person.setUpdatedAt(LocalDateTime.now());
+    }
+
+    private void updateClientFromForm(Client client, ClientForm clientForm) {
+        client.setFurtherContact(clientForm.getFurtherContact());
+        client.setComment(clientForm.getComment());
+        client.setSocialInsuranceNumber(clientForm.getSocialInsuranceNumber());
+        client.setUpdatedAt(LocalDateTime.now());
+        setClient(client, clientForm);
+    }
+
+    private void updateAddressFromForm(Address address, ClientForm clientForm) {
+        if (clientForm.getStreet() != null) {
+            address.setStreet(clientForm.getStreet());
+        }
+        if (clientForm.getZipCode() != null) {
+            address.setZipCode(clientForm.getZipCode());
+        }
+        if (clientForm.getCity() != null) {
+            address.setCity(clientForm.getCity());
+        }
+        if (clientForm.getCountry() != null) {
+            address.setCountry(clientForm.getCountry());
+        }
+    }
+
+    private CaseDto updateCaseFromForm(UUID clientId, ClientForm clientForm) {
+        return caseService.updateCase(
+                clientId,
+                clientForm.getWorkingRelationship(),
+                clientForm.getHumanTrafficking(),
+                clientForm.getJobCenterBlock(),
+                clientForm.getTargetGroup()
+        );
+    }
+
+    private void updateCategorySelections(ClientForm clientForm, UUID caseId) {
+        updateCategorySelection(clientForm.getCounselingLanguageSelected(), CategoryType.COUNSELING_LANGUAGE, caseId);
+        updateCategorySelection(clientForm.getJobMarketAccessSelected(), CategoryType.JOB_MARKET_ACCESS, caseId);
+        updateCategorySelection(clientForm.getOriginOfAttentionSelected(), CategoryType.ORIGIN_OF_ATTENTION, caseId);
+        updateCategorySelection(clientForm.getUndocumentedWorkSelected(), CategoryType.UNDOCUMENTED_WORK, caseId);
+        updateCategorySelection(clientForm.getComplaintsSelected(), CategoryType.COMPLAINT, caseId);
+        updateCategorySelection(clientForm.getIndustryUnionSelected(), CategoryType.INDUSTRY_UNION, caseId);
+        updateCategorySelection(clientForm.getJobFunctionSelected(), CategoryType.JOB_FUNCTION, caseId);
+        updateCategorySelection(clientForm.getSectorSelected(), CategoryType.SECTOR, caseId);
+    }
+
+    private void updateCategorySelection(List<JoinCategoryForm> selectedIds, String categoryType, UUID caseId) {
+        categoryService.sortOutDeselected(selectedIds, categoryType, caseId);
     }
 
 }

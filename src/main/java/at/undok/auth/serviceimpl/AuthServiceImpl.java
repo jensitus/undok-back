@@ -78,20 +78,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDto getUserDtoWithSecondFactorJwt(LoginDto loginDto) {
-        boolean byLockedTrue = userRepo.checkIfLockedByUsername(loginDto.getUsername());
-        if (byLockedTrue) {
-            throw new UserLockedException("you're locked");
-        }
-        removeRole(loginDto.getUsername(), RoleName.ROLE_USER);
-        addRole(loginDto.getUsername(), RoleName.ROLE_SECOND_FACTOR);
-        Authentication authentication = undokAuthenticationManager.authenticate(loginDto);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtProvider.generateJwt(
-                new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials()),
-                secondFactorJwtExpiration
-        );
+        validateUserNotLocked(loginDto.getUsername());
+        switchToSecondFactorRole(loginDto.getUsername());
+
+        Authentication authentication = authenticateUser(loginDto);
+        String jwt = generateSecondFactorJwt(authentication);
         UserDto userDto = userDtoWithJwt(jwt, loginDto.getUsername());
+
         generateAndPersist2FactorToken(userDto);
+
         return userDto;
     }
 
@@ -241,6 +236,33 @@ public class AuthServiceImpl implements AuthService {
     private void deleteOldTwoFactorTokens(UUID userId) {
         List<TwoFactor> twoFactorList = twoFactorRepo.findByUserId(userId);
         twoFactorRepo.deleteAll(twoFactorList);
+    }
+
+    private void validateUserNotLocked(String username) {
+        boolean isLocked = userRepo.checkIfLockedByUsername(username);
+        if (isLocked) {
+            throw new UserLockedException("Your account has been locked. Please contact support.");
+        }
+    }
+
+    private void switchToSecondFactorRole(String username) {
+        removeRole(username, RoleName.ROLE_USER);
+        addRole(username, RoleName.ROLE_SECOND_FACTOR);
+    }
+
+    private Authentication authenticateUser(LoginDto loginDto) {
+        Authentication authentication = undokAuthenticationManager.authenticate(loginDto);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return authentication;
+    }
+
+    private String generateSecondFactorJwt(Authentication authentication) {
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(
+                        authentication.getPrincipal(),
+                        authentication.getCredentials()
+                );
+        return jwtProvider.generateJwt(authToken, secondFactorJwtExpiration);
     }
 
 }

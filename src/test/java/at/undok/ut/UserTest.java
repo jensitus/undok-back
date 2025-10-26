@@ -1,29 +1,25 @@
 package at.undok.ut;
 
+import at.undok.auth.exception.UserLockedException;
+import at.undok.auth.model.dto.LoginDto;
+import at.undok.auth.model.dto.UserDto;
+import at.undok.auth.model.entity.User;
+import at.undok.auth.repository.UserRepo;
 import at.undok.auth.service.AuthService;
 import at.undok.common.encryption.AttributeEncryptor;
 import at.undok.common.util.ToLocalDateService;
-import at.undok.common.util.UUIDConverter;
 import at.undok.it.IntegrationTestBase;
 import at.undok.undok.client.model.dto.AllClientDto;
-import at.undok.undok.client.model.dto.ClientDto;
-import at.undok.undok.client.model.dto.CounselingDto;
-import at.undok.undok.client.model.entity.Address;
 import at.undok.undok.client.model.entity.Client;
-import at.undok.undok.client.model.entity.Employer;
 import at.undok.undok.client.model.entity.Person;
 import at.undok.undok.client.model.enumeration.MaritalStatus;
-import at.undok.undok.client.model.form.ClientForm;
-import at.undok.undok.client.repository.AddressRepo;
-import at.undok.undok.client.repository.ClientRepo;
-import at.undok.undok.client.repository.EmployerRepo;
-import at.undok.undok.client.repository.PersonRepo;
 import at.undok.undok.client.service.ClientService;
-import at.undok.undok.client.service.CounselingService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.Base64Codec;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,11 +33,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-// @TestPropertySource(properties = {"undok.secretKey=abcTestKey"})
-// @Disabled
-//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Slf4j
 public class UserTest extends IntegrationTestBase {
 
@@ -57,25 +50,8 @@ public class UserTest extends IntegrationTestBase {
     private AuthService authService;
 
     @Autowired
-    private AddressRepo addressRepo;
-
-    @Autowired
-    private ClientRepo clientRepo;
-
-    @Autowired
     private ClientService clientService;
 
-    @Autowired
-    private PersonRepo personRepo;
-
-    @Autowired
-    private EmployerRepo employerRepo;
-
-    @Autowired
-    private UUIDConverter uuidConverter;
-
-    @Autowired
-    private CounselingService counselingService;
 
     @Autowired
     private ToLocalDateService toLocalDateService;
@@ -88,21 +64,27 @@ public class UserTest extends IntegrationTestBase {
 
     private static final String HOST = "http://localhost:";
 
+    @Autowired
+    private UserRepo userRepo;
+
+    @Autowired
+    private TestUserBuilder testUserBuilder;
+
+    @BeforeEach
+    void setUp() {
+        testUserBuilder.createTestUser("emil", "emil@robber.uk", "Pfefferpistole");
+    }
+
+    @AfterEach
+    void tearDown() {
+        userRepo.deleteAll();
+        // Don't delete roles as they might be needed by other tests
+    }
+
     @Test
     public void testMist() {
         String forObject = this.testRestTemplate.getForObject(HOST + port + "/service/auth/mist", String.class);
         assertEquals("Hi du verdammter Mistkerl", forObject);
-    }
-
-    @Test
-    public void getAllPersons() {
-        Person person = new Person();
-        person.setEmail("emil@kobold.at");
-        person.setFirstName("Emil");
-        person.setLastName("Kobold");
-        personRepo.save(person);
-        List<Person> people = personRepo.findAll();
-        log.info(people.toString());
     }
 
     private String generateJwtToken() {
@@ -127,46 +109,10 @@ public class UserTest extends IntegrationTestBase {
     }
 
     @Test
-    public void createConfUrlTest() {
-        // String confirmationUrl = authService.createConfirmationUrl("birgitt@service-b.org", UUID.randomUUID().toString());
-        // log.info(confirmationUrl);
-    }
-
-    @Test
     public void testAttributeEncryptor() {
         String encodedEmail = attributeEncryptor.encodeWithUrlEncoder("birgitt@service-b.org");
-
         String decodedEmail = attributeEncryptor.decodeUrlEncoded(encodedEmail);
-
         assertThat(decodedEmail).isEqualTo("birgitt@service-b.org");
-    }
-
-    @Test
-    public void testAddressRepo() {
-        Address address = new Address();
-        address.setCity("Vienna");
-        address.setCountry("Austria");
-        address.setZipCode("1200");
-        address.setStreet("Klosterneuburger");
-        Address address1 = addressRepo.save(address);
-        assertThat(address1).isEqualTo(address);
-    }
-
-    @Test
-    public void testClientRepo() {
-
-        ClientForm clientForm = new ClientForm();
-        clientForm.setFirstName("Emil");
-        clientForm.setLastName("Donner");
-        clientForm.setEducation("yes");
-        clientForm.setKeyword("Kette");
-        clientForm.setVulnerableWhenAssertingRights(Boolean.FALSE);
-        clientForm.setInterpreterNecessary(Boolean.TRUE);
-        clientForm.setHowHasThePersonHeardFromUs("Freunde");
-
-        ClientDto expected = clientService.createClient(clientForm);
-
-        assertThat(expected.getEducation()).isEqualTo(clientForm.getEducation());
     }
 
     @Test
@@ -225,24 +171,6 @@ public class UserTest extends IntegrationTestBase {
     }
 
     @Test
-    public void getPerson() {
-        Person p = personRepo.findByFirstName("Emil");
-        // Person p = personRepo.getOne(uuidConverter.convertToEntityAttribute("90242ff4-1547-4d7a-880d-8a4731a2c9e0"));
-
-//        assertThat(p.getId()).isEqualTo(UUID.fromString("90242ff4-1547-4d7a-880d-8a4731a2c9e0"));
-    }
-
-    @Test
-    public void getClient() {
-        // Client c = clientRepo.getOne(UUID.fromString("15c59593-20bf-4cc4-afd3-1d7878ee0770"));
-        List<Client> c = clientRepo.findByKeyword("Kette");
-        for (Client client : c) {
-            assertThat(client.getKeyword()).isEqualTo("Kette");
-        }
-
-    }
-
-    @Test
     public void testToEnum() {
         Client client = new Client();
         client.setMaritalStatus("Verheiratet");
@@ -255,24 +183,6 @@ public class UserTest extends IntegrationTestBase {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         LocalDateTime localDateTime = LocalDateTime.parse("16-07-2021 13:30:11", dateTimeFormatter);
 //        assertThat("yes").isEqualTo("no");
-    }
-
-    @Test
-    public void testGetFutureCounselings() {
-        List<CounselingDto> futureCounselings = counselingService.getFutureCounselings();
-//        assertThat("yes").isEqualTo("no");
-    }
-
-    @Test
-    public void testGetPastCounselings() {
-        List<CounselingDto> pastCounselings = counselingService.getPastCounselings();
-//        assertThat("yes").isEqualTo("no");
-    }
-
-    @Test
-    public void testGetEmployers() {
-        List<Employer> employerList = employerRepo.findAll();
-        log.info(employerList.toString());
     }
 
     @Test
@@ -293,4 +203,42 @@ public class UserTest extends IntegrationTestBase {
         System.out.println(generatedString);
     }
 
+    @Test
+    public void testAuthServiceGetUserDtoWithSecondFactorJwt() {
+        LoginDto loginDto = new LoginDto();
+        loginDto.setEmail("emil@robber.uk");
+        loginDto.setPassword("Pfefferpistole");
+        loginDto.setUsername("emil");
+        UserDto userDto = authService.getUserDtoWithSecondFactorJwt(loginDto);
+        assertNotNull(userDto);
+        assertEquals("emil", userDto.getUsername());
+    }
+
+    @Test
+    void testAdminLogin() {
+        User admin = testUserBuilder.createAdminUser();
+
+        LoginDto loginDto = new LoginDto();
+        loginDto.setUsername("test_admin");
+        loginDto.setPassword("admin123");
+
+        UserDto result = authService.getUserDtoWithSecondFactorJwt(loginDto);
+
+        assertTrue(result.isAdmin());
+    }
+
+    @Test
+    void testLockedUserCannotLogin() {
+        User lockedUser = testUserBuilder.createLockedUser();
+
+        LoginDto loginDto = new LoginDto();
+        loginDto.setUsername("locked");
+        loginDto.setPassword("locked123");
+
+        assertThrows(UserLockedException.class, () ->
+                authService.getUserDtoWithSecondFactorJwt(loginDto)
+        );
+    }
+
 }
+

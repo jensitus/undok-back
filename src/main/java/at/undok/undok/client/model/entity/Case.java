@@ -23,6 +23,10 @@ public class Case extends AbstractCrud {
     @OneToMany(mappedBy = "counselingCase", fetch = FetchType.LAZY)
     private List<Counseling> counselings;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "caseEntity", fetch = FetchType.LAZY)
+    private List<Task> tasks;
+
     @Column(name = "status")
     private String status;
 

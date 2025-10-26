@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,11 +38,9 @@ public class EntityToDtoMapper {
         PersonDto personDto = mapPersonToDto(client.getPerson());
         clientDto.setPerson(personDto);
         if (client.getCounselings() != null) {
-            List<CounselingDto> counselingDtos = new ArrayList<>();
-            for (Counseling counseling : client.getCounselings()) {
-                CounselingDto counselingDto = convertCounselingToDto(counseling);
-                counselingDtos.add(counselingDto);
-            }
+            List<CounselingDto> counselingDtos = client.getCounselings().stream()
+                                                       .map(this::convertCounselingToDto)
+                                                       .toList();
             clientDto.setCounselings(counselingDtos);
         }
         return clientDto;
@@ -49,8 +48,6 @@ public class EntityToDtoMapper {
 
     public CounselingDto convertCounselingToDto(Counseling counseling) {
         CounselingDto counselingDto = counselingMapper.toDto(counseling);
-//        CaseDto caseDto = caseMapper.toDto(counseling.getCounselingCase());
-//        counselingDto.setCounselingCase(caseDto);
         return counselingDto;
     }
 
@@ -59,41 +56,15 @@ public class EntityToDtoMapper {
     }
 
     public List<ClientDto> convertClientListToDtoList(List<Client> clients) {
-        List<ClientDto> clientDtos = new ArrayList<>();
-        for (Client c : clients) {
-            Person p = c.getPerson();
-            ClientDto clientDto = convertClientToDto(c);
-            PersonDto personDto = mapPersonToDto(p);
-            clientDto.setPerson(personDto);
-            clientDtos.add(clientDto);
-        }
-        return clientDtos;
+        return clients.stream()
+                      .map(this::convertClientToDto)
+                      .toList();
     }
 
     public List<AllCounselingDto> convertCounselingListToDtoForTableList(List<Counseling> counselings) {
-        List<AllCounselingDto> dtoList = new ArrayList<>();
-        for (Counseling c : counselings) {
-            AllCounselingDto allCounselingDto = modelMapper.map(c, AllCounselingDto.class);
-            Client client = c.getClient();
-            allCounselingDto.setClientId(client.getId());
-            allCounselingDto.setKeyword(client.getKeyword());
-            if (client.getPerson().getFirstName() != null && client.getPerson().getLastName() != null) {
-                allCounselingDto.setClientFullName(client.getPerson().getFirstName()
-                        + " " + client.getPerson().getLastName());
-            }
-            List<CategoryDto> activityCategories = categoryService.getCategoryListByTypeAndEntity(CategoryType.LEGAL, c.getId());
-            StringBuilder activityCategoriesSeparatedByComma = new StringBuilder();
-            activityCategories.forEach(activityCategoryDto -> {
-                activityCategoriesSeparatedByComma.append(activityCategoryDto.getName()).append(",");
-            });
-            String activityCommaCategories = activityCategoriesSeparatedByComma.toString();
-            if (!activityCommaCategories.equals("")) {
-                activityCommaCategories = activityCommaCategories.substring(0, activityCommaCategories.length() - 1);
-            }
-            allCounselingDto.setActivityCategories(activityCommaCategories);
-            dtoList.add(allCounselingDto);
-        }
-        return dtoList;
+        return counselings.stream()
+                          .map(this::convertCounselingToAllCounselingDto)
+                          .toList();
     }
 
     public List<CounselingDto> convertCounselingListToDtoList(List<Counseling> counselings) {
@@ -103,6 +74,35 @@ public class EntityToDtoMapper {
             dtoList.add(counselingDto);
         }
         return dtoList;
+    }
+
+    private AllCounselingDto convertCounselingToAllCounselingDto(Counseling counseling) {
+        AllCounselingDto dto = modelMapper.map(counseling, AllCounselingDto.class);
+
+        Client client = counseling.getClient();
+        dto.setClientId(client.getId());
+        dto.setKeyword(client.getKeyword());
+        dto.setClientFullName(buildClientFullName(client));
+        dto.setActivityCategories(buildActivityCategoriesString(counseling.getId()));
+
+        return dto;
+    }
+
+    private String buildClientFullName(Client client) {
+        Person person = client.getPerson();
+        if (person.getFirstName() != null && person.getLastName() != null) {
+            return person.getFirstName() + " " + person.getLastName();
+        }
+        return null;
+    }
+
+    private String buildActivityCategoriesString(UUID counselingId) {
+        List<CategoryDto> activityCategories =
+                categoryService.getCategoryListByTypeAndEntity(CategoryType.LEGAL, counselingId);
+
+        return activityCategories.stream()
+                                 .map(CategoryDto::getName)
+                                 .collect(java.util.stream.Collectors.joining(","));
     }
 
     private ClientDto mapClientToDto(Client client) {
