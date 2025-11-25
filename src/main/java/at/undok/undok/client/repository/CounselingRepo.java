@@ -47,4 +47,7 @@ public interface CounselingRepo extends JpaRepository<Counseling, UUID> {
 
     List<Counseling> findByClientIdOrderByCounselingDateDesc(UUID clientId);
     List<Counseling> findByClientIdOrderByCounselingDateAsc(UUID clientId);
+
+    // Count of counselings between a given date range [from, to)
+    long countByCounselingDateGreaterThanEqualAndCounselingDateLessThan(LocalDateTime from, LocalDateTime to);
 }

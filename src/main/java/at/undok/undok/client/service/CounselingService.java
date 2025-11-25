@@ -5,10 +5,7 @@ import at.undok.undok.client.exception.CounselingDateException;
 import at.undok.undok.client.exception.TooMuchCasesException;
 import at.undok.undok.client.mapper.inter.CaseMapper;
 import at.undok.undok.client.mapper.inter.CounselingMapper;
-import at.undok.undok.client.model.dto.AllCounselingDto;
-import at.undok.undok.client.model.dto.CaseDto;
-import at.undok.undok.client.model.dto.CounselingDto;
-import at.undok.undok.client.model.dto.CounselingForCsvResult;
+import at.undok.undok.client.model.dto.*;
 import at.undok.undok.client.model.entity.Case;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.entity.Counseling;
@@ -21,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -95,6 +93,27 @@ public class CounselingService {
 
     public Long numberOfCounselings() {
         return counselingRepo.countByStatus(StatusService.STATUS_ACTIVE);
+    }
+
+    public Long numberOfCounselingsByDateRange(LocalDateTime from, LocalDateTime to) {
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("from and to must be provided");
+        }
+        return counselingRepo.countByCounselingDateGreaterThanEqualAndCounselingDateLessThan(from, to);
+    }
+
+    public Long numberOfClientsWithFirstCounselingInDateRange(LocalDateTime from, LocalDateTime to) {
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("from and to must be provided");
+        }
+        return clientRepo.countClientsWithFirstCounselingInRange(from, to);
+    }
+
+    public List<LanguageCountProjection> countByLanguageInDateRange(LocalDateTime from, LocalDateTime to) {
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("from and to must be provided");
+        }
+        return clientRepo.countByLanguageInDateRange(from, to);
     }
 
     public List<CounselingDto> getFutureCounselings() {
