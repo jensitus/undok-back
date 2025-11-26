@@ -18,13 +18,13 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -109,11 +109,14 @@ public class CounselingService {
         return clientRepo.countClientsWithFirstCounselingInRange(from, to);
     }
 
-    public List<LanguageCountProjection> countByLanguageInDateRange(LocalDateTime from, LocalDateTime to) {
-        if (from == null || to == null) {
-            throw new IllegalArgumentException("from and to must be provided");
-        }
-        return clientRepo.countByLanguageInDateRange(from, to);
+    public List<LanguageCount> countByLanguageInDateRange(LocalDateTime from, LocalDateTime to) {
+        validate(from, to);
+        return clientRepo.countByLanguageInDateRange(from, to).stream().map(LanguageCount::from).collect(Collectors.toList());
+    }
+
+    public List<NationalityCount> getNationalityCountsByDateRange(LocalDateTime fromDate, LocalDateTime toDate) {
+        validate(fromDate, toDate);
+        return clientRepo.countByNationalityInDateRange(fromDate, toDate).stream().map(NationalityCount::from).collect(Collectors.toList());
     }
 
     public List<CounselingDto> getFutureCounselings() {
@@ -215,6 +218,15 @@ public class CounselingService {
             counselings = counselingRepo.findByClientIdOrderByCounselingDateAsc(clientId);
         }
         return entityToDtoMapper.convertCounselingListToDtoList(counselings);
+    }
+
+    private void validate(LocalDateTime fromDate, LocalDateTime toDate) {
+        if (fromDate == null || toDate == null) {
+            throw new IllegalArgumentException("from and to must be provided");
+        }
+        if (fromDate.isAfter(toDate) || fromDate.isEqual(toDate)) {
+            throw new IllegalArgumentException("'from' date must be before 'to' date");
+        }
     }
 
 }

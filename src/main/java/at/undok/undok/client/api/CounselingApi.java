@@ -3,15 +3,13 @@ package at.undok.undok.client.api;
 import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.dto.LanguageCount;
-import at.undok.undok.client.model.dto.LanguageCountProjection;
+import at.undok.undok.client.model.dto.NationalityCount;
 import org.springframework.core.io.Resource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -23,21 +21,7 @@ public interface CounselingApi {
     @GetMapping("/count")
     Long getNumberOfCounselings();
 
-    @GetMapping("/count-by-date-range")
-    Long getNumberOfCounselingsByDateRange(
-            @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-            @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to);
 
-    // Count clients whose very first counseling falls within [from, to)
-    @GetMapping("/count-first-by-date-range")
-    Long getNumberOfClientsWithFirstCounselingInDateRange(
-            @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-            @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to);
-
-    @GetMapping("/count-languages-by-date-range")
-    List<LanguageCountProjection> countByLanguageInDateRange(
-            @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-            @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to);
 
     @GetMapping("/past/")
     List<CounselingDto> getOldCounselings();

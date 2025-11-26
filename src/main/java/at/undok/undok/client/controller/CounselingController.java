@@ -4,7 +4,7 @@ import at.undok.undok.client.api.CounselingApi;
 import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.dto.LanguageCount;
-import at.undok.undok.client.model.dto.LanguageCountProjection;
+import at.undok.undok.client.model.dto.NationalityCount;
 import at.undok.undok.client.service.CounselingService;
 import at.undok.undok.client.service.CsvService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -30,21 +29,6 @@ public class CounselingController implements CounselingApi {
     @Override
     public Long getNumberOfCounselings() {
         return counselingService.numberOfCounselings();
-    }
-
-    @Override
-    public Long getNumberOfCounselingsByDateRange(LocalDateTime from, LocalDateTime to) {
-        return counselingService.numberOfCounselingsByDateRange(from, to);
-    }
-
-    @Override
-    public Long getNumberOfClientsWithFirstCounselingInDateRange(LocalDateTime from, LocalDateTime to) {
-        return counselingService.numberOfClientsWithFirstCounselingInDateRange(from, to);
-    }
-
-    @Override
-    public List<LanguageCountProjection> countByLanguageInDateRange(LocalDateTime from, LocalDateTime to) {
-        return counselingService.countByLanguageInDateRange(from, to);
     }
 
     @Override
