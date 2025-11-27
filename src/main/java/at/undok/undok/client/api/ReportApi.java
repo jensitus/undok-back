@@ -1,7 +1,6 @@
 package at.undok.undok.client.api;
 
-import at.undok.undok.client.model.dto.LanguageCount;
-import at.undok.undok.client.model.dto.NationalityCount;
+import at.undok.undok.client.model.dto.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,6 +33,21 @@ public interface ReportApi {
 
     @GetMapping("/nationality-counts")
     ResponseEntity<List<NationalityCount>> getNationalityCountsByDateRange(
+            @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to);
+
+    @GetMapping("/gender-counts")
+    ResponseEntity<List<GenderCount>> getGenderCountsByDateRange(
+            @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to);
+
+    @GetMapping("/sector-counts")
+    ResponseEntity<List<SectorCount>> getSectorCountsByDateRange(
+            @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to);
+
+    @GetMapping("/activity-counts")
+    ResponseEntity<List<CounselingActivityCount>> getCounselingActivityCount(
             @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
             @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to);
 

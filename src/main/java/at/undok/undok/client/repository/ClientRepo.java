@@ -23,7 +23,6 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
     long countByStatus(String status);
 
 
-
     @Query(value = """
             select count(*) from (
                 select cl.*
@@ -57,6 +56,39 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
             "AND co.counselingDate < :toDate " +
             "GROUP BY cl.nationality")
     List<KeyCountProjection> countByNationalityInDateRange(
+            @Param("fromDate") LocalDateTime fromDate,
+            @Param("toDate") LocalDateTime toDate
+    );
+
+    @Query("SELECT COALESCE(p.gender, 'unbekannt') as key, COUNT(DISTINCT p.id) as count " +
+            "FROM Client cl " +
+            "JOIN cl.counselings co " +
+            "JOIN cl.person p " +
+            "WHERE co.counselingDate >= :fromDate " +
+            "AND co.counselingDate < :toDate " +
+            "GROUP BY p.gender")
+    List<KeyCountProjection> countByGenderInDateRange(@Param("fromDate") LocalDateTime fromDate,
+                                                      @Param("toDate") LocalDateTime toDate);
+
+    @Query("select COALESCE(cl.sector, 'unbekannt') as key, count(distinct cl.id) as count " +
+            "from Client cl JOIN cl.counselings co" +
+            "  where co.counselingDate >= :fromDate" +
+            "  and co.counselingDate < :toDate" +
+            " group by cl.sector")
+    List<KeyCountProjection> countBySectorInDateRange(@Param("fromDate") LocalDateTime fromDate,
+                                                      @Param("toDate") LocalDateTime toDate);
+
+    @Query(value = "SELECT ca.name as key, COUNT(*) as count " +
+            "FROM categories ca " +
+            "JOIN join_category jc ON ca.id = jc.category_id " +
+            "JOIN counselings co ON co.id = jc.entity_id " +
+            "WHERE ca.type = 'ACTIVITY' " +
+            "AND jc.entity_type = 'COUNSELING' " +
+            "AND co.counseling_date >= :fromDate " +
+            "AND co.counseling_date < :toDate " +
+            "GROUP BY ca.name",
+            nativeQuery = true)
+    List<KeyCountProjection> countByActivityInDateRange(
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate
     );

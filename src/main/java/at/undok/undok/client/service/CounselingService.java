@@ -5,7 +5,10 @@ import at.undok.undok.client.exception.CounselingDateException;
 import at.undok.undok.client.exception.TooMuchCasesException;
 import at.undok.undok.client.mapper.inter.CaseMapper;
 import at.undok.undok.client.mapper.inter.CounselingMapper;
-import at.undok.undok.client.model.dto.*;
+import at.undok.undok.client.model.dto.AllCounselingDto;
+import at.undok.undok.client.model.dto.CaseDto;
+import at.undok.undok.client.model.dto.CounselingDto;
+import at.undok.undok.client.model.dto.CounselingForCsvResult;
 import at.undok.undok.client.model.entity.Case;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.entity.Counseling;
@@ -24,7 +27,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -93,30 +95,6 @@ public class CounselingService {
 
     public Long numberOfCounselings() {
         return counselingRepo.countByStatus(StatusService.STATUS_ACTIVE);
-    }
-
-    public Long numberOfCounselingsByDateRange(LocalDateTime from, LocalDateTime to) {
-        if (from == null || to == null) {
-            throw new IllegalArgumentException("from and to must be provided");
-        }
-        return counselingRepo.countByCounselingDateGreaterThanEqualAndCounselingDateLessThan(from, to);
-    }
-
-    public Long numberOfClientsWithFirstCounselingInDateRange(LocalDateTime from, LocalDateTime to) {
-        if (from == null || to == null) {
-            throw new IllegalArgumentException("from and to must be provided");
-        }
-        return clientRepo.countClientsWithFirstCounselingInRange(from, to);
-    }
-
-    public List<LanguageCount> countByLanguageInDateRange(LocalDateTime from, LocalDateTime to) {
-        validate(from, to);
-        return clientRepo.countByLanguageInDateRange(from, to).stream().map(LanguageCount::from).collect(Collectors.toList());
-    }
-
-    public List<NationalityCount> getNationalityCountsByDateRange(LocalDateTime fromDate, LocalDateTime toDate) {
-        validate(fromDate, toDate);
-        return clientRepo.countByNationalityInDateRange(fromDate, toDate).stream().map(NationalityCount::from).collect(Collectors.toList());
     }
 
     public List<CounselingDto> getFutureCounselings() {
@@ -218,15 +196,6 @@ public class CounselingService {
             counselings = counselingRepo.findByClientIdOrderByCounselingDateAsc(clientId);
         }
         return entityToDtoMapper.convertCounselingListToDtoList(counselings);
-    }
-
-    private void validate(LocalDateTime fromDate, LocalDateTime toDate) {
-        if (fromDate == null || toDate == null) {
-            throw new IllegalArgumentException("from and to must be provided");
-        }
-        if (fromDate.isAfter(toDate) || fromDate.isEqual(toDate)) {
-            throw new IllegalArgumentException("'from' date must be before 'to' date");
-        }
     }
 
 }
