@@ -1,5 +1,10 @@
 package at.undok.undok.client.model.dto;
 
+import at.undok.undok.client.mapper.inter.CaseMapper;
+import at.undok.undok.client.model.entity.Case;
+import at.undok.undok.client.model.entity.Client;
+import at.undok.undok.client.model.entity.Counseling;
+import at.undok.undok.client.model.entity.Person;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -53,4 +58,32 @@ public class CounselingDto {
         this.keyword = keyword;
         this.requiredTime = requiredTime;
     }
+
+    public static CounselingDto from(Counseling counseling) {
+        CounselingDto dto = new CounselingDto();
+        dto.setId(counseling.getId());
+        dto.setCounselingStatus(counseling.getCounselingStatus());
+        dto.setEntryDate(counseling.getEntryDate());
+        dto.setConcern(counseling.getConcern());
+        dto.setActivity(counseling.getActivity());
+        dto.setRegisteredBy(counseling.getRegisteredBy());
+        dto.setCounselingDate(counseling.getCounselingDate().toString());
+        dto.setCreatedAt(counseling.getCreatedAt());
+        dto.setComment(counseling.getComment());
+        dto.setRequiredTime(counseling.getRequiredTime());
+        dto.setKeyword(counseling.getClient().getKeyword());
+
+        // Map client info if available
+        if (counseling.getClient() != null) {
+            Client client = counseling.getClient();
+            Person person = client.getPerson();
+            String firstName = person != null ? person.getFirstName() : null;
+            String lastName = person != null ? person.getLastName() : null;
+            dto.setClientId(counseling.getClient().getId());
+            dto.setClientFullName(firstName + " " + lastName);
+        }
+
+        return dto;
+    }
+
 }

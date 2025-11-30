@@ -19,6 +19,9 @@ import at.undok.undok.client.repository.CounselingRepo;
 import at.undok.undok.client.util.StatusService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -90,7 +93,6 @@ public class CounselingService {
             return null;
         }
     }
-
 
 
     public Long numberOfCounselings() {
@@ -196,6 +198,16 @@ public class CounselingService {
             counselings = counselingRepo.findByClientIdOrderByCounselingDateAsc(clientId);
         }
         return entityToDtoMapper.convertCounselingListToDtoList(counselings);
+    }
+
+    public Page<CounselingDto> search(String searchTerm, int page, int size) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return Page.empty();
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        return counselingRepo.fullTextSearch(searchTerm.trim(), pageable)
+                             .map(CounselingDto::from);
     }
 
 }

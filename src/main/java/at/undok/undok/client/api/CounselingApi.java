@@ -5,6 +5,7 @@ import at.undok.undok.client.model.dto.CounselingDto;
 import at.undok.undok.client.model.dto.LanguageCount;
 import at.undok.undok.client.model.dto.NationalityCount;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,7 +21,6 @@ public interface CounselingApi {
 
     @GetMapping("/count")
     Long getNumberOfCounselings();
-
 
 
     @GetMapping("/past/")
@@ -49,5 +49,10 @@ public interface CounselingApi {
 
     @GetMapping("by-client/{client-id}/order/{order}")
     ResponseEntity<List<CounselingDto>> getCounselingByClientId(@PathVariable("client-id") UUID clientId, @PathVariable("order") String order);
+
+    @GetMapping("/search")
+    ResponseEntity<Page<CounselingDto>> search(@RequestParam("q") String query,
+                                               @RequestParam(defaultValue = "0") int page,
+                                               @RequestParam(defaultValue = "20") int size);
 
 }
