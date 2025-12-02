@@ -53,6 +53,8 @@ public interface CounselingApi {
     @GetMapping("/search")
     ResponseEntity<Page<CounselingDto>> search(@RequestParam("q") String query,
                                                @RequestParam(defaultValue = "0") int page,
-                                               @RequestParam(defaultValue = "20") int size);
+                                               @RequestParam(defaultValue = "20") int size,
+                                               @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+                                               @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to);
 
 }

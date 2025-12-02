@@ -80,7 +80,7 @@ class CounselingFullTextSearchIntegrationTest extends IntegrationTestBase {
     @Test
     void shouldFindCounselingsBySearchTerm() {
         // When
-        Page<CounselingDto> results = searchService.search("Arbeitserlaubnis", 0, 10);
+        Page<CounselingDto> results = searchService.search("Arbeitserlaubnis", 0, 10, null, null);
 
         // Then
         assertThat(results.getContent()).hasSize(1);
@@ -91,7 +91,7 @@ class CounselingFullTextSearchIntegrationTest extends IntegrationTestBase {
     @Test
     void shouldFindCounselingsWithStemming() {
         // When - search for "arbeit" should find "Arbeitserlaubnis"
-        Page<CounselingDto> results = searchService.search("arbeit", 0, 10);
+        Page<CounselingDto> results = searchService.search("arbeit", 0, 10, null, null);
 
         // Then - German stemming should match
         assertThat(results.getContent()).hasSizeGreaterThanOrEqualTo(0);
@@ -100,7 +100,7 @@ class CounselingFullTextSearchIntegrationTest extends IntegrationTestBase {
     @Test
     void shouldFindCounselingsByActivityField() {
         // When
-        Page<CounselingDto> results = searchService.search("Beratung", 0, 10);
+        Page<CounselingDto> results = searchService.search("Beratung", 0, 10, null, null);
 
         // Then
         assertThat(results.getContent()).isNotEmpty();
@@ -113,7 +113,7 @@ class CounselingFullTextSearchIntegrationTest extends IntegrationTestBase {
         // Given - "Aufenthaltstitel" appears in both concern and activity
 
         // When
-        Page<CounselingDto> results = searchService.search("Aufenthaltstitel", 0, 10);
+        Page<CounselingDto> results = searchService.search("Aufenthaltstitel", 0, 10, null, null);
 
         // Then - the one with "Aufenthaltstitel" in concern should rank first
         assertThat(results.getContent()).isNotEmpty();
@@ -124,7 +124,7 @@ class CounselingFullTextSearchIntegrationTest extends IntegrationTestBase {
     @Test
     void shouldReturnEmptyForNonMatchingSearch() {
         // When
-        Page<CounselingDto> results = searchService.search("xyz123notfound", 0, 10);
+        Page<CounselingDto> results = searchService.search("xyz123notfound", 0, 10, null, null);
 
         // Then
         assertThat(results.getContent()).isEmpty();
@@ -133,7 +133,7 @@ class CounselingFullTextSearchIntegrationTest extends IntegrationTestBase {
     @Test
     void shouldHandleEmptySearchTerm() {
         // When
-        Page<CounselingDto> results = searchService.search("", 0, 10);
+        Page<CounselingDto> results = searchService.search("", 0, 10, null, null);
 
         // Then
         assertThat(results.getContent()).isEmpty();
@@ -142,7 +142,7 @@ class CounselingFullTextSearchIntegrationTest extends IntegrationTestBase {
     @Test
     void shouldHandleNullSearchTerm() {
         // When
-        Page<CounselingDto> results = searchService.search(null, 0, 10);
+        Page<CounselingDto> results = searchService.search(null, 0, 10, null, null);
 
         // Then
         assertThat(results.getContent()).isEmpty();
@@ -151,7 +151,7 @@ class CounselingFullTextSearchIntegrationTest extends IntegrationTestBase {
     @Test
     void shouldHandleMultipleWords() {
         // When
-        Page<CounselingDto> results = searchService.search("Arbeitserlaubnis Beratung", 0, 10);
+        Page<CounselingDto> results = searchService.search("Arbeitserlaubnis Beratung", 0, 10, null, null);
 
         // Then - should find counselings containing both words
         assertThat(results.getContent()).isNotEmpty();
@@ -173,8 +173,8 @@ class CounselingFullTextSearchIntegrationTest extends IntegrationTestBase {
         counselingRepository.flush();
 
         // When - get first page
-        Page<CounselingDto> page1 = searchService.search("Beratung", 0, 10);
-        Page<CounselingDto> page2 = searchService.search("Beratung", 1, 10);
+        Page<CounselingDto> page1 = searchService.search("Beratung", 0, 10, null, null);
+        Page<CounselingDto> page2 = searchService.search("Beratung", 1, 10, null, null);
 
         // Then
         assertThat(page1.getContent()).hasSize(10);

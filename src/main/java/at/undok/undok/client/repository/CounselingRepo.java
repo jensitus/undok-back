@@ -32,7 +32,6 @@ public interface CounselingRepo extends JpaRepository<Counseling, UUID> {
     List<CounselingForCsvResult> getCounselingForCsv();
 
 
-
     @Query(value = """
             select distinct ca.id from cases ca, counselings co, clients cl
                                       where cl.id = co.client_id
@@ -49,6 +48,7 @@ public interface CounselingRepo extends JpaRepository<Counseling, UUID> {
     Integer selectTotalConsultationTime(UUID caseId);
 
     List<Counseling> findByClientIdOrderByCounselingDateDesc(UUID clientId);
+
     List<Counseling> findByClientIdOrderByCounselingDateAsc(UUID clientId);
 
     // Count of counselings between a given date range [from, to)
@@ -58,16 +58,21 @@ public interface CounselingRepo extends JpaRepository<Counseling, UUID> {
         SELECT c.* 
         FROM counselings c 
         WHERE c.search_vector @@ plainto_tsquery('german', :searchTerm)
+          AND (CAST (:dateFrom AS TIMESTAMP) IS NULL OR c.counseling_date >= :dateFrom)
+          AND (CAST (:dateTo AS TIMESTAMP) IS NULL OR c.counseling_date < :dateTo)
         ORDER BY ts_rank(c.search_vector, plainto_tsquery('german', :searchTerm)) DESC
         """,
             countQuery = """
-        SELECT COUNT(*) 
-        FROM counselings c 
+        SELECT COUNT(*)
+        FROM counselings c
         WHERE c.search_vector @@ plainto_tsquery('german', :searchTerm)
-        """,
+          AND (CAST (:dateFrom AS TIMESTAMP) IS NULL OR c.counseling_date >= :dateFrom)
+          AND (CAST (:dateTo AS TIMESTAMP) IS NULL OR c.counseling_date < :dateTo)
+       \s""",
             nativeQuery = true)
-    Page<Counseling> fullTextSearch(
-            @Param("searchTerm") String searchTerm,
-            Pageable pageable
+    Page<Counseling> fullTextSearch(@Param("searchTerm") String searchTerm,
+                                    @Param("dateFrom") LocalDateTime dateFrom,
+                                    @Param("dateTo") LocalDateTime dateTo,
+                                    Pageable pageable
     );
 }

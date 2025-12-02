@@ -84,8 +84,8 @@ public class CounselingController implements CounselingApi {
     }
 
     @Override
-    public ResponseEntity<Page<CounselingDto>> search(String query, int page, int size) {
-        return ResponseEntity.ok(counselingService.search(query, page, size));
+    public ResponseEntity<Page<CounselingDto>> search(String query, int page, int size, LocalDateTime from, LocalDateTime to) {
+        return ResponseEntity.ok(counselingService.search(query, page, size, from, to));
     }
 
 
