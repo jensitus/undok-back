@@ -306,6 +306,12 @@ public class ClientService {
         client.setFurtherContact(clientForm.getFurtherContact());
         client.setComment(clientForm.getComment());
         client.setSocialInsuranceNumber(clientForm.getSocialInsuranceNumber());
+        client.setCity(clientForm.getCity());
+        client.setFirstName(clientForm.getFirstName());
+        client.setLastName(clientForm.getLastName());
+        client.setEmail(clientForm.getEmail());
+        client.setTelephone(clientForm.getTelephone());
+        client.setGender(clientForm.getGender());
         client.setUpdatedAt(LocalDateTime.now());
         setClient(client, clientForm);
     }
