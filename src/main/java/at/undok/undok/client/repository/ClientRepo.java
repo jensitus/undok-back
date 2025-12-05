@@ -60,13 +60,12 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
             @Param("toDate") LocalDateTime toDate
     );
 
-    @Query("SELECT COALESCE(p.gender, 'unbekannt') as key, COUNT(DISTINCT p.id) as count " +
+    @Query("SELECT COALESCE(cl.gender, 'unbekannt') as key, COUNT(DISTINCT cl.id) as count " +
             "FROM Client cl " +
             "JOIN cl.counselings co " +
-            "JOIN cl.person p " +
             "WHERE co.counselingDate >= :fromDate " +
             "AND co.counselingDate < :toDate " +
-            "GROUP BY p.gender")
+            "GROUP BY cl.gender")
     List<KeyCountProjection> countByGenderInDateRange(@Param("fromDate") LocalDateTime fromDate,
                                                       @Param("toDate") LocalDateTime toDate);
 

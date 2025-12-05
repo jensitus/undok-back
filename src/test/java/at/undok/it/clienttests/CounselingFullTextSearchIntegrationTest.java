@@ -48,7 +48,7 @@ class CounselingFullTextSearchIntegrationTest extends IntegrationTestBase {
         Client client = new Client();
         /// client.setId(UUID.randomUUID());
         client.setKeyword("Test Client");
-        client.setPerson(savedPerson);
+        // client.setPerson(savedPerson);
         // ... set other required fields
         Client savedClient = clientRepository.save(client);
 

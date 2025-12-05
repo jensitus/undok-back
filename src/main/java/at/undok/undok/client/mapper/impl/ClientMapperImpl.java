@@ -30,7 +30,13 @@ public class ClientMapperImpl implements ClientMapper {
                              client.getSocialInsuranceNumber(),
                              client.getFurtherContact(),
                              client.getComment(),
-                             client.getAlert());
+                             client.getAlert(),
+                             client.getFirstName(),
+                             client.getLastName(),
+                             client.getGender(),
+                             client.getTelephone(),
+                             client.getEmail(),
+                             client.getCity());
     }
 
     @Override

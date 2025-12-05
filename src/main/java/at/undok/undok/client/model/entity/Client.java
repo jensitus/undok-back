@@ -29,9 +29,9 @@ public class Client extends AbstractCrud {
     @Column(name = "language")
     private String language;
 
-    @OneToOne(mappedBy = "client")
-    @JsonIgnore
-    private Person person;
+//    @OneToOne(mappedBy = "client")
+//    @JsonIgnore
+//    private Person person;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "client_employer", joinColumns = @JoinColumn(name = "client_id"), inverseJoinColumns = @JoinColumn(name = "employer_id"))
@@ -88,5 +88,23 @@ public class Client extends AbstractCrud {
 
     @Column(name = "alert")
     private Boolean alert;
+
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "gender")
+    private String gender;
+
+    @Column(name = "telephone")
+    private String telephone;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "city")
+    private String city;
 
 }

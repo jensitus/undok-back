@@ -41,12 +41,15 @@ public interface ClientApi {
     @PostMapping("/{id}/update")
     ResponseEntity<Message> updateAttemptClient(@PathVariable("id") UUID clientId,
                                                 @RequestBody ClientForm clientForm);
-
+    @Deprecated
     @GetMapping("/all")
     List<AllClientDto> getAll();
 
+    @GetMapping("/all/active")
+    List<ClientDto> getAllActive();
+
     @DeleteMapping("/{id}/set-deleted")
-    ResponseEntity setStatusDeleted(@PathVariable("id") UUID clientPersonId);
+    ResponseEntity<Void> setStatusDeleted(@PathVariable("id") UUID clientPersonId);
 
     @DeleteMapping("/{id}")
     ResponseEntity deleteClient(@PathVariable("id") UUID clientId);

@@ -51,4 +51,5 @@ public class AllClientDto {
     private List<CounselingDto> counselings;
     private String furtherContact;
     private String comment;
+
 }

@@ -35,8 +35,8 @@ public class EntityToDtoMapper {
 
     public ClientDto  convertClientToDto(Client client) {
         ClientDto clientDto = mapClientToDto(client);
-        PersonDto personDto = mapPersonToDto(client.getPerson());
-        clientDto.setPerson(personDto);
+        // PersonDto personDto = mapPersonToDto(client.getPerson());
+        // clientDto.setPerson(personDto);
         if (client.getCounselings() != null) {
             List<CounselingDto> counselingDtos = client.getCounselings().stream()
                                                        .map(this::convertCounselingToDto)
@@ -89,9 +89,9 @@ public class EntityToDtoMapper {
     }
 
     private String buildClientFullName(Client client) {
-        Person person = client.getPerson();
-        if (person.getFirstName() != null && person.getLastName() != null) {
-            return person.getFirstName() + " " + person.getLastName();
+        // Person person = client.getPerson();
+        if (client.getFirstName() != null && client.getLastName() != null) {
+            return client.getFirstName() + " " + client.getLastName();
         }
         return null;
     }

@@ -76,9 +76,9 @@ public class CounselingDto {
         // Map client info if available
         if (counseling.getClient() != null) {
             Client client = counseling.getClient();
-            Person person = client.getPerson();
-            String firstName = person != null ? person.getFirstName() : null;
-            String lastName = person != null ? person.getLastName() : null;
+            // Person person = client.getPerson();
+            String firstName = client.getFirstName() != null ? client.getFirstName() : null;
+            String lastName = client.getLastName() != null ? client.getLastName() : null;
             dto.setClientId(counseling.getClient().getId());
             dto.setClientFullName(firstName + " " + lastName);
         }
