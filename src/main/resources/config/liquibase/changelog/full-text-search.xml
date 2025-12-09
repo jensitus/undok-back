@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="add-fulltext-search-columns" author="jensitus">
+        <comment>Add tsvector columns for full-text search</comment>
+
+        <!-- Add search_vector column to counselings table -->
+        <addColumn tableName="counselings">
+            <column name="search_vector" type="tsvector">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <!-- Add search_vector column to clients table -->
+        <addColumn tableName="clients">
+            <column name="search_vector" type="tsvector">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="create-counselings-search-function" author="jensitus">
+        <comment>Create function to update counselings search vector</comment>
+
+        <sql>
+            CREATE OR REPLACE FUNCTION counselings_search_vector_update() RETURNS trigger AS $$
+            BEGIN
+              NEW.search_vector :=
+                setweight(to_tsvector('german', COALESCE(NEW.concern, '')), 'A') ||
+                setweight(to_tsvector('german', COALESCE(NEW.activity, '')), 'B');
+            RETURN NEW;
+            END
+            $$ LANGUAGE plpgsql;
+        </sql>
+
+        <rollback>
+            DROP FUNCTION IF EXISTS counselings_search_vector_update();
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-clients-search-function" author="jensitus">
+        <comment>Create function to update clients search vector</comment>
+
+        <sql>
+            CREATE OR REPLACE FUNCTION clients_search_vector_update() RETURNS trigger AS $$
+            BEGIN
+              NEW.search_vector :=
+                setweight(to_tsvector('german', COALESCE(NEW.keyword, '')), 'A') ||
+                setweight(to_tsvector('german', COALESCE(NEW.last_name, '')), 'A') ||
+                setweight(to_tsvector('german', COALESCE(NEW.first_name, '')), 'B') ||
+                setweight(to_tsvector('german', COALESCE(NEW.comment, '')), 'C');
+            RETURN NEW;
+            END
+            $$ LANGUAGE plpgsql;
+        </sql>
+
+        <rollback>
+            DROP FUNCTION IF EXISTS clients_search_vector_update();
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-counselings-search-trigger" author="jensitus">
+        <comment>Create trigger to automatically update counselings search vector</comment>
+
+        <sql>
+            CREATE TRIGGER counselings_search_vector_trigger
+                BEFORE INSERT OR UPDATE ON counselings
+                                     FOR EACH ROW EXECUTE FUNCTION counselings_search_vector_update();
+        </sql>
+
+        <rollback>
+            DROP TRIGGER IF EXISTS counselings_search_vector_trigger ON counselings;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-clients-search-trigger" author="jensitus">
+        <comment>Create trigger to automatically update clients search vector</comment>
+
+        <sql>
+            CREATE TRIGGER clients_search_vector_trigger
+                BEFORE INSERT OR UPDATE ON clients
+                                     FOR EACH ROW EXECUTE FUNCTION clients_search_vector_update();
+        </sql>
+
+        <rollback>
+            DROP TRIGGER IF EXISTS clients_search_vector_trigger ON clients;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="populate-counselings-search-vectors" author="jensitus">
+        <comment>Populate existing counselings data with search vectors</comment>
+
+        <sql>
+            UPDATE counselings
+            SET search_vector =
+                    setweight(to_tsvector('german', COALESCE(concern, '')), 'A') ||
+                    setweight(to_tsvector('german', COALESCE(activity, '')), 'B');
+        </sql>
+    </changeSet>
+
+    <changeSet id="populate-clients-search-vectors" author="jensitus">
+        <comment>Populate existing clients data with search vectors</comment>
+
+        <sql>
+            UPDATE clients
+            SET search_vector =
+                    setweight(to_tsvector('german', COALESCE(keyword, '')), 'A') ||
+                    setweight(to_tsvector('german', COALESCE(last_name, '')), 'A') ||
+                    setweight(to_tsvector('german', COALESCE(first_name, '')), 'B') ||
+                    setweight(to_tsvector('german', COALESCE(comment, '')), 'C');
+        </sql>
+    </changeSet>
+
+    <changeSet id="create-counselings-search-index" author="jensitus">
+        <comment>Create GIN index for fast full-text search on counselings</comment>
+
+        <sql>
+            CREATE INDEX counselings_search_idx ON counselings USING GIN(search_vector);
+        </sql>
+
+        <rollback>
+            DROP INDEX IF EXISTS counselings_search_idx;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-clients-search-index" author="jensitus">
+        <comment>Create GIN index for fast full-text search on clients</comment>
+
+        <sql>
+            CREATE INDEX clients_search_idx ON clients USING GIN(search_vector);
+        </sql>
+
+        <rollback>
+            DROP INDEX IF EXISTS clients_search_idx;
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

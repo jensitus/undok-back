@@ -2,16 +2,11 @@ package at.undok.undok.client.api;
 
 import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CounselingDto;
-import at.undok.undok.client.model.dto.LanguageCount;
-import at.undok.undok.client.model.dto.NationalityCount;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,7 +16,6 @@ public interface CounselingApi {
 
     @GetMapping("/count")
     Long getNumberOfCounselings();
-
 
     @GetMapping("/past/")
     List<CounselingDto> getOldCounselings();
@@ -50,11 +44,5 @@ public interface CounselingApi {
     @GetMapping("by-client/{client-id}/order/{order}")
     ResponseEntity<List<CounselingDto>> getCounselingByClientId(@PathVariable("client-id") UUID clientId, @PathVariable("order") String order);
 
-    @GetMapping("/search")
-    ResponseEntity<Page<CounselingDto>> search(@RequestParam("q") String query,
-                                               @RequestParam(defaultValue = "0") int page,
-                                               @RequestParam(defaultValue = "20") int size,
-                                               @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-                                               @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to);
 
 }

@@ -2,10 +2,13 @@ package at.undok.undok.client.model.entity;
 
 import at.undok.common.model.AbstractCrud;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.hypersistence.utils.hibernate.type.search.PostgreSQLTSVectorType;
 import lombok.Data;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.Type;
+
 import java.util.List;
 
 @Data
@@ -106,5 +109,9 @@ public class Client extends AbstractCrud {
 
     @Column(name = "city")
     private String city;
+
+    @Column(name = "search_vector", columnDefinition = "tsvector")
+    @Type(PostgreSQLTSVectorType.class)
+    private String searchVector;
 
 }

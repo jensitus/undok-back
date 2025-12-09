@@ -92,4 +92,95 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
             @Param("toDate") LocalDateTime toDate
     );
 
+    /**
+     * Full-text search across keyword, last_name, first_name, and comment fields
+     * Uses PostgreSQL's ts_rank for relevance scoring
+     */
+    @Query(value = """
+        SELECT c.*, ts_rank(c.search_vector, websearch_to_tsquery('german', :searchTerm)) AS rank
+        FROM clients c
+        WHERE c.search_vector @@ websearch_to_tsquery('german', :searchTerm)
+        ORDER BY rank DESC
+        """, nativeQuery = true)
+    List<Client> fullTextSearch(@Param("searchTerm") String searchTerm);
+
+    /**
+     * Full-text search with date range filter (uses created_at)
+     */
+    @Query(value = """
+        SELECT c.*, ts_rank(c.search_vector, websearch_to_tsquery('german', :searchTerm)) AS rank
+        FROM clients c
+        WHERE c.search_vector @@ websearch_to_tsquery('german', :searchTerm)
+        AND c.created_at >= :startDate
+        AND c.created_at <= :endDate
+        ORDER BY rank DESC
+        """, nativeQuery = true)
+    List<Client> fullTextSearchWithDateRange(
+            @Param("searchTerm") String searchTerm,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
+    /**
+     * Full-text search with pagination support
+     */
+    @Query(value = """
+        SELECT c.*, ts_rank(c.search_vector, websearch_to_tsquery('german', :searchTerm)) AS rank
+        FROM clients c
+        WHERE c.search_vector @@ websearch_to_tsquery('german', :searchTerm)
+        ORDER BY rank DESC
+        LIMIT :limit OFFSET :offset
+        """, nativeQuery = true)
+    List<Client> fullTextSearchWithPagination(
+            @Param("searchTerm") String searchTerm,
+            @Param("limit") int limit,
+            @Param("offset") int offset
+    );
+
+    /**
+     * Full-text search with pagination and date range
+     */
+    @Query(value = """
+        SELECT c.*, ts_rank(c.search_vector, websearch_to_tsquery('german', :searchTerm)) AS rank
+        FROM clients c
+        WHERE c.search_vector @@ websearch_to_tsquery('german', :searchTerm)
+        AND c.created_at >= :startDate
+        AND c.created_at <= :endDate
+        ORDER BY rank DESC
+        LIMIT :limit OFFSET :offset
+        """, nativeQuery = true)
+    List<Client> fullTextSearchWithPaginationAndDateRange(
+            @Param("searchTerm") String searchTerm,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            @Param("limit") int limit,
+            @Param("offset") int offset
+    );
+
+    /**
+     * Count results with date range for pagination
+     */
+    @Query(value = """
+        SELECT COUNT(*)
+        FROM clients c
+        WHERE c.search_vector @@ websearch_to_tsquery('german', :searchTerm)
+        AND c.created_at >= :startDate
+        AND c.created_at <= :endDate
+        """, nativeQuery = true)
+    long countFullTextSearchWithDateRange(
+            @Param("searchTerm") String searchTerm,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
+    /**
+     * Count results for pagination
+     */
+    @Query(value = """
+        SELECT COUNT(*)
+        FROM clients c
+        WHERE c.search_vector @@ websearch_to_tsquery('german', :searchTerm)
+        """, nativeQuery = true)
+    long countFullTextSearch(@Param("searchTerm") String searchTerm);
+
 }

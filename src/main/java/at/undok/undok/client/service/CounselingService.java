@@ -200,14 +200,4 @@ public class CounselingService {
         return entityToDtoMapper.convertCounselingListToDtoList(counselings);
     }
 
-    public Page<CounselingDto> search(String searchTerm, int page, int size, LocalDateTime from, LocalDateTime to) {
-        if (searchTerm == null || searchTerm.trim().isEmpty()) {
-            return Page.empty();
-        }
-
-        Pageable pageable = PageRequest.of(page, size);
-        return counselingRepo.fullTextSearch(searchTerm.trim(), from, to, pageable)
-                             .map(CounselingDto::from);
-    }
-
 }

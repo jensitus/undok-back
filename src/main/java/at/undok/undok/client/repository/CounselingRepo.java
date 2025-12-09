@@ -54,25 +54,117 @@ public interface CounselingRepo extends JpaRepository<Counseling, UUID> {
     // Count of counselings between a given date range [from, to)
     long countByCounselingDateGreaterThanEqualAndCounselingDateLessThan(LocalDateTime from, LocalDateTime to);
 
+//    @Query(value = """
+//        SELECT c.*
+//        FROM counselings c
+//        WHERE c.search_vector @@ plainto_tsquery('german', :searchTerm)
+//          AND (CAST (:dateFrom AS TIMESTAMP) IS NULL OR c.counseling_date >= :dateFrom)
+//          AND (CAST (:dateTo AS TIMESTAMP) IS NULL OR c.counseling_date < :dateTo)
+//        ORDER BY ts_rank(c.search_vector, plainto_tsquery('german', :searchTerm)) DESC
+//        """,
+//            countQuery = """
+//        SELECT COUNT(*)
+//        FROM counselings c
+//        WHERE c.search_vector @@ plainto_tsquery('german', :searchTerm)
+//          AND (CAST (:dateFrom AS TIMESTAMP) IS NULL OR c.counseling_date >= :dateFrom)
+//          AND (CAST (:dateTo AS TIMESTAMP) IS NULL OR c.counseling_date < :dateTo)
+//       \s""",
+//            nativeQuery = true)
+//    Page<Counseling> fullTextSearch(@Param("searchTerm") String searchTerm,
+//                                    @Param("dateFrom") LocalDateTime dateFrom,
+//                                    @Param("dateTo") LocalDateTime dateTo,
+//                                    Pageable pageable
+//    );
+
+    /**
+     * Full-text search across concern and activity fields
+     * Uses PostgreSQL's ts_rank for relevance scoring
+     */
     @Query(value = """
-        SELECT c.* 
-        FROM counselings c 
-        WHERE c.search_vector @@ plainto_tsquery('german', :searchTerm)
-          AND (CAST (:dateFrom AS TIMESTAMP) IS NULL OR c.counseling_date >= :dateFrom)
-          AND (CAST (:dateTo AS TIMESTAMP) IS NULL OR c.counseling_date < :dateTo)
-        ORDER BY ts_rank(c.search_vector, plainto_tsquery('german', :searchTerm)) DESC
-        """,
-            countQuery = """
+        SELECT c.*, ts_rank(c.search_vector, websearch_to_tsquery('german', :searchTerm)) AS rank
+        FROM counselings c
+        WHERE c.search_vector @@ websearch_to_tsquery('german', :searchTerm)
+        ORDER BY rank DESC
+        """, nativeQuery = true)
+    List<Counseling> fullTextSearch(@Param("searchTerm") String searchTerm);
+
+    /**
+     * Full-text search with date range filter
+     */
+    @Query(value = """
+        SELECT c.*, ts_rank(c.search_vector, websearch_to_tsquery('german', :searchTerm)) AS rank
+        FROM counselings c
+        WHERE c.search_vector @@ websearch_to_tsquery('german', :searchTerm)
+        AND c.counseling_date >= :startDate
+        AND c.counseling_date <= :endDate
+        ORDER BY rank DESC
+        """, nativeQuery = true)
+    List<Counseling> fullTextSearchWithDateRange(
+            @Param("searchTerm") String searchTerm,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
+    /**
+     * Full-text search with pagination support
+     */
+    @Query(value = """
+        SELECT c.*, ts_rank(c.search_vector, websearch_to_tsquery('german', :searchTerm)) AS rank
+        FROM counselings c
+        WHERE c.search_vector @@ websearch_to_tsquery('german', :searchTerm)
+        ORDER BY rank DESC
+        LIMIT :limit OFFSET :offset
+        """, nativeQuery = true)
+    List<Counseling> fullTextSearchWithPagination(
+            @Param("searchTerm") String searchTerm,
+            @Param("limit") int limit,
+            @Param("offset") int offset
+    );
+
+    /**
+     * Full-text search with pagination and date range
+     */
+    @Query(value = """
+        SELECT c.*, ts_rank(c.search_vector, websearch_to_tsquery('german', :searchTerm)) AS rank
+        FROM counselings c
+        WHERE c.search_vector @@ websearch_to_tsquery('german', :searchTerm)
+        AND c.counseling_date >= :startDate
+        AND c.counseling_date <= :endDate
+        ORDER BY rank DESC
+        LIMIT :limit OFFSET :offset
+        """, nativeQuery = true)
+    List<Counseling> fullTextSearchWithPaginationAndDateRange(
+            @Param("searchTerm") String searchTerm,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            @Param("limit") int limit,
+            @Param("offset") int offset
+    );
+
+    /**
+     * Count results with date range for pagination
+     */
+    @Query(value = """
         SELECT COUNT(*)
         FROM counselings c
-        WHERE c.search_vector @@ plainto_tsquery('german', :searchTerm)
-          AND (CAST (:dateFrom AS TIMESTAMP) IS NULL OR c.counseling_date >= :dateFrom)
-          AND (CAST (:dateTo AS TIMESTAMP) IS NULL OR c.counseling_date < :dateTo)
-       \s""",
-            nativeQuery = true)
-    Page<Counseling> fullTextSearch(@Param("searchTerm") String searchTerm,
-                                    @Param("dateFrom") LocalDateTime dateFrom,
-                                    @Param("dateTo") LocalDateTime dateTo,
-                                    Pageable pageable
+        WHERE c.search_vector @@ websearch_to_tsquery('german', :searchTerm)
+        AND c.counseling_date >= :startDate
+        AND c.counseling_date <= :endDate
+        """, nativeQuery = true)
+    long countFullTextSearchWithDateRange(
+            @Param("searchTerm") String searchTerm,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
     );
+
+    /**
+     * Count results for pagination
+     */
+    @Query(value = """
+        SELECT COUNT(*)
+        FROM counselings c
+        WHERE c.search_vector @@ websearch_to_tsquery('german', :searchTerm)
+        """, nativeQuery = true)
+    long countFullTextSearch(@Param("searchTerm") String searchTerm);
+
 }

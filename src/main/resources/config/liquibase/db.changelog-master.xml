@@ -32,4 +32,5 @@
     <include file="config/liquibase/changelog/add-constraint-to-cagegories.xml"/>
     <include file="config/liquibase/changelog/add-not-null-to-join-category.xml"/>
     <include file="config/liquibase/changelog/undok.xml"/>
+    <include file="config/liquibase/changelog/full-text-search.xml" />
 </databaseChangeLog> 

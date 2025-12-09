@@ -2,8 +2,10 @@ package at.undok.undok.client.model.entity;
 
 import at.undok.common.model.AbstractCrud;
 import at.undok.undok.client.model.dto.CounselingForCsvResult;
+import io.hypersistence.utils.hibernate.type.search.PostgreSQLTSVectorType;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -82,6 +84,10 @@ public class Counseling extends AbstractCrud {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_id")
     private Case counselingCase;
+
+    @Column(name = "search_vector", columnDefinition = "tsvector")
+    @Type(PostgreSQLTSVectorType.class)
+    private String searchVector;
 
     public String getCounselingStatus() {
         return counselingStatus;
@@ -185,5 +191,13 @@ public class Counseling extends AbstractCrud {
 
     public void setCounselingCase(Case counselingCase) {
         this.counselingCase = counselingCase;
+    }
+
+    public String getSearchVector() {
+        return searchVector;
+    }
+
+    public void setSearchVector(String searchVector) {
+        this.searchVector = searchVector;
     }
 }

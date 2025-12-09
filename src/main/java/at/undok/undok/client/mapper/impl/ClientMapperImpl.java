@@ -1,9 +1,11 @@
 package at.undok.undok.client.mapper.impl;
 
+import at.undok.undok.client.mapper.annotation.UndokMapper;
 import at.undok.undok.client.mapper.inter.ClientMapper;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.entity.Client;
 
+@UndokMapper
 public class ClientMapperImpl implements ClientMapper {
 
     @Override
