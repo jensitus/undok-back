@@ -139,4 +139,73 @@
         </rollback>
     </changeSet>
 
+    <!--
+                   Add search for tasks as well
+    -->
+
+    <changeSet id="add-search-vector-to-tasks" author="jensitus">
+        <addColumn tableName="tasks">
+            <column name="search_vector" type="tsvector">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="create-tasks-search-function" author="jensitus">
+        <comment>Create function to update tasks search vector</comment>
+
+        <sql>
+            CREATE OR REPLACE FUNCTION tasks_search_vector_update() RETURNS trigger AS $$
+            BEGIN
+              NEW.search_vector :=
+                setweight(to_tsvector('german', COALESCE(NEW.title, '')), 'A') ||
+                setweight(to_tsvector('german', COALESCE(NEW.description, '')), 'B');
+            RETURN NEW;
+            END
+            $$ LANGUAGE plpgsql;
+        </sql>
+
+        <rollback>
+            DROP FUNCTION IF EXISTS tasks_search_vector_update();
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-tasks-search-trigger" author="jensitus">
+        <comment>Create trigger to automatically update tasks search vector</comment>
+
+        <sql>
+            CREATE TRIGGER tasks_search_vector_trigger
+                BEFORE INSERT OR UPDATE ON tasks
+                                     FOR EACH ROW EXECUTE FUNCTION tasks_search_vector_update();
+        </sql>
+
+        <rollback>
+            DROP TRIGGER IF EXISTS tasks_search_vector_trigger ON tasks;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="populate-tasks-search-vectors" author="jensitus">
+        <comment>Populate existing tasks data with search vectors</comment>
+
+        <sql>
+            UPDATE tasks
+            SET search_vector =
+                    setweight(to_tsvector('german', COALESCE(title, '')), 'A') ||
+                    setweight(to_tsvector('german', COALESCE(description, '')), 'B');
+        </sql>
+    </changeSet>
+
+    <changeSet id="create-tasks-search-index" author="jensitus">
+        <comment>Create GIN index for fast full-text search on tasks</comment>
+
+        <sql>
+            CREATE INDEX tasks_search_idx ON tasks USING GIN(search_vector);
+        </sql>
+
+        <rollback>
+            DROP INDEX IF EXISTS tasks_search_idx;
+        </rollback>
+    </changeSet>
+
+
 </databaseChangeLog>

@@ -34,7 +34,7 @@ public class SearchControllerTest {
     @WithMockUser(username = "testuser", roles = {"USER"})
     void shouldReturnSearchResults() throws Exception {
         UnifiedSearchResponse mockResponse = new UnifiedSearchResponse(
-                List.of(), List.of(), new PaginationInfo(0, 20, 0, 0)
+                List.of(), List.of(), List.of(), new PaginationInfo(0, 20, 0, 0, 0)
         );
 
         when(searchService.searchAll(anyString(), any(), any(), anyInt(), anyInt()))

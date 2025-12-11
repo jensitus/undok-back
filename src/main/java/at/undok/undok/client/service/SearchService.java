@@ -5,8 +5,10 @@ import at.undok.undok.client.mapper.inter.CounselingMapper;
 import at.undok.undok.client.model.dto.*;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.entity.Counseling;
+import at.undok.undok.client.model.entity.Task;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.CounselingRepo;
+import at.undok.undok.client.repository.TaskRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,13 +25,15 @@ public class SearchService {
     private final ClientRepo clientRepository;
     private final CounselingMapper counselingMapper;
     private final ClientMapper clientMapper;
+    private final TaskRepo taskRepo;
 
     public SearchService(CounselingRepo counselingRepository,
-                         ClientRepo clientRepository, CounselingMapper counselingMapper, ClientMapper clientMapper) {
+                         ClientRepo clientRepository, CounselingMapper counselingMapper, ClientMapper clientMapper, TaskRepo taskRepo) {
         this.counselingRepository = counselingRepository;
         this.clientRepository = clientRepository;
         this.counselingMapper = counselingMapper;
         this.clientMapper = clientMapper;
+        this.taskRepo = taskRepo;
     }
 
     /**
@@ -45,8 +49,8 @@ public class SearchService {
     public UnifiedSearchResponse searchAll(String searchTerm, LocalDateTime startDate,
                                            LocalDateTime endDate, int page, int size) {
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
-            PaginationInfo emptyPagination = new PaginationInfo(page, size, 0, 0);
-            return new UnifiedSearchResponse(List.of(), List.of(), emptyPagination);
+            PaginationInfo emptyPagination = new PaginationInfo(page, size, 0, 0, 0);
+            return new UnifiedSearchResponse(List.of(), List.of(), List.of(), emptyPagination);
         }
 
         String trimmedSearch = searchTerm.trim();
@@ -59,46 +63,60 @@ public class SearchService {
         // Get total counts for pagination metadata
         long totalCounselings = countCounselingsWithDateRange(trimmedSearch, startDate, endDate);
         long totalClients = countClientsWithDateRange(trimmedSearch, startDate, endDate);
-        long totalElements = totalCounselings + totalClients;
+        long totalTasks = countTasksWithDateRange(trimmedSearch, startDate, endDate);
+        long totalElements = totalCounselings + totalClients + totalTasks;
 
         // Calculate how many results from each table for this page
         int offset = page * size;
 
         List<CounselingSearchResult> counselingDtos = new ArrayList<>();
         List<ClientSearchResult> clientDtos = new ArrayList<>();
+        List<TaskSearchResult> taskDtos = new ArrayList<>();
 
         if (offset < totalElements) {
+            int remaining = size;
+
+            // 1. First, try to fill from counselings
             if (offset < totalCounselings) {
-                // Still have counselings to show on this page
-                int counselingsToFetch = (int) Math.min(size, totalCounselings - offset);
+                int counselingsToFetch = (int) Math.min(remaining, totalCounselings - offset);
                 List<Counseling> counselingResults = searchCounselingsWithDateRange(
                         trimmedSearch, startDate, endDate, counselingsToFetch, offset);
                 counselingDtos = counselingResults.stream()
                                                   .map(CounselingSearchResult::new)
                                                   .collect(Collectors.toList());
-
-                // Fill the remaining space with clients if needed
-                int remaining = size - counselingDtos.size();
-                if (remaining > 0 && totalClients > 0) {
-                    List<Client> clientResults = searchClientsWithDateRange(
-                            trimmedSearch, startDate, endDate, remaining, 0);
-                    clientDtos = clientResults.stream()
-                                              .map(ClientSearchResult::new)
-                                              .collect(Collectors.toList());
-                }
+                remaining -= counselingDtos.size();
+                offset = 0; // Reset offset for next table
             } else {
-                // Past all counselings, show only clients
-                int clientOffset = offset - (int) totalCounselings;
+                offset -= (int) totalCounselings; // Adjust offset for next table
+            }
+
+            // 2. Then, try to fill remaining space with clients
+            if (remaining > 0 && offset < totalClients) {
+                int clientsToFetch = (int) Math.min(remaining, totalClients - offset);
                 List<Client> clientResults = searchClientsWithDateRange(
-                        trimmedSearch, startDate, endDate, size, clientOffset);
+                        trimmedSearch, startDate, endDate, clientsToFetch, offset);
                 clientDtos = clientResults.stream()
                                           .map(ClientSearchResult::new)
                                           .collect(Collectors.toList());
+                remaining -= clientDtos.size();
+                offset = 0; // Reset offset for next table
+            } else if (remaining > 0) {
+                offset -= (int) totalClients; // Adjust offset for next table
+            }
+
+            // 3. Finally, fill remaining space with tasks
+            if (remaining > 0 && offset < totalTasks) {
+                int tasksToFetch = (int) Math.min(remaining, totalTasks - offset);
+                List<Task> taskResults = searchTasksWithDateRange(
+                        trimmedSearch, startDate, endDate, tasksToFetch, offset);
+                taskDtos = taskResults.stream()
+                                      .map(TaskSearchResult::new)
+                                      .collect(Collectors.toList());
             }
         }
 
-        PaginationInfo pagination = new PaginationInfo(page, size, totalCounselings, totalClients);
-        return new UnifiedSearchResponse(counselingDtos, clientDtos, pagination);
+        PaginationInfo pagination = new PaginationInfo(page, size, totalCounselings, totalClients, totalTasks);
+        return new UnifiedSearchResponse(counselingDtos, clientDtos, taskDtos, pagination);
     }
 
     /**
@@ -111,8 +129,8 @@ public class SearchService {
      */
     public UnifiedSearchResponse searchAll(String searchTerm, int page, int size) {
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
-            PaginationInfo emptyPagination = new PaginationInfo(page, size, 0, 0);
-            return new UnifiedSearchResponse(List.of(), List.of(), emptyPagination);
+            PaginationInfo emptyPagination = new PaginationInfo(page, size, 0, 0, 0);
+            return new UnifiedSearchResponse(List.of(), List.of(), List.of(), emptyPagination);
         }
 
         String trimmedSearch = searchTerm.trim();
@@ -120,49 +138,60 @@ public class SearchService {
         // Get total counts for pagination metadata
         long totalCounselings = counselingRepository.countFullTextSearch(trimmedSearch);
         long totalClients = clientRepository.countFullTextSearch(trimmedSearch);
-        long totalElements = totalCounselings + totalClients;
+        long totalTasks = taskRepo.countFullTextSearch(trimmedSearch);
+        long totalElements = totalCounselings + totalClients + totalTasks;
 
         // Calculate how many results from each table for this page
         int offset = page * size;
 
         List<CounselingSearchResult> counselingDtos = new ArrayList<>();
         List<ClientSearchResult> clientDtos = new ArrayList<>();
+        List<TaskSearchResult> taskDtos = new ArrayList<>();
 
         if (offset < totalElements) {
-            // Fetch results proportionally from both tables
-            // Or you can customize the logic based on your needs
+            int remaining = size;
 
+            // 1. First, try to fill from counselings
             if (offset < totalCounselings) {
-                // Still have counselings to show on this page
-                int counselingsToFetch = (int) Math.min(size, totalCounselings - offset);
+                int counselingsToFetch = (int) Math.min(remaining, totalCounselings - offset);
                 List<Counseling> counselingResults = counselingRepository
                         .fullTextSearchWithPagination(trimmedSearch, counselingsToFetch, offset);
                 counselingDtos = counselingResults.stream()
                                                   .map(CounselingSearchResult::new)
                                                   .collect(Collectors.toList());
-
-                // Fill remaining space with clients if needed
-                int remaining = size - counselingDtos.size();
-                if (remaining > 0 && totalClients > 0) {
-                    List<Client> clientResults = clientRepository
-                            .fullTextSearchWithPagination(trimmedSearch, remaining, 0);
-                    clientDtos = clientResults.stream()
-                                              .map(ClientSearchResult::new)
-                                              .collect(Collectors.toList());
-                }
+                remaining -= counselingDtos.size();
+                offset = 0; // Reset offset for next table
             } else {
-                // Past all counselings, show only clients
-                int clientOffset = offset - (int) totalCounselings;
+                offset -= (int) totalCounselings; // Adjust offset for next table
+            }
+
+            // 2. Then, try to fill remaining space with clients
+            if (remaining > 0 && offset < totalClients) {
+                int clientsToFetch = (int) Math.min(remaining, totalClients - offset);
                 List<Client> clientResults = clientRepository
-                        .fullTextSearchWithPagination(trimmedSearch, size, clientOffset);
+                        .fullTextSearchWithPagination(trimmedSearch, clientsToFetch, offset);
                 clientDtos = clientResults.stream()
                                           .map(ClientSearchResult::new)
                                           .collect(Collectors.toList());
+                remaining -= clientDtos.size();
+                offset = 0; // Reset offset for next table
+            } else if (remaining > 0) {
+                offset -= (int) totalClients; // Adjust offset for next table
+            }
+
+            // 3. Finally, fill remaining space with tasks
+            if (remaining > 0 && offset < totalTasks) {
+                int tasksToFetch = (int) Math.min(remaining, totalTasks - offset);
+                List<Task> taskResults = taskRepo
+                        .fullTextSearchWithPagination(trimmedSearch, tasksToFetch, offset);
+                taskDtos = taskResults.stream()
+                                      .map(TaskSearchResult::new)
+                                      .collect(Collectors.toList());
             }
         }
 
-        PaginationInfo pagination = new PaginationInfo(page, size, totalCounselings, totalClients);
-        return new UnifiedSearchResponse(counselingDtos, clientDtos, pagination);
+        PaginationInfo pagination = new PaginationInfo(page, size, totalCounselings, totalClients, totalTasks);
+        return new UnifiedSearchResponse(counselingDtos, clientDtos, taskDtos, pagination);
     }
 
     /**
@@ -173,15 +202,16 @@ public class SearchService {
      */
     public UnifiedSearchResponse searchAll(String searchTerm) {
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
-            PaginationInfo emptyPagination = new PaginationInfo(0, 0, 0, 0);
-            return new UnifiedSearchResponse(List.of(), List.of(), emptyPagination);
+            PaginationInfo emptyPagination = new PaginationInfo(0, 0, 0, 0, 0);
+            return new UnifiedSearchResponse(List.of(), List.of(), List.of(), emptyPagination);
         }
 
         String trimmedSearch = searchTerm.trim();
 
-        // Search both tables
+        // Search all three tables
         List<Counseling> counselingResults = counselingRepository.fullTextSearch(trimmedSearch);
         List<Client> clientResults = clientRepository.fullTextSearch(trimmedSearch);
+        List<Task> taskResults = taskRepo.fullTextSearch(trimmedSearch);
 
         // Convert to DTOs
         List<CounselingSearchResult> counselingDtos = counselingResults.stream()
@@ -192,12 +222,19 @@ public class SearchService {
                                                            .map(ClientSearchResult::new)
                                                            .collect(Collectors.toList());
 
+        List<TaskSearchResult> taskDtos = taskResults.stream()
+                                                     .map(TaskSearchResult::new)
+                                                     .collect(Collectors.toList());
+
         long totalCounselings = counselingResults.size();
         long totalClients = clientResults.size();
-        PaginationInfo pagination = new PaginationInfo(0,
-                                                       (int)(totalCounselings + totalClients), totalCounselings, totalClients);
+        long totalTasks = taskResults.size();
+        long totalElements = totalCounselings + totalClients + totalTasks;
 
-        return new UnifiedSearchResponse(counselingDtos, clientDtos, pagination);
+        PaginationInfo pagination = new PaginationInfo(0, (int) totalElements,
+                                                       totalCounselings, totalClients, totalTasks);
+
+        return new UnifiedSearchResponse(counselingDtos, clientDtos, taskDtos, pagination);
     }
 
     /**
@@ -289,6 +326,13 @@ public class SearchService {
         return clientRepository.countFullTextSearchWithDateRange(searchTerm, startDate, endDate);
     }
 
+    private long countTasksWithDateRange(String searchTerm, LocalDateTime startDate, LocalDateTime endDate) {
+        if (startDate == null && endDate == null) {
+            return taskRepo.countFullTextSearch(searchTerm);
+        }
+        return taskRepo.countFullTextSearchWithDateRange(searchTerm, startDate, endDate);
+    }
+
     /**
      * Helper method to search counselings with date range handling
      */
@@ -311,6 +355,14 @@ public class SearchService {
         }
         return clientRepository.fullTextSearchWithPaginationAndDateRange(
                 searchTerm, startDate, endDate, limit, offset);
+    }
+
+    private List<Task> searchTasksWithDateRange(String searchTerm, LocalDateTime startDate, LocalDateTime endDate,
+                                                int limit, int offset) {
+        if (startDate == null && endDate == null) {
+            return taskRepo.fullTextSearchWithPagination(searchTerm, limit, offset);
+        }
+        return taskRepo.fullTextSearchWithPaginationAndDateRange(searchTerm, startDate, endDate, limit, offset);
     }
 
 }

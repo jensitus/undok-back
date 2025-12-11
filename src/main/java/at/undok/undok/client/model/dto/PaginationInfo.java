@@ -10,6 +10,7 @@ public class PaginationInfo {
     private int pageSize;
     private long totalCounselings;
     private long totalClients;
+    private long totalTasks;
     private long totalElements;
     private int totalPages;
     private boolean hasNext;
@@ -19,12 +20,13 @@ public class PaginationInfo {
     }
 
     public PaginationInfo(int currentPage, int pageSize,
-                          long totalCounselings, long totalClients) {
+                          long totalCounselings, long totalClients, long totalTasks) {
         this.currentPage = currentPage;
         this.pageSize = pageSize;
         this.totalCounselings = totalCounselings;
         this.totalClients = totalClients;
-        this.totalElements = totalCounselings + totalClients;
+        this.totalTasks = totalTasks;
+        this.totalElements = totalCounselings + totalClients + totalTasks;
         this.totalPages = (int) Math.ceil((double) totalElements / pageSize);
         this.hasNext = currentPage < totalPages - 1;
         this.hasPrevious = currentPage > 0;
