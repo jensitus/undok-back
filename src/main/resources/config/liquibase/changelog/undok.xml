@@ -20,4 +20,38 @@
     </createTable>
 </changeSet>
 
+    <!--
+    <changeSet id="add-full-text-index" author="jensitus">
+        <sql>
+            ALTER TABLE counselings
+                ADD COLUMN search_vector tsvector
+                    GENERATED ALWAYS AS (
+                        setweight(to_tsvector('german', COALESCE(concern, '')), 'A') ||
+                        setweight(to_tsvector('german', COALESCE(activity, '')), 'B')
+                        ) STORED
+        </sql>
+
+        <sql>
+            CREATE INDEX counselings_search_idx ON counselings USING GIN (search_vector)
+        </sql>
+
+        <rollback>
+            DROP INDEX IF EXISTS counselings_search_idx;
+            ALTER TABLE counselings DROP COLUMN search_vector;
+        </rollback>
+    </changeSet>
+    -->
+
+    <changeSet id="add_name_to_clients" author="jensitus">
+        <addColumn tableName="clients">
+            <column name="first_name" type="varchar(255)" />
+            <column name="last_name" type="varchar(255)" />
+            <column name="gender" type="varchar(255)" />
+            <column name="telephone" type="varchar(255)" />
+            <column name="email" type="varchar(255)" />
+            <column name="city" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+
+
 </databaseChangeLog>

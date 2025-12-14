@@ -20,9 +20,9 @@ public class Person extends AbstractCrud implements Serializable {
     @Column(name = "first_name")
     private String firstName;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "client_id", referencedColumnName = "id")
-    private Client client;
+//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @JoinColumn(name = "client_id", referencedColumnName = "id")
+//    private Client client;
 
     @OneToOne(mappedBy = "person")
     @JsonIgnore
@@ -68,13 +68,13 @@ public class Person extends AbstractCrud implements Serializable {
         this.firstName = firstName;
     }
 
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
+//    public Client getClient() {
+//        return client;
+//    }
+//
+//    public void setClient(Client client) {
+//        this.client = client;
+//    }
 
     public Employer getEmployer() {
         return employer;

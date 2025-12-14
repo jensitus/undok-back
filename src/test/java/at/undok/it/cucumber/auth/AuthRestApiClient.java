@@ -91,16 +91,16 @@ public class AuthRestApiClient {
         return testRestTemplate.getForObject(url, ClientDto.class);
     }
 
-    public List<AllClientDto> getAllClients(String accessToken) {
+    public List<ClientDto> getAllClients(String accessToken) {
         HttpHeaders httpHeaders = getHeaders(accessToken);
-        String url = HOST + serverPort + UNDOK_CLIENTS_PATH + "/all";
+        String url = HOST + serverPort + UNDOK_CLIENTS_PATH + "/all/active";
         HttpEntity entity = new HttpEntity<>(httpHeaders);
-        return testRestTemplate.exchange(url, HttpMethod.GET, entity, new ParameterizedTypeReference<List<AllClientDto>>() {}).getBody();
+        return testRestTemplate.exchange(url, HttpMethod.GET, entity, new ParameterizedTypeReference<List<ClientDto>>() {}).getBody();
     }
 
     public void deleteClient(UUID clientId, String accessToken) {
         HttpHeaders httpHeaders = getHeaders(accessToken);
-        String url = HOST + serverPort + UNDOK_CLIENTS_PATH + "/" + clientId;
+        String url = HOST + serverPort + UNDOK_CLIENTS_PATH + "/" + clientId + "/set-deleted";
         HttpEntity entity = new HttpEntity<>(httpHeaders);
         testRestTemplate.exchange(url, HttpMethod.DELETE, entity, Void.class);
     }

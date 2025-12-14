@@ -53,12 +53,18 @@ public class ClientService {
         return clientRepo.existsByKeyword(keyword);
     }
 
+    @Deprecated
     public List<AllClientDto> getAll() {
         List<ClientDto> clientDtos =
                 entityToDtoMapper.convertClientListToDtoList(
                         clientRepo.findByStatusOrderByCreatedAtDesc(StatusService.STATUS_ACTIVE));  // findAll(Sort.by(Sort.Order.by("createdAt"))));
         List<AllClientDto> allClientDtoList = turnClientDtoListToAllClientDtoList(clientDtos);
         return allClientDtoList;
+    }
+
+    public List<ClientDto> getAllActiveClients() {
+        return entityToDtoMapper.convertClientListToDtoList(
+                clientRepo.findByStatusOrderByCreatedAtDesc(StatusService.STATUS_ACTIVE));
     }
 
     public ClientDto createClient(ClientForm clientForm) {
@@ -104,19 +110,18 @@ public class ClientService {
 
         Optional<Client> client = clientRepo.findById(clientId);
         if (client.isPresent()) {
-            Person person = client.get().getPerson();
-            Address address = person.getAddress();
-            return updateClient(person, client.get(), address, clientForm, clientId);
+            // Person person = client.get().getPerson();
+            // Address address = person.getAddress();
+            return updateClient(client.get(), clientForm, clientId);
         } else {
             throw new RuntimeException("Sorry");
         }
     }
 
     public void setStatusDeleted(UUID clientPersonId) {
-        Optional<Person> optionalPerson = personRepo.findById(clientPersonId);
-        if (optionalPerson.isPresent()) {
-            Person person = optionalPerson.get();
-            Client client = person.getClient();
+        Client client = clientRepo.findById(clientPersonId).orElseThrow(
+                () -> new NoSuchElementException("No client found with ID " + clientPersonId)
+        );
             client.setStatus(StatusService.STATUS_DELETED);
             clientRepo.save(client);
             List<Counseling> counselings = client.getCounselings();
@@ -125,9 +130,6 @@ public class ClientService {
                 counselingIds.add(c.getId());
             });
             counselingService.setStatusDeleted(counselingIds);
-        } else {
-            throw new NoSuchElementException("No client found with ID " + clientPersonId);
-        }
     }
 
     public void deleteClient(UUID clientId) {
@@ -138,9 +140,9 @@ public class ClientService {
 
         Address savedAddress = createAndSaveAddress(clientForm);
         Client savedClient = createAndSaveClient(clientForm);
-        Person savedPerson = createAndSavePerson(clientForm, savedAddress, savedClient);
+        // Person savedPerson = createAndSavePerson(clientForm, savedAddress, savedClient);
 
-        savedClient.setPerson(savedPerson);
+        // savedClient.setPerson(savedPerson);
         Client finalClient = clientRepo.save(savedClient);
 
         ClientDto clientDto = entityToDtoMapper.convertClientToDto(finalClient);
@@ -177,14 +179,14 @@ public class ClientService {
     }
 
 
-    private ClientDto updateClient(Person person, Client client, Address address, ClientForm clientForm, UUID clientId) {
+    private ClientDto updateClient(/*Person person,*/ Client client, /*Address address,*/ ClientForm clientForm, UUID clientId) {
 
-        updatePersonFromForm(person, clientForm);
+        // updatePersonFromForm(person, clientForm);
         updateClientFromForm(client, clientForm);
-        updateAddressFromForm(address, clientForm);
+        // updateAddressFromForm(address, clientForm);
 
-        person.setAddress(address);
-        client.setPerson(person);
+        // person.setAddress(address);
+        // client.setPerson(person);
         Client savedClient = clientRepo.save(client);
 
         CaseDto caseDto = updateCaseFromForm(clientId, clientForm);
@@ -200,17 +202,17 @@ public class ClientService {
             AllClientDto allClientDto = new AllClientDto();
             allClientDto.setId(clientDto.getId());
             // person stuff:
-            allClientDto.setFirstName(clientDto.getPerson().getFirstName());
-            allClientDto.setLastName(clientDto.getPerson().getLastName());
-            allClientDto.setDateOfBirth(clientDto.getPerson().getDateOfBirth());
-            allClientDto.setEmail(clientDto.getPerson().getEmail());
-            allClientDto.setTelephone(clientDto.getPerson().getTelephone());
-            allClientDto.setGender(clientDto.getPerson().getGender());
+            allClientDto.setFirstName(clientDto.getFirstName());
+            allClientDto.setLastName(clientDto.getLastName());
+            // allClientDto.setDateOfBirth(clientDto.getDateOfBirth());
+            allClientDto.setEmail(clientDto.getEmail());
+            allClientDto.setTelephone(clientDto.getTelephone());
+            allClientDto.setGender(clientDto.getGender());
             // address stuff:
-            allClientDto.setStreet(clientDto.getPerson().getAddress().getStreet());
-            allClientDto.setZipCode(clientDto.getPerson().getAddress().getZipCode());
-            allClientDto.setCity(clientDto.getPerson().getAddress().getCity());
-            allClientDto.setCountry(clientDto.getPerson().getAddress().getCountry());
+            // allClientDto.setStreet(clientDto.getPerson().getAddress().getStreet());
+            // allClientDto.setZipCode(clientDto.getPerson().getAddress().getZipCode());
+            allClientDto.setCity(clientDto.getCity());
+            // allClientDto.setCountry(clientDto.getPerson().getAddress().getCountry());
             // client stuff:
             allClientDto.setKeyword(clientDto.getKeyword());
             allClientDto.setEducation(clientDto.getEducation());
@@ -250,6 +252,12 @@ public class ClientService {
         client.setCreatedAt(LocalDateTime.now());
         client.setSocialInsuranceNumber(clientForm.getSocialInsuranceNumber());
         client.setStatus(StatusService.STATUS_ACTIVE);
+        client.setFirstName(clientForm.getFirstName());
+        client.setLastName(clientForm.getLastName());
+        client.setEmail(clientForm.getEmail());
+        client.setTelephone(clientForm.getTelephone());
+        client.setGender(clientForm.getGender());
+        client.setCity(clientForm.getCity());
         return clientRepo.saveAndFlush(client);
     }
 
@@ -263,7 +271,7 @@ public class ClientService {
         person.setDateOfBirth(parseDate(clientForm.getDateOfBirth()));
         person.setCreatedAt(LocalDateTime.now());
         person.setAddress(address);
-        person.setClient(client);
+        // person.setClient(client);
         return personRepo.save(person);
     }
 
@@ -298,6 +306,12 @@ public class ClientService {
         client.setFurtherContact(clientForm.getFurtherContact());
         client.setComment(clientForm.getComment());
         client.setSocialInsuranceNumber(clientForm.getSocialInsuranceNumber());
+        client.setCity(clientForm.getCity());
+        client.setFirstName(clientForm.getFirstName());
+        client.setLastName(clientForm.getLastName());
+        client.setEmail(clientForm.getEmail());
+        client.setTelephone(clientForm.getTelephone());
+        client.setGender(clientForm.getGender());
         client.setUpdatedAt(LocalDateTime.now());
         setClient(client, clientForm);
     }

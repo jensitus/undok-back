@@ -44,4 +44,5 @@ public interface CounselingApi {
     @GetMapping("by-client/{client-id}/order/{order}")
     ResponseEntity<List<CounselingDto>> getCounselingByClientId(@PathVariable("client-id") UUID clientId, @PathVariable("order") String order);
 
+
 }

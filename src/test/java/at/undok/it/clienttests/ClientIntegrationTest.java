@@ -73,7 +73,7 @@ public class ClientIntegrationTest extends IntegrationTestBase {
         ClientForm secondClientForm = createClientForm("second_client");
         ClientForm thirdClientForm = createClientForm("third_client");
         ResponseEntity<ClientDto> secondClient = authRestApiClient.createClient(secondClientForm, accessToken);
-        clientId = Objects.requireNonNull(secondClient.getBody()).getPerson().getId();
+        clientId = Objects.requireNonNull(secondClient.getBody()).getId();
         ResponseEntity<ClientDto> thirdClient = authRestApiClient.createClient(thirdClientForm, accessToken);
         CounselingForm counselingFormSecondClient = createCounselingForm(Objects.requireNonNull(secondClient.getBody()).getId());
         CounselingForm counselingFormThirdClient = createCounselingForm(Objects.requireNonNull(Objects.requireNonNull(thirdClient.getBody()).getId()));
@@ -87,7 +87,7 @@ public class ClientIntegrationTest extends IntegrationTestBase {
     @Test
     public void testDeleteClient() {
         int first = checkDeletedClient();
-        authRestApiClient.getClient(clientId, accessToken);
+        // authRestApiClient.getClient(clientId, accessToken);
         authRestApiClient.deleteClient(clientId, accessToken);
         int second = checkDeletedClient();
         int sum = first - second;
@@ -98,7 +98,7 @@ public class ClientIntegrationTest extends IntegrationTestBase {
 
 
     private int checkDeletedClient() {
-        List<AllClientDto> allClients = authRestApiClient.getAllClients(accessToken);
+        List<ClientDto> allClients = authRestApiClient.getAllClients(accessToken);
         assertNotNull(allClients);
         return allClients.size();
     }

@@ -54,8 +54,8 @@ public class TimelineService {
       timelineItemDto.setCounselingDate(c.getCounselingDate());
       timelineItemDto.setCounselingId(c.getId());
       timelineItemDto.setCreatedAt(c.getCreatedAt());
-      if (c.getClient().getPerson().getFirstName() != null && c.getClient().getPerson().getLastName() != null) {
-        timelineItemDto.setName(c.getClient().getPerson().getFirstName() + ' ' + c.getClient().getPerson().getLastName());
+      if (c.getClient().getFirstName() != null && c.getClient().getLastName() != null) {
+        timelineItemDto.setName(c.getClient().getFirstName() + ' ' + c.getClient().getLastName());
       } else {
         timelineItemDto.setName(c.getClient().getKeyword());
       }

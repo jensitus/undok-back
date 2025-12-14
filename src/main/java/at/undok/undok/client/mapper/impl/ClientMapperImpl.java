@@ -1,9 +1,11 @@
 package at.undok.undok.client.mapper.impl;
 
+import at.undok.undok.client.mapper.annotation.UndokMapper;
 import at.undok.undok.client.mapper.inter.ClientMapper;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.entity.Client;
 
+@UndokMapper
 public class ClientMapperImpl implements ClientMapper {
 
     @Override
@@ -30,7 +32,13 @@ public class ClientMapperImpl implements ClientMapper {
                              client.getSocialInsuranceNumber(),
                              client.getFurtherContact(),
                              client.getComment(),
-                             client.getAlert());
+                             client.getAlert(),
+                             client.getFirstName(),
+                             client.getLastName(),
+                             client.getGender(),
+                             client.getTelephone(),
+                             client.getEmail(),
+                             client.getCity());
     }
 
     @Override

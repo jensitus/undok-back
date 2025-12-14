@@ -3,11 +3,15 @@ package at.undok.undok.client.controller;
 import at.undok.undok.client.api.CounselingApi;
 import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.CounselingDto;
+import at.undok.undok.client.model.dto.LanguageCount;
+import at.undok.undok.client.model.dto.NationalityCount;
+import at.undok.undok.client.model.entity.Counseling;
 import at.undok.undok.client.service.CounselingService;
 import at.undok.undok.client.service.CsvService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -78,5 +82,6 @@ public class CounselingController implements CounselingApi {
     public ResponseEntity<List<CounselingDto>> getCounselingByClientId(UUID clientId, String order) {
         return ResponseEntity.ok(counselingService.findByClient(clientId, order));
     }
+
 
 }

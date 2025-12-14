@@ -18,7 +18,7 @@ public class CounselingMapperImpl implements CounselingMapper {
                                  counseling.getCreatedAt(),
                                  counseling.getComment(),
                                  counseling.getClient().getId(),
-                                 counseling.getClient().getPerson().getFirstName() + " " + counseling.getClient().getPerson().getLastName(),
+                                 counseling.getClient().getFirstName() + " " + counseling.getClient().getLastName(),
                                  counseling.getClient().getKeyword(),
                                  counseling.getRequiredTime());
     }

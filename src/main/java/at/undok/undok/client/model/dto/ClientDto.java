@@ -16,59 +16,45 @@ public class ClientDto {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
     private String keyword;
-
     private String education;
-
     private String maritalStatus;
-
     private String nationality;
-
     private String language;
-
     private Boolean interpreterNecessary;
-
     private String howHasThePersonHeardFromUs;
-
     private String currentResidentStatus;
-
     private Boolean vulnerableWhenAssertingRights;
-
     private String formerResidentStatus;
-
     private String labourMarketAccess;
-
     private String position;
-
     private String sector;
-
     private String union;
-
     private Boolean membership;
-
     private String organization;
-
-    private PersonDto person;
-
+    // private PersonDto person;
     private List<CounselingDto> counselings;
-
     private String socialInsuranceNumber;
     private List<CaseDto> closedCases;
     private CaseDto openCase;
     private List<CategoryDto> jobFunctions;
-
     private String furtherContact;
     private String comment;
-
     private Boolean alert;
+    private String firstName;
+    private String lastName;
+    private String gender;
+    private String telephone;
+    private String email;
+    private String city;
 
     public ClientDto(UUID id, LocalDateTime createdAt, LocalDateTime updatedAt, String keyword, String education,
                      String maritalStatus, String nationality, String language, Boolean interpreterNecessary,
                      String howHasThePersonHeardFromUs, String currentResidentStatus, Boolean vulnerableWhenAssertingRights,
                      String formerResidentStatus, String labourMarketAccess, String position, String sector, String union,
                      Boolean membership, String organization, String socialInsuranceNumber, String furtherContact,
-                     String comment, Boolean alert) {
+                     String comment, Boolean alert, String firstName, String lastName, String gender, String telephone,
+                     String email, String city) {
         this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -92,5 +78,11 @@ public class ClientDto {
         this.furtherContact = furtherContact;
         this.comment = comment;
         this.alert = alert;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.gender = gender;
+        this.telephone = telephone;
+        this.email = email;
+        this.city = city;
     }
 }
