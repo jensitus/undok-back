@@ -179,7 +179,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void setAdmin(UUID userId, boolean admin) {
-        User user = userRepo.getOne(userId);
+        User user = userRepo.findById(userId).orElse(null);
+        assert user != null;
         Set<Role> userRoles = user.getRoles();
         Role adminRole = roleService.getAdminRole();
         if (admin) {
@@ -202,6 +203,7 @@ public class UserServiceImpl implements UserService {
     public boolean lockUser(LockUserDto lockUserDto) {
         User user = userRepo.findById(lockUserDto.getId()).orElse(null);
         assert user != null;
+        setAdmin(user.getId(), false);
         user.setLocked(lockUserDto.isLock());
         Set<Role> roleSet = user.getRoles();
         if (user.isLocked()) {
