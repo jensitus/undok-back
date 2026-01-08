@@ -11,6 +11,7 @@ import at.undok.undok.client.model.entity.Person;
 import at.undok.undok.client.model.form.EmployerForm;
 import at.undok.undok.client.repository.AddressRepo;
 import at.undok.undok.client.repository.EmployerRepo;
+import at.undok.undok.client.repository.PersonRepo;
 import at.undok.undok.client.util.StatusService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -29,6 +30,7 @@ public class EmployerService {
     private final EntityToDtoMapper entityToDtoMapper;
     private final AttributeEncryptor attributeEncryptor;
     private final ClientEmployerService clientEmployerService;
+    private final PersonRepo personRepo;
 
     public EmployerDto setEmployer(EmployerForm employerForm) {
         Person employerPerson = new Person();
@@ -101,9 +103,10 @@ public class EmployerService {
         List<ClientEmployer> clientEmployers = clientEmployerService.getByClientId(clientId);
         List<ClientEmployerJobDescriptionDto> clientEmployerJobDescriptionDtos = new ArrayList<>();
         for (ClientEmployer ce : clientEmployers) {
-            Employer employer = employerRepo.getOne(ce.getEmployerId());
+            Employer employer = employerRepo.getReferenceById(ce.getEmployerId());
             EmployerDto employerDto = entityToDtoMapper.mapEmployerToDto(employer);
             ClientEmployerJobDescriptionDto clientEmployerJobDescriptionDto = new ClientEmployerJobDescriptionDto();
+            clientEmployerJobDescriptionDto.setId(ce.getId());
             clientEmployerJobDescriptionDto.setEmployer(employerDto);
             clientEmployerJobDescriptionDto.setFrom(ce.getFrom());
             clientEmployerJobDescriptionDto.setUntil(ce.getUntil());
@@ -123,12 +126,32 @@ public class EmployerService {
 
     public EmployerDto updateEmployer(EmployerDto employerDto) {
 
-        Address address = addressRepo.save(entityToDtoMapper.mapToAddress(employerDto.getPerson().getAddress()));
-        Employer employer = entityToDtoMapper.mapDtoToEmployer(employerDto);
-        employer.getPerson().setAddress(address);
-        employer.setId(employerDto.getId());
-        employerRepo.save(employer);
-        return modelMapper.map(employer, EmployerDto.class);
+        Employer toBeUpdatedEmployer = employerRepo.findById(employerDto.getId()).orElseThrow();
+        Person toBeUpdatedPerson = personRepo.findById(employerDto.getPerson().getId()).orElseThrow();
+        Address toBeUpdatedAddress = addressRepo.findById(employerDto.getPerson().getAddress().getId()).orElseThrow();
+
+        toBeUpdatedAddress.setStreet(employerDto.getPerson().getAddress().getStreet());
+        toBeUpdatedAddress.setCity(employerDto.getPerson().getAddress().getCity());
+        toBeUpdatedAddress.setCountry(employerDto.getPerson().getAddress().getCountry());
+        toBeUpdatedAddress.setZipCode(employerDto.getPerson().getAddress().getZipCode());
+        Address savedAddress = addressRepo.save(toBeUpdatedAddress);
+
+        toBeUpdatedPerson.setAddress(savedAddress);
+        toBeUpdatedPerson.setFirstName(employerDto.getPerson().getFirstName());
+        toBeUpdatedPerson.setLastName(employerDto.getPerson().getLastName());
+        toBeUpdatedPerson.setEmail(employerDto.getPerson().getEmail());
+        toBeUpdatedPerson.setTelephone(employerDto.getPerson().getTelephone());
+        toBeUpdatedPerson.setUpdatedAt(LocalDateTime.now());
+        Person savedPerson = personRepo.save(toBeUpdatedPerson);
+
+        toBeUpdatedEmployer.setPerson(savedPerson);
+        toBeUpdatedEmployer.setPosition(employerDto.getPosition());
+        toBeUpdatedEmployer.setCompany(employerDto.getCompany());
+        toBeUpdatedEmployer.setPosition(employerDto.getPosition());
+        toBeUpdatedEmployer.setUpdatedAt(LocalDateTime.now());
+        Employer savedEmployer = employerRepo.save(toBeUpdatedEmployer);
+
+        return modelMapper.map(savedEmployer, EmployerDto.class);
     }
 
     public void setStatusDeleted(UUID employerId) {

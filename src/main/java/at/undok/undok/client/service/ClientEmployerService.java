@@ -2,7 +2,6 @@ package at.undok.undok.client.service;
 
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.entity.ClientEmployer;
-import at.undok.undok.client.model.entity.Employer;
 import at.undok.undok.client.model.form.ClientEmployerForm;
 import at.undok.undok.client.repository.ClientEmployerRepo;
 import lombok.RequiredArgsConstructor;
@@ -57,8 +56,8 @@ public class ClientEmployerService {
         }
     }
 
-    public boolean removeEmployerFromClient(UUID employerId, UUID clientId) {
-        ClientEmployer clientEmployer = clientEmployerRepo.findByEmployerIdAndClientId(employerId, clientId);
+    public boolean removeEmployerFromClient(UUID clientEmployerId, UUID clientId) {
+        ClientEmployer clientEmployer = clientEmployerRepo.findById(clientEmployerId).orElseThrow();
         clientEmployerRepo.delete(clientEmployer);
         return true;
     }
@@ -68,7 +67,8 @@ public class ClientEmployerService {
     }
 
     public boolean updateClientEmployerJobDescription(UUID employerId, UUID clientId, ClientEmployerForm clientEmployerForm) {
-        ClientEmployer clientEmployer = clientEmployerRepo.findByEmployerIdAndClientId(employerId, clientId);
+        // ClientEmployer clientEmployer = clientEmployerRepo.findByEmployerIdAndClientId(employerId, clientId);
+        ClientEmployer clientEmployer = clientEmployerRepo.findById(clientEmployerForm.getId()).orElseThrow();
         clientEmployer = setClientEmployer(clientEmployer, clientEmployerForm);
         clientEmployer.setUpdatedAt(LocalDateTime.now());
         clientEmployerRepo.save(clientEmployer);

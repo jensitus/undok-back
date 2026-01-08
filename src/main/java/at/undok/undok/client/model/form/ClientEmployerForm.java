@@ -9,7 +9,7 @@ import java.util.UUID;
 @Data
 @ToString
 public class ClientEmployerForm {
-
+    private UUID id;
     private UUID employerId;
     private UUID clientId;
     private LocalDate from;

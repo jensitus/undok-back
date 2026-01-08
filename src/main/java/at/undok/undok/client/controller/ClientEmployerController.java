@@ -30,8 +30,8 @@ public class ClientEmployerController implements ClientEmployerApi {
     }
 
     @Override
-    public boolean removeEmployerFromClient(UUID employerId, UUID clientId) {
-        return clientEmployerService.removeEmployerFromClient(employerId, clientId);
+    public boolean removeEmployerFromClient(UUID clientEmployerId, UUID clientId) {
+        return clientEmployerService.removeEmployerFromClient(clientEmployerId, clientId);
     }
 
     @Override
