@@ -103,9 +103,10 @@ public class EmployerService {
         List<ClientEmployer> clientEmployers = clientEmployerService.getByClientId(clientId);
         List<ClientEmployerJobDescriptionDto> clientEmployerJobDescriptionDtos = new ArrayList<>();
         for (ClientEmployer ce : clientEmployers) {
-            Employer employer = employerRepo.getOne(ce.getEmployerId());
+            Employer employer = employerRepo.getReferenceById(ce.getEmployerId());
             EmployerDto employerDto = entityToDtoMapper.mapEmployerToDto(employer);
             ClientEmployerJobDescriptionDto clientEmployerJobDescriptionDto = new ClientEmployerJobDescriptionDto();
+            clientEmployerJobDescriptionDto.setId(ce.getId());
             clientEmployerJobDescriptionDto.setEmployer(employerDto);
             clientEmployerJobDescriptionDto.setFrom(ce.getFrom());
             clientEmployerJobDescriptionDto.setUntil(ce.getUntil());

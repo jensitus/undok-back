@@ -19,8 +19,8 @@ public interface ClientEmployerApi {
                                 @PathVariable("client_id") UUID clientId,
                                 @RequestBody ClientEmployerForm clientEmployerForm);
 
-    @DeleteMapping("/{employer_id}/client/{client_id}/delete")
-    boolean removeEmployerFromClient(@PathVariable("employer_id") UUID employerId,
+    @DeleteMapping("/{client_employer_id}/client/{client_id}/delete")
+    boolean removeEmployerFromClient(@PathVariable("client_employer_id") UUID clientEmployerId,
                                      @PathVariable("client_id") UUID clientId);
 
     @PutMapping("/{employer_id}/client/{client_id}")
