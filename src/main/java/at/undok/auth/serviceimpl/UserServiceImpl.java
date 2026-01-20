@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Message resetPassword(PasswordResetForm passwordResetForm, String base64Token, String email) {
-        if (passwordResetForm.getPassword().equals(passwordResetForm.getPassword_confirmation())) {
+        if (passwordResetForm.getPassword().equals(passwordResetForm.getPasswordConfirmation())) {
             if (checkIfResetTokenExpired(base64Token, email)) {
                 User user = userRepo.findByEmail(attributeEncryptor.decodeUrlEncoded(passwordResetForm.getEmail()));
                 user.setPassword(encoder.encode(passwordResetForm.getPassword()));
