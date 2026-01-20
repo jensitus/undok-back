@@ -2,11 +2,12 @@ package at.undok.it.cucumber.auth;
 
 import at.undok.auth.message.JwtResponse;
 import at.undok.auth.message.PasswordResetForm;
-import at.undok.auth.model.dto.LoginDto;
-import at.undok.auth.model.dto.SignUpDto;
+import at.undok.auth.model.dto.*;
 import at.undok.auth.model.form.ConfirmAccountForm;
+import at.undok.auth.model.form.CreateUserForm;
 import at.undok.auth.model.form.SecondFactorForm;
 import at.undok.common.message.Message;
+import org.springframework.security.core.userdetails.UserDetails;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.AllCounselingDto;
 import at.undok.undok.client.model.dto.ClientDto;
@@ -145,6 +146,90 @@ public class AuthRestApiClient {
     public ResponseEntity<Message> setNewPassword(ConfirmAccountForm confirmAccountForm) {
         String url = HOST + serverPort + "/service/auth/" + confirmAccountForm.getConfirmationToken() + "/set_new_password";
         return testRestTemplate.postForEntity(url, confirmAccountForm, Message.class);
+    }
+
+    // User API methods
+
+    public ResponseEntity<List> getAllUsers(String accessToken) {
+        HttpHeaders httpHeaders = getHeaders(accessToken);
+        String url = HOST + serverPort + "/service/users/all";
+        HttpEntity entity = new HttpEntity(httpHeaders);
+        return testRestTemplate.exchange(url, HttpMethod.GET, entity, List.class);
+    }
+
+    public ResponseEntity<UserDto> getUserByUsername(String username, String accessToken) {
+        HttpHeaders httpHeaders = getHeaders(accessToken);
+        String url = HOST + serverPort + "/service/users/by_username/" + username;
+        HttpEntity entity = new HttpEntity(httpHeaders);
+        return testRestTemplate.exchange(url, HttpMethod.GET, entity, UserDto.class);
+    }
+
+    public ResponseEntity<UserDetails> getSpecialUser(String username, String accessToken) {
+        HttpHeaders httpHeaders = getHeaders(accessToken);
+        String url = HOST + serverPort + "/service/users/principle/" + username;
+        HttpEntity entity = new HttpEntity(httpHeaders);
+        return testRestTemplate.exchange(url, HttpMethod.GET, entity, UserDetails.class);
+    }
+
+    public ResponseEntity<String> getSpecialUserAsString(String username, String accessToken) {
+        HttpHeaders httpHeaders = getHeaders(accessToken);
+        String url = HOST + serverPort + "/service/users/principle/" + username;
+        HttpEntity entity = new HttpEntity(httpHeaders);
+        return testRestTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+    }
+
+    public ResponseEntity<Message> checkAuthToken(String token, String accessToken) {
+        HttpHeaders httpHeaders = getHeaders(accessToken);
+        String url = HOST + serverPort + "/service/users/auth/check_auth_token";
+        HttpEntity<String> entity = new HttpEntity<>(token, httpHeaders);
+        return testRestTemplate.postForEntity(url, entity, Message.class);
+    }
+
+    public ResponseEntity<Message> requestPasswordReset(String email, String accessToken) {
+        HttpHeaders httpHeaders = getHeaders(accessToken);
+        String url = HOST + serverPort + "/service/users/auth/password_resets";
+        HttpEntity<String> entity = new HttpEntity<>(email, httpHeaders);
+        return testRestTemplate.postForEntity(url, entity, Message.class);
+    }
+
+    public ResponseEntity<Message> changePassword(ChangePwDto changePwDto, String accessToken) {
+        HttpHeaders httpHeaders = getHeaders(accessToken);
+        String url = HOST + serverPort + "/service/users/changepw";
+        HttpEntity<ChangePwDto> entity = new HttpEntity<>(changePwDto, httpHeaders);
+        return testRestTemplate.postForEntity(url, entity, Message.class);
+    }
+
+    public ResponseEntity<Message> setAdminFlag(UUID userId, boolean isAdmin, String accessToken) {
+        HttpHeaders httpHeaders = getHeaders(accessToken);
+        String url = HOST + serverPort + "/service/users/set-admin/" + userId;
+        SetAdminDto setAdminDto = new SetAdminDto();
+        setAdminDto.setAdmin(isAdmin);
+        HttpEntity<SetAdminDto> entity = new HttpEntity<>(setAdminDto, httpHeaders);
+        return testRestTemplate.postForEntity(url, entity, Message.class);
+    }
+
+    public ResponseEntity<Message> createUserViaAdmin(CreateUserForm createUserForm, String accessToken) {
+        HttpHeaders httpHeaders = getHeaders(accessToken);
+        String url = HOST + serverPort + "/service/users/create-user-via-admin";
+        HttpEntity<CreateUserForm> entity = new HttpEntity<>(createUserForm, httpHeaders);
+        return testRestTemplate.postForEntity(url, entity, Message.class);
+    }
+
+    public ResponseEntity<Message> resendConfirmationLink(String userId, String accessToken) {
+        HttpHeaders httpHeaders = getHeaders(accessToken);
+        String url = HOST + serverPort + "/service/users/resend-confirmation-link";
+        HttpEntity<String> entity = new HttpEntity<>(userId, httpHeaders);
+        return testRestTemplate.postForEntity(url, entity, Message.class);
+    }
+
+    public ResponseEntity<Message> lockUser(UUID userId, boolean lock, String accessToken) {
+        HttpHeaders httpHeaders = getHeaders(accessToken);
+        String url = HOST + serverPort + "/service/users/" + userId + "/lock";
+        LockUserDto lockUserDto = new LockUserDto();
+        lockUserDto.setId(userId);
+        lockUserDto.setLock(lock);
+        HttpEntity<LockUserDto> entity = new HttpEntity<>(lockUserDto, httpHeaders);
+        return testRestTemplate.postForEntity(url, entity, Message.class);
     }
 
 }
