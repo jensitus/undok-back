@@ -1,8 +1,10 @@
 package at.undok.it.cucumber.auth;
 
 import at.undok.auth.message.JwtResponse;
+import at.undok.auth.message.PasswordResetForm;
 import at.undok.auth.model.dto.LoginDto;
 import at.undok.auth.model.dto.SignUpDto;
+import at.undok.auth.model.form.ConfirmAccountForm;
 import at.undok.auth.model.form.SecondFactorForm;
 import at.undok.common.message.Message;
 import at.undok.undok.client.model.dto.AllClientDto;
@@ -117,6 +119,32 @@ public class AuthRestApiClient {
         HttpEntity<Object> entity = new HttpEntity<>(httpHeaders);
         ResponseEntity<Message> response = testRestTemplate.exchange(url, HttpMethod.GET, entity, Message.class);
         return response;
+    }
+
+    public ResponseEntity<Message> resetPassword(PasswordResetForm passwordResetForm) {
+        String url = HOST + serverPort + "/service/auth/reset_password";
+        return testRestTemplate.postForEntity(url, passwordResetForm, Message.class);
+    }
+
+    public ResponseEntity<String> validatePasswordResetToken(String token, String email) {
+        String url = HOST + serverPort + "/service/auth/reset_password/" + token + "/edit?email=" + email;
+        return testRestTemplate.getForEntity(url, String.class);
+    }
+
+    public ResponseEntity<Message> resetPasswordWithToken(PasswordResetForm passwordResetForm, String token, String email) {
+        String url = HOST + serverPort + "/service/auth/reset_password/" + token + "?email=" + email;
+        HttpEntity<PasswordResetForm> requestEntity = new HttpEntity<>(passwordResetForm);
+        return testRestTemplate.exchange(url, HttpMethod.PUT, requestEntity, Message.class);
+    }
+
+    public ResponseEntity<Message> checkConfirmationData(String token, String confirm, String encodedEmail) {
+        String url = HOST + serverPort + "/service/auth/" + token + "/" + confirm + "/" + encodedEmail;
+        return testRestTemplate.getForEntity(url, Message.class);
+    }
+
+    public ResponseEntity<Message> setNewPassword(ConfirmAccountForm confirmAccountForm) {
+        String url = HOST + serverPort + "/service/auth/" + confirmAccountForm.getConfirmationToken() + "/set_new_password";
+        return testRestTemplate.postForEntity(url, confirmAccountForm, Message.class);
     }
 
 }
