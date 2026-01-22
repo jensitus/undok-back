@@ -22,4 +22,5 @@ public interface CategoryRepo extends JpaRepository<Category, UUID> {
 
     List<Category> findCategoryByToBeDeleted(Boolean toBeDeleted);
 
+    Category findByNameAndType(String name, String type);
 }

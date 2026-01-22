@@ -48,7 +48,14 @@ public class CategoryService {
             Category c = categoryRepo.save(category);
             return modelMapper.map(c, CategoryDto.class);
         } catch (DataIntegrityViolationException e) {
-            throw new UniqueCategoryException("Category already exists for this topic");
+            Category c = categoryRepo.findByNameAndType(categoryForm.getName(), categoryForm.getType());
+            if (c.isToBeDeleted()) {
+                c.setToBeDeleted(false);
+                Category saved = categoryRepo.save(c);
+                return modelMapper.map(saved, CategoryDto.class);
+            } else {
+                throw new UniqueCategoryException("Category already exists for this topic");
+            }
         }
     }
 
