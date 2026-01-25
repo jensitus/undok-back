@@ -17,7 +17,7 @@ import java.util.UUID;
 public interface CategoryApi {
 
     @PostMapping("/create")
-    ResponseEntity createCategory(@RequestBody CategoryForm categoryForm);
+    ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryForm categoryForm);
 
     @GetMapping("/by-type/{type}")
     List<CategoryDto> getCategoriesByType(@PathVariable("type") String type);

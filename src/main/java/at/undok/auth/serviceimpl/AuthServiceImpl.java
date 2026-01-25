@@ -177,6 +177,7 @@ public class AuthServiceImpl implements AuthService {
         user.setAdmin(createUserForm.isAdmin());
         user.setConfirmationTokenCreatedAt(LocalDateTime.now());
         user.setChangePassword(true);
+        user.setConfirmed(false);
         Message m = undokMailer.createConfirmationMail(user, confirmationToken);
         userRepo.save(user);
         return m.getText();
