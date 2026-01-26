@@ -24,9 +24,9 @@ public class Person extends AbstractCrud implements Serializable {
 //    @JoinColumn(name = "client_id", referencedColumnName = "id")
 //    private Client client;
 
-    @OneToOne(mappedBy = "person")
-    @JsonIgnore
-    private Employer employer;
+//    @OneToOne(mappedBy = "person")
+//    @JsonIgnore
+//    private Employer employer;
 
     @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
@@ -76,13 +76,13 @@ public class Person extends AbstractCrud implements Serializable {
 //        this.client = client;
 //    }
 
-    public Employer getEmployer() {
-        return employer;
-    }
-
-    public void setEmployer(Employer employer) {
-        this.employer = employer;
-    }
+//    public Employer getEmployer() {
+//        return employer;
+//    }
+//
+//    public void setEmployer(Employer employer) {
+//        this.employer = employer;
+//    }
 
     public Address getAddress() {
         return address;
