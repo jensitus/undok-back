@@ -28,7 +28,7 @@ public class ClientDto {
     private String formerResidentStatus;
     private String labourMarketAccess;
     private String position;
-    private String sector;
+    // private String sector;
     private String union;
     private Boolean membership;
     private String organization;
@@ -51,7 +51,7 @@ public class ClientDto {
     public ClientDto(UUID id, LocalDateTime createdAt, LocalDateTime updatedAt, String keyword, String education,
                      String maritalStatus, String nationality, String language, Boolean interpreterNecessary,
                      String howHasThePersonHeardFromUs, String currentResidentStatus, Boolean vulnerableWhenAssertingRights,
-                     String formerResidentStatus, String labourMarketAccess, String position, String sector, String union,
+                     String formerResidentStatus, String labourMarketAccess, String position, /*String sector*/ String union,
                      Boolean membership, String organization, String socialInsuranceNumber, String furtherContact,
                      String comment, Boolean alert, String firstName, String lastName, String gender, String telephone,
                      String email, String city) {
@@ -70,7 +70,7 @@ public class ClientDto {
         this.formerResidentStatus = formerResidentStatus;
         this.labourMarketAccess = labourMarketAccess;
         this.position = position;
-        this.sector = sector;
+        //this.sector = sector;
         this.union = union;
         this.membership = membership;
         this.organization = organization;

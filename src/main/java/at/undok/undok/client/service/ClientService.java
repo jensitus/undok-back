@@ -217,7 +217,7 @@ public class ClientService {
             allClientDto.setKeyword(clientDto.getKeyword());
             allClientDto.setEducation(clientDto.getEducation());
             allClientDto.setLanguage(clientDto.getLanguage());
-            allClientDto.setSector(clientDto.getSector());
+            // allClientDto.setSector(clientDto.getSector());
             allClientDto.setUnion(clientDto.getUnion());
             allClientDto.setMembership(clientDto.getMembership());
             allClientDto.setPosition(clientDto.getPosition());

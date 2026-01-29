@@ -35,38 +35,42 @@ import java.util.*;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private PasswordResetTokenRepo passwordResetTokenRepo;
+    private final PasswordResetTokenRepo passwordResetTokenRepo;
 
-    @Autowired
-    private UndokMailer undokMailer;
+    private final UndokMailer undokMailer;
 
-    @Autowired
-    private JwtProvider jwtProvider;
+    private final JwtProvider jwtProvider;
 
-    @Autowired
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
+    final
     PasswordEncoder encoder;
 
-    @Autowired
-    private RoleRepo roleRepo;
+    private final RoleRepo roleRepo;
 
-    @Autowired
-    private RoleService roleService;
+    private final RoleService roleService;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private AttributeEncryptor attributeEncryptor;
+    private final AttributeEncryptor attributeEncryptor;
 
     @Value("${service.b.org.app.baseUrl}")
     private String applicationBaseUrl;
+
+    public UserServiceImpl(PasswordResetTokenRepo passwordResetTokenRepo, UndokMailer undokMailer, JwtProvider jwtProvider, UserRepo userRepo, ModelMapper modelMapper, PasswordEncoder encoder, RoleRepo roleRepo, RoleService roleService, AuthenticationManager authenticationManager, AttributeEncryptor attributeEncryptor) {
+        this.passwordResetTokenRepo = passwordResetTokenRepo;
+        this.undokMailer = undokMailer;
+        this.jwtProvider = jwtProvider;
+        this.userRepo = userRepo;
+        this.modelMapper = modelMapper;
+        this.encoder = encoder;
+        this.roleRepo = roleRepo;
+        this.roleService = roleService;
+        this.authenticationManager = authenticationManager;
+        this.attributeEncryptor = attributeEncryptor;
+    }
 
     @Override
     public Message createPasswordResetTokenForUser(String email) {
