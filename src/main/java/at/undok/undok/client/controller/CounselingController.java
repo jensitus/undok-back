@@ -54,8 +54,9 @@ public class CounselingController implements CounselingApi {
     }
 
     @Override
-    public void deleteCounseling(UUID counselingId) {
+    public ResponseEntity<Void> deleteCounseling(UUID counselingId) {
         counselingService.deleteCounseling(counselingId);
+        return ResponseEntity.ok().build();
     }
 
     @Override
