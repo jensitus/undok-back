@@ -3,12 +3,16 @@ package at.undok.it.search;
 import at.undok.it.IntegrationTestBase;
 import at.undok.undok.client.model.dto.UnifiedSearchResponse;
 import at.undok.undok.client.model.entity.Case;
+import at.undok.undok.client.model.entity.Category;
 import at.undok.undok.client.model.entity.Client;
 import at.undok.undok.client.model.entity.Counseling;
+import at.undok.undok.client.model.entity.JoinCategory;
 import at.undok.undok.client.model.entity.Task;
 import at.undok.undok.client.repository.CaseRepo;
+import at.undok.undok.client.repository.CategoryRepo;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.CounselingRepo;
+import at.undok.undok.client.repository.JoinCategoryRepo;
 import at.undok.undok.client.repository.TaskRepo;
 import at.undok.undok.client.service.SearchService;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,12 +42,20 @@ public class CounselingRepositoryTest extends IntegrationTestBase {
     @Autowired
     private CaseRepo caseRepo;
 
+    @Autowired
+    private CategoryRepo categoryRepo;
+
+    @Autowired
+    private JoinCategoryRepo joinCategoryRepo;
+
     @BeforeEach
     void setUp() {
+        joinCategoryRepo.deleteAll();
         counselingRepository.deleteAll();
         clientRepo.deleteAll();
         caseRepo.deleteAll();
         taskRepo.deleteAll();
+        categoryRepo.deleteAll();
 
         // Create test data
 
@@ -198,6 +210,90 @@ public class CounselingRepositoryTest extends IntegrationTestBase {
 
     private LocalDateTime getEndDate() {
         return LocalDateTime.of(2024, 6, 30, 0, 0);
+    }
+
+    @Test
+    void shouldFindClientByIndustryUnionCategoryName() {
+        // Create a client that won't match fulltext search for "Tourismus"
+        Client client = new Client();
+        client.setFirstName("Max");
+        client.setLastName("Mustermann");
+        client.setKeyword("max_mustermann");
+        client.setCreatedAt(LocalDateTime.of(2024, 6, 1, 0, 0));
+        Client savedClient = clientRepo.save(client);
+
+        // Create a case for the client (categories are linked to cases)
+        Case clientCase = new Case();
+        clientCase.setName("Tourismus Case");
+        clientCase.setStatus("OPEN");
+        clientCase.setStartDate(LocalDate.of(2024, 6, 1));
+        clientCase.setClientId(savedClient.getId());
+        Case savedCase = caseRepo.save(clientCase);
+
+        // Create an INDUSTRY_UNION category
+        Category category = new Category();
+        category.setName("Tourismus (Vida)");
+        category.setType("INDUSTRY_UNION");
+        Category savedCategory = categoryRepo.save(category);
+
+        // Link category to case
+        JoinCategory joinCategory = new JoinCategory();
+        joinCategory.setCategoryId(savedCategory.getId());
+        joinCategory.setEntityId(savedCase.getId());
+        joinCategory.setCategoryType("INDUSTRY_UNION");
+        joinCategory.setEntityType("CASE");
+        joinCategory.setCreatedAt(LocalDateTime.now());
+        joinCategoryRepo.save(joinCategory);
+
+        // Search for the category name - should find the client
+        UnifiedSearchResponse response = searchService.searchAll("Tourismus", LocalDateTime.of(2000, 1, 1, 0, 0), LocalDateTime.of(2026, 2, 17, 23, 59), 0, 10);
+        assertThat(response.getClients()).hasSize(1);
+        assertThat(response.getClients().get(0).getKeyword()).isEqualTo("max_mustermann");
+        assertThat(response.getClients().get(0).getMatchedCategories()).containsExactly("Tourismus (Vida)");
+
+        // Partial match should also work
+        UnifiedSearchResponse partialResponse = searchService.searchAll("Tour", 0, 10);
+        assertThat(partialResponse.getClients()).hasSize(1);
+        assertThat(partialResponse.getClients().get(0).getMatchedCategories()).containsExactly("Tourismus (Vida)");
+    }
+
+    @Test
+    void shouldNotDuplicateClientInSearchResults() {
+        // Create a client with "Tourismus" in the comment (matches fulltext)
+        Client client = new Client();
+        client.setFirstName("Anna");
+        client.setLastName("Schmidt");
+        client.setKeyword("anna_schmidt");
+        client.setComment("Arbeitet im Tourismus");
+        client.setCreatedAt(LocalDateTime.of(2024, 6, 1, 0, 0));
+        Client savedClient = clientRepo.save(client);
+
+        // Create a case for the client (categories are linked to cases)
+        Case clientCase = new Case();
+        clientCase.setName("Duplicate Test Case");
+        clientCase.setStatus("OPEN");
+        clientCase.setStartDate(LocalDate.of(2024, 6, 1));
+        clientCase.setClientId(savedClient.getId());
+        Case savedCase = caseRepo.save(clientCase);
+
+        // Also link case to Tourismus category
+        Category category = new Category();
+        category.setName("Tourismus (Vida)");
+        category.setType("INDUSTRY_UNION");
+        Category savedCategory = categoryRepo.save(category);
+
+        JoinCategory joinCategory = new JoinCategory();
+        joinCategory.setCategoryId(savedCategory.getId());
+        joinCategory.setEntityId(savedCase.getId());
+        joinCategory.setCategoryType("INDUSTRY_UNION");
+        joinCategory.setEntityType("CASE");
+        joinCategory.setCreatedAt(LocalDateTime.now());
+        joinCategoryRepo.save(joinCategory);
+
+        // Search should return the client only once (not duplicated)
+        UnifiedSearchResponse response = searchService.searchAll("Tourismus", 0, 10);
+        assertThat(response.getClients()).hasSize(1);
+        assertThat(response.getPagination().getTotalClients()).isEqualTo(1);
     }
 
 }
