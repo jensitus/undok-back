@@ -4,18 +4,20 @@ import at.undok.undok.client.model.entity.Client;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Setter
 @Getter
 public class ClientSearchResult {
-    // Getters and setters
     private UUID id;
     private String keyword;
     private String lastName;
     private String firstName;
     private String comment;
     private String type = "client";
+    private List<String> matchedCategories = new ArrayList<>();
 
     public ClientSearchResult() {
     }
@@ -26,6 +28,11 @@ public class ClientSearchResult {
         this.lastName = client.getLastName();
         this.firstName = client.getFirstName();
         this.comment = client.getComment();
+    }
+
+    public ClientSearchResult(Client client, List<String> matchedCategories) {
+        this(client);
+        this.matchedCategories = matchedCategories != null ? matchedCategories : new ArrayList<>();
     }
 
 }

@@ -19,6 +19,11 @@ public class UndokExceptionHandler {
         return ResponseEntity.status(HttpStatus.PRECONDITION_REQUIRED).body(new Message(e.getMessage()));
     }
 
+    @ExceptionHandler(CounselingDateTimeParseException.class)
+    public ResponseEntity<String> handleCounselingDateTimeParseException(CounselingDateTimeParseException e) {
+        return ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).body(HttpStatus.I_AM_A_TEAPOT.getReasonPhrase() + " :: " + e.getMessage() + " :: " + HttpStatus.I_AM_A_TEAPOT);
+    }
+
     @ExceptionHandler(TooMuchCasesException.class)
     public ResponseEntity<Message> handleTooMuchCaseException(TooMuchCasesException e) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new Message(e.getMessage()));

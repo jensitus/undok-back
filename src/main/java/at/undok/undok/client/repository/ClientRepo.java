@@ -183,4 +183,72 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
         """, nativeQuery = true)
     long countFullTextSearch(@Param("searchTerm") String searchTerm);
 
+    /**
+     * Find clients connected to categories of a specific type matching the search term.
+     * Categories are linked to cases, which are linked to clients.
+     *
+     * @param searchTerm the search term to match against category names
+     * @param categoryType the category type (e.g., INDUSTRY_UNION, COUNSELING_LANGUAGE, ORIGIN_OF_ATTENTION)
+     */
+    @Query(value = """
+        SELECT DISTINCT c.*
+        FROM clients c
+        JOIN cases ca ON ca.client_id = c.id
+        JOIN join_category jc ON jc.entity_id = ca.id
+        JOIN categories cat ON jc.category_id = cat.id
+        WHERE jc.entity_type = 'CASE'
+          AND jc.category_type = :categoryType
+          AND LOWER(cat.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+        """, nativeQuery = true)
+    List<Client> findClientsByCategoryName(
+            @Param("searchTerm") String searchTerm,
+            @Param("categoryType") String categoryType);
+
+    /**
+     * Find clients connected to categories of specific types matching the search term.
+     * Categories are linked to cases, which are linked to clients.
+     *
+     * @param searchTerm the search term to match against category names
+     * @param categoryTypes list of category types to search
+     */
+    @Query(value = """
+        SELECT DISTINCT c.*
+        FROM clients c
+        JOIN cases ca ON ca.client_id = c.id
+        JOIN join_category jc ON jc.entity_id = ca.id
+        JOIN categories cat ON jc.category_id = cat.id
+        WHERE jc.entity_type = 'CASE'
+          AND jc.category_type IN (:categoryTypes)
+          AND LOWER(cat.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+        """, nativeQuery = true)
+    List<Client> findClientsByCategoryNames(
+            @Param("searchTerm") String searchTerm,
+            @Param("categoryTypes") List<String> categoryTypes);
+
+    /**
+     * Projection interface for client ID with matched category name
+     */
+    interface ClientCategoryMatch {
+        UUID getClientId();
+        String getCategoryName();
+    }
+
+    /**
+     * Find matching category names for clients.
+     * Returns pairs of (client_id, category_name) for building the matchedCategories list.
+     */
+    @Query(value = """
+        SELECT c.id as clientId, cat.name as categoryName
+        FROM clients c
+        JOIN cases ca ON ca.client_id = c.id
+        JOIN join_category jc ON jc.entity_id = ca.id
+        JOIN categories cat ON jc.category_id = cat.id
+        WHERE jc.entity_type = 'CASE'
+          AND jc.category_type IN (:categoryTypes)
+          AND LOWER(cat.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+        """, nativeQuery = true)
+    List<ClientCategoryMatch> findMatchedCategoriesForClients(
+            @Param("searchTerm") String searchTerm,
+            @Param("categoryTypes") List<String> categoryTypes);
+
 }

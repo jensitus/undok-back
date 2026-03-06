@@ -30,7 +30,7 @@ public class UndokAuthenticationManager {
     private void checkPW(LoginDto loginDto) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.getUsername());
         if (!passwordEncoder.matches(loginDto.getPassword(), userDetails.getPassword())) {
-            throw new BadCredentialsException("wrong password");
+            throw new BadCredentialsException("something went wrong - check your credentials?");
         }
     }
 

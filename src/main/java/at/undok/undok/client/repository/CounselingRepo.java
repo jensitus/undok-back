@@ -54,28 +54,6 @@ public interface CounselingRepo extends JpaRepository<Counseling, UUID> {
     // Count of counselings between a given date range [from, to)
     long countByCounselingDateGreaterThanEqualAndCounselingDateLessThan(LocalDateTime from, LocalDateTime to);
 
-//    @Query(value = """
-//        SELECT c.*
-//        FROM counselings c
-//        WHERE c.search_vector @@ plainto_tsquery('german', :searchTerm)
-//          AND (CAST (:dateFrom AS TIMESTAMP) IS NULL OR c.counseling_date >= :dateFrom)
-//          AND (CAST (:dateTo AS TIMESTAMP) IS NULL OR c.counseling_date < :dateTo)
-//        ORDER BY ts_rank(c.search_vector, plainto_tsquery('german', :searchTerm)) DESC
-//        """,
-//            countQuery = """
-//        SELECT COUNT(*)
-//        FROM counselings c
-//        WHERE c.search_vector @@ plainto_tsquery('german', :searchTerm)
-//          AND (CAST (:dateFrom AS TIMESTAMP) IS NULL OR c.counseling_date >= :dateFrom)
-//          AND (CAST (:dateTo AS TIMESTAMP) IS NULL OR c.counseling_date < :dateTo)
-//       \s""",
-//            nativeQuery = true)
-//    Page<Counseling> fullTextSearch(@Param("searchTerm") String searchTerm,
-//                                    @Param("dateFrom") LocalDateTime dateFrom,
-//                                    @Param("dateTo") LocalDateTime dateTo,
-//                                    Pageable pageable
-//    );
-
     /**
      * Full-text search across concern and activity fields
      * Uses PostgreSQL's ts_rank for relevance scoring

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <!-- Add person fields directly to employers table -->
+    <changeSet id="add-person-fields-to-employers" author="jensitus">
+        <addColumn tableName="employers">
+            <column name="date_of_birth" type="date" />
+            <column name="last_name" type="varchar(255)" />
+            <column name="first_name" type="varchar(255)" />
+            <column name="email" type="varchar(255)" />
+            <column name="telephone" type="varchar(255)" />
+            <column name="gender" type="varchar(64)" />
+            <column name="contact_data" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+
+    <!-- Add address fields directly to employers table -->
+    <changeSet id="add-address-fields-to-employers" author="jensitus">
+        <addColumn tableName="employers">
+            <column name="street" type="varchar(255)" />
+            <column name="zip_code" type="varchar(20)" />
+            <column name="city" type="varchar(255)" />
+            <column name="country" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+
+    <!-- Migrate data from persons and addresses to employers -->
+    <changeSet id="migrate-person-address-data-to-employers" author="jensitus">
+        <sql>
+            UPDATE employers e
+            SET
+                date_of_birth = p.date_of_birth,
+                last_name = p.last_name,
+                first_name = p.first_name,
+                email = p.email,
+                telephone = p.telephone,
+                gender = p.gender,
+                contact_data = p.contact_data,
+                street = a.street,
+                zip_code = a.zip_code,
+                city = a.city,
+                country = a.country
+            FROM persons p
+            LEFT JOIN addresses a ON p.address_id = a.id
+            WHERE e.person_id = p.id;
+        </sql>
+    </changeSet>
+
+    <!-- Drop the person_id foreign key column -->
+    <changeSet id="drop-person-id-from-employers" author="jensitus">
+        <dropColumn tableName="employers" columnName="person_id" />
+    </changeSet>
+
+</databaseChangeLog>

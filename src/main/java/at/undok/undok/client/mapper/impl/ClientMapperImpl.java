@@ -25,7 +25,7 @@ public class ClientMapperImpl implements ClientMapper {
                              client.getFormerResidentStatus(),
                              client.getLabourMarketAccess(),
                              client.getPosition(),
-                             client.getSector(),
+                             // client.getSector(),
                              client.getUnion(),
                              client.getMembership(),
                              client.getOrganization(),

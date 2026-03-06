@@ -5,6 +5,7 @@ import at.undok.undok.client.model.dto.CheckClientEmployerDto;
 import lombok.Data;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -23,10 +24,6 @@ public class Employer extends AbstractCrud {
 
     public static final String TABLE_NAME = "employers";
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "person_id", referencedColumnName = "id")
-    private Person person;
-
     @Column(name = "company")
     private String company;
 
@@ -35,5 +32,40 @@ public class Employer extends AbstractCrud {
 
     @Column(name = "status")
     private String status;
+
+    // Fields previously in Person
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "telephone")
+    private String telephone;
+
+    @Column(name = "gender")
+    private String gender;
+
+    @Column(name = "contact_data")
+    private String contactData;
+
+    // Fields previously in Address
+    @Column(name = "street")
+    private String street;
+
+    @Column(name = "zip_code")
+    private String zipCode;
+
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "country")
+    private String country;
 
 }

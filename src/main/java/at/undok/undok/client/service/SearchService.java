@@ -14,12 +14,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class SearchService {
+
+    /**
+     * Category types to include in client search.
+     * Add additional types here to extend the search (e.g., "COUNSELING_LANGUAGE", "ORIGIN_OF_ATTENTION")
+     */
+    private static final List<String> SEARCHABLE_CATEGORY_TYPES = List.of("INDUSTRY_UNION", "SECTOR");
 
     private final CounselingRepo counselingRepository;
     private final ClientRepo clientRepository;
@@ -60,9 +71,9 @@ public class SearchService {
             return searchAll(trimmedSearch, page, size);
         }
 
-        // Get total counts for pagination metadata
+        // Get total counts for pagination metadata (including category search for clients)
         long totalCounselings = countCounselingsWithDateRange(trimmedSearch, startDate, endDate);
-        long totalClients = countClientsWithDateRange(trimmedSearch, startDate, endDate);
+        long totalClients = countMergedClientsWithDateRange(trimmedSearch, startDate, endDate);
         long totalTasks = countTasksWithDateRange(trimmedSearch, startDate, endDate);
         long totalElements = totalCounselings + totalClients + totalTasks;
 
@@ -90,13 +101,14 @@ public class SearchService {
                 offset -= (int) totalCounselings; // Adjust offset for next table
             }
 
-            // 2. Then, try to fill remaining space with clients
+            // 2. Then, try to fill remaining space with clients (merged from fulltext + category search)
             if (remaining > 0 && offset < totalClients) {
                 int clientsToFetch = (int) Math.min(remaining, totalClients - offset);
-                List<Client> clientResults = searchClientsWithDateRange(
+                List<Client> clientResults = getMergedClientsWithDateRangeAndPagination(
                         trimmedSearch, startDate, endDate, clientsToFetch, offset);
+                Map<UUID, List<String>> matchedCategories = getMatchedCategoriesMap(trimmedSearch);
                 clientDtos = clientResults.stream()
-                                          .map(ClientSearchResult::new)
+                                          .map(c -> new ClientSearchResult(c, matchedCategories.get(c.getId())))
                                           .collect(Collectors.toList());
                 remaining -= clientDtos.size();
                 offset = 0; // Reset offset for next table
@@ -135,9 +147,9 @@ public class SearchService {
 
         String trimmedSearch = searchTerm.trim();
 
-        // Get total counts for pagination metadata
+        // Get total counts for pagination metadata (including category search for clients)
         long totalCounselings = counselingRepository.countFullTextSearch(trimmedSearch);
-        long totalClients = clientRepository.countFullTextSearch(trimmedSearch);
+        long totalClients = countMergedClients(trimmedSearch);
         long totalTasks = taskRepo.countFullTextSearch(trimmedSearch);
         long totalElements = totalCounselings + totalClients + totalTasks;
 
@@ -165,13 +177,13 @@ public class SearchService {
                 offset -= (int) totalCounselings; // Adjust offset for next table
             }
 
-            // 2. Then, try to fill remaining space with clients
+            // 2. Then, try to fill remaining space with clients (merged from fulltext + category search)
             if (remaining > 0 && offset < totalClients) {
                 int clientsToFetch = (int) Math.min(remaining, totalClients - offset);
-                List<Client> clientResults = clientRepository
-                        .fullTextSearchWithPagination(trimmedSearch, clientsToFetch, offset);
+                List<Client> clientResults = getMergedClientsWithPagination(trimmedSearch, clientsToFetch, offset);
+                Map<UUID, List<String>> matchedCategories = getMatchedCategoriesMap(trimmedSearch);
                 clientDtos = clientResults.stream()
-                                          .map(ClientSearchResult::new)
+                                          .map(c -> new ClientSearchResult(c, matchedCategories.get(c.getId())))
                                           .collect(Collectors.toList());
                 remaining -= clientDtos.size();
                 offset = 0; // Reset offset for next table
@@ -208,10 +220,11 @@ public class SearchService {
 
         String trimmedSearch = searchTerm.trim();
 
-        // Search all three tables
+        // Search all three tables (clients merged from fulltext + category search)
         List<Counseling> counselingResults = counselingRepository.fullTextSearch(trimmedSearch);
-        List<Client> clientResults = clientRepository.fullTextSearch(trimmedSearch);
+        List<Client> clientResults = getMergedClients(trimmedSearch);
         List<Task> taskResults = taskRepo.fullTextSearch(trimmedSearch);
+        Map<UUID, List<String>> matchedCategories = getMatchedCategoriesMap(trimmedSearch);
 
         // Convert to DTOs
         List<CounselingSearchResult> counselingDtos = counselingResults.stream()
@@ -219,7 +232,7 @@ public class SearchService {
                                                                        .collect(Collectors.toList());
 
         List<ClientSearchResult> clientDtos = clientResults.stream()
-                                                           .map(ClientSearchResult::new)
+                                                           .map(c -> new ClientSearchResult(c, matchedCategories.get(c.getId())))
                                                            .collect(Collectors.toList());
 
         List<TaskSearchResult> taskDtos = taskResults.stream()
@@ -269,6 +282,7 @@ public class SearchService {
     /**
      * Search clients by term
      * Supports multi-word searches, phrases, and boolean operators
+     * Also searches clients connected to INDUSTRY_UNION categories matching the term
      *
      * @param searchTerm the search query (e.g., "John Smith", "keyword:urgent")
      * @return list of matching clients ordered by relevance
@@ -277,20 +291,19 @@ public class SearchService {
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
             return List.of();
         }
-        return clientRepository.fullTextSearch(searchTerm.trim()).stream().map(clientMapper::toDto).toList();
+        return getMergedClients(searchTerm.trim()).stream().map(clientMapper::toDto).toList();
     }
 
     /**
      * Search clients with pagination
+     * Also searches clients connected to INDUSTRY_UNION categories matching the term
      */
     public List<ClientDto> searchClients(String searchTerm, int page, int size) {
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
             return List.of();
         }
         int offset = page * size;
-        return clientRepository.fullTextSearchWithPagination(searchTerm.trim(),
-                                                             size,
-                                                             offset)
+        return getMergedClientsWithPagination(searchTerm.trim(), size, offset)
                                .stream()
                                .map(clientMapper::toDto)
                                .toList();
@@ -298,12 +311,13 @@ public class SearchService {
 
     /**
      * Count matching clients for pagination
+     * Includes both fulltext and INDUSTRY_UNION category matches
      */
     public long countClientSearchResults(String searchTerm) {
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
             return 0;
         }
-        return clientRepository.countFullTextSearch(searchTerm.trim());
+        return countMergedClients(searchTerm.trim());
     }
 
     /**
@@ -363,6 +377,140 @@ public class SearchService {
             return taskRepo.fullTextSearchWithPagination(searchTerm, limit, offset);
         }
         return taskRepo.fullTextSearchWithPaginationAndDateRange(searchTerm, startDate, endDate, limit, offset);
+    }
+
+    /**
+     * Merge fulltext search results with category search results.
+     * Searches across all category types defined in SEARCHABLE_CATEGORY_TYPES.
+     * Removes duplicates while preserving order (fulltext results first).
+     */
+    private List<Client> getMergedClients(String searchTerm) {
+        List<Client> fulltextResults = clientRepository.fullTextSearch(searchTerm);
+        List<Client> categoryResults = clientRepository.findClientsByCategoryNames(searchTerm, SEARCHABLE_CATEGORY_TYPES);
+
+        // Use LinkedHashSet to maintain order and remove duplicates
+        Set<UUID> seenIds = new LinkedHashSet<>();
+        List<Client> merged = new ArrayList<>();
+
+        for (Client client : fulltextResults) {
+            if (seenIds.add(client.getId())) {
+                merged.add(client);
+            }
+        }
+        for (Client client : categoryResults) {
+            if (seenIds.add(client.getId())) {
+                merged.add(client);
+            }
+        }
+
+        return merged;
+    }
+
+    /**
+     * Merge fulltext search results with category search results with pagination
+     */
+    private List<Client> getMergedClientsWithPagination(String searchTerm, int limit, int offset) {
+        // For pagination, we need to get all merged results first, then paginate
+        List<Client> allMerged = getMergedClients(searchTerm);
+
+        // Apply pagination
+        int fromIndex = Math.min(offset, allMerged.size());
+        int toIndex = Math.min(offset + limit, allMerged.size());
+
+        return allMerged.subList(fromIndex, toIndex);
+    }
+
+    /**
+     * Count merged clients from fulltext and category search
+     */
+    private long countMergedClients(String searchTerm) {
+        // We need to count unique clients from both sources
+        List<Client> fulltextResults = clientRepository.fullTextSearch(searchTerm);
+        List<Client> categoryResults = clientRepository.findClientsByCategoryNames(searchTerm, SEARCHABLE_CATEGORY_TYPES);
+
+        Set<UUID> uniqueIds = new LinkedHashSet<>();
+        fulltextResults.forEach(c -> uniqueIds.add(c.getId()));
+        categoryResults.forEach(c -> uniqueIds.add(c.getId()));
+
+        return uniqueIds.size();
+    }
+
+    /**
+     * Count merged clients from fulltext and category search with date range filter
+     */
+    private long countMergedClientsWithDateRange(String searchTerm, LocalDateTime startDate, LocalDateTime endDate) {
+        List<Client> fulltextResults;
+        if (startDate == null && endDate == null) {
+            fulltextResults = clientRepository.fullTextSearch(searchTerm);
+        } else {
+            fulltextResults = clientRepository.fullTextSearchWithDateRange(searchTerm, startDate, endDate);
+        }
+        List<Client> categoryResults = clientRepository.findClientsByCategoryNames(searchTerm, SEARCHABLE_CATEGORY_TYPES);
+
+        Set<UUID> uniqueIds = new LinkedHashSet<>();
+        fulltextResults.forEach(c -> uniqueIds.add(c.getId()));
+        categoryResults.forEach(c -> uniqueIds.add(c.getId()));
+
+        return uniqueIds.size();
+    }
+
+    /**
+     * Merge fulltext search results (with date range) with category search results
+     */
+    private List<Client> getMergedClientsWithDateRange(String searchTerm, LocalDateTime startDate, LocalDateTime endDate) {
+        List<Client> fulltextResults;
+        if (startDate == null && endDate == null) {
+            fulltextResults = clientRepository.fullTextSearch(searchTerm);
+        } else {
+            fulltextResults = clientRepository.fullTextSearchWithDateRange(searchTerm, startDate, endDate);
+        }
+        List<Client> categoryResults = clientRepository.findClientsByCategoryNames(searchTerm, SEARCHABLE_CATEGORY_TYPES);
+
+        // Use LinkedHashSet to maintain order and remove duplicates
+        Set<UUID> seenIds = new LinkedHashSet<>();
+        List<Client> merged = new ArrayList<>();
+
+        for (Client client : fulltextResults) {
+            if (seenIds.add(client.getId())) {
+                merged.add(client);
+            }
+        }
+        for (Client client : categoryResults) {
+            if (seenIds.add(client.getId())) {
+                merged.add(client);
+            }
+        }
+
+        return merged;
+    }
+
+    /**
+     * Merge fulltext search results (with date range) with category search results, with pagination
+     */
+    private List<Client> getMergedClientsWithDateRangeAndPagination(String searchTerm, LocalDateTime startDate,
+                                                                     LocalDateTime endDate, int limit, int offset) {
+        List<Client> allMerged = getMergedClientsWithDateRange(searchTerm, startDate, endDate);
+
+        // Apply pagination
+        int fromIndex = Math.min(offset, allMerged.size());
+        int toIndex = Math.min(offset + limit, allMerged.size());
+
+        return allMerged.subList(fromIndex, toIndex);
+    }
+
+    /**
+     * Get a map of client IDs to their matched category names
+     */
+    private Map<UUID, List<String>> getMatchedCategoriesMap(String searchTerm) {
+        List<ClientRepo.ClientCategoryMatch> matches = clientRepository.findMatchedCategoriesForClients(
+                searchTerm, SEARCHABLE_CATEGORY_TYPES);
+
+        Map<UUID, List<String>> result = new HashMap<>();
+        for (ClientRepo.ClientCategoryMatch match : matches) {
+            result.computeIfAbsent(match.getClientId(), k -> new ArrayList<>())
+                  .add(match.getCategoryName());
+        }
+        return result;
     }
 
 }

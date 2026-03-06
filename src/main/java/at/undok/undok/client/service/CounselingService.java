@@ -2,6 +2,7 @@ package at.undok.undok.client.service;
 
 import at.undok.common.util.ToLocalDateService;
 import at.undok.undok.client.exception.CounselingDateException;
+import at.undok.undok.client.exception.CounselingDateTimeParseException;
 import at.undok.undok.client.exception.TooMuchCasesException;
 import at.undok.undok.client.mapper.inter.CaseMapper;
 import at.undok.undok.client.mapper.inter.CounselingMapper;
@@ -132,6 +133,8 @@ public class CounselingService {
         } catch (NullPointerException | DateTimeParseException e) {
             if (e.getClass().equals(NullPointerException.class)) {
                 throw new CounselingDateException("Counseling Date Required");
+            } else if (e.getClass().equals(DateTimeParseException.class)) {
+                throw new CounselingDateTimeParseException(e.getMessage());
             } else {
                 throw e;
             }

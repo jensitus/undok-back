@@ -4,6 +4,7 @@ import at.undok.undok.client.mapper.impl.ClientMapperImpl;
 import at.undok.undok.client.mapper.inter.CaseMapper;
 import at.undok.undok.client.mapper.inter.ClientMapper;
 import at.undok.undok.client.mapper.inter.CounselingMapper;
+import at.undok.undok.client.mapper.inter.EmployerMapper;
 import at.undok.undok.client.model.dto.*;
 import at.undok.undok.client.model.entity.*;
 import at.undok.undok.client.util.CategoryType;
@@ -23,14 +24,10 @@ public class EntityToDtoMapper {
     private final CategoryService categoryService;
     private final CaseMapper caseMapper;
     private final CounselingMapper counselingMapper;
+    private final EmployerMapper employerMapper;
 
     public List<EmployerDto> convertEmployerListToDto(List<Employer> employers) {
-        List<EmployerDto> employerDtoList = new ArrayList<>();
-        for (Employer e : employers) {
-            EmployerDto employerDto = mapEmployerToDto(e);
-            employerDtoList.add(employerDto);
-        }
-        return employerDtoList;
+        return employerMapper.toDtoList(employers);
     }
 
     public ClientDto  convertClientToDto(Client client) {
@@ -51,9 +48,6 @@ public class EntityToDtoMapper {
         return counselingDto;
     }
 
-    public PersonDto convertPersonToDto(Person person) {
-        return mapPersonToDto(person);
-    }
 
     public List<ClientDto> convertClientListToDtoList(List<Client> clients) {
         return clients.stream()
@@ -110,107 +104,14 @@ public class EntityToDtoMapper {
         return clientMapper.toDto(client);
     }
 
-    private PersonDto mapPersonToDto(Person person) {
-        PersonDto personDto = new PersonDto();
-
-        if (person == null) {
-            return null;
-        }
-        if (person.getFirstName() != null) {
-            personDto.setFirstName(person.getFirstName());
-        }
-        if (person.getLastName() != null) {
-            personDto.setLastName(person.getLastName());
-        }
-        if (person.getEmail() != null) {
-            personDto.setEmail(person.getEmail());
-        }
-        if (person.getTelephone() != null) {
-            personDto.setTelephone(person.getTelephone());
-        }
-        if (person.getGender() != null) {
-            personDto.setGender(person.getGender());
-        }
-
-        personDto.setId(person.getId());
-        personDto.setDateOfBirth(person.getDateOfBirth());
-
-        if (person.getAddress() != null) {
-            AddressDto addressDto = new AddressDto();
-            addressDto.setId(person.getAddress().getId());
-            if (person.getAddress().getCity() != null) {
-                addressDto.setCity(person.getAddress().getCity());
-            }
-            if (person.getAddress().getStreet() != null) {
-                addressDto.setStreet(person.getAddress().getStreet());
-            }
-            if (person.getAddress().getZipCode() != null) {
-                addressDto.setZipCode(person.getAddress().getZipCode());
-            }
-            if (person.getAddress().getCountry() != null) {
-                addressDto.setCountry(person.getAddress().getCountry());
-            }
-            personDto.setAddress(addressDto);
-        }
-
-        return personDto;
-    }
 
     public EmployerDto mapEmployerToDto(Employer employer) {
-        EmployerDto employerDto = new EmployerDto();
-        employerDto.setCompany(employer.getCompany());
-        employerDto.setPosition(employer.getPosition());
-        employerDto.setId(employer.getId());
-        Person person = employer.getPerson();
-        PersonDto personDto = mapPersonToDto(person);
-        employerDto.setPerson(personDto);
-        return employerDto;
+        return employerMapper.toDto(employer);
     }
 
     public Employer mapDtoToEmployer(EmployerDto employerDto) {
-        Person employerPerson = new Person();
-
-
-        if (employerDto.getPerson().getFirstName() != null) {
-            employerPerson.setFirstName(employerDto.getPerson().getFirstName());
-        }
-        if (employerDto.getPerson().getLastName() != null) {
-            employerPerson.setLastName(employerDto.getPerson().getLastName());
-        }
-        if (employerDto.getPerson().getEmail() != null) {
-            employerPerson.setEmail(employerDto.getPerson().getEmail());
-        }
-        if (employerDto.getPerson().getTelephone() != null) {
-            employerPerson.setTelephone(employerDto.getPerson().getTelephone());
-        }
-
-
-        Employer employer = new Employer();
-        employer.setCompany(employerDto.getCompany());
-        employer.setPosition(employerDto.getPosition());
-        employer.setPerson(employerPerson);
-
-        return employer;
+        return employerMapper.toEntity(employerDto);
     }
 
-    public Address mapToAddress(AddressDto addressDto) {
-        Address address = new Address();
-        if (addressDto.getId() != null) {
-            address.setId(addressDto.getId());
-        }
-        if (addressDto.getStreet() != null) {
-            address.setStreet(addressDto.getStreet());
-        }
-        if (addressDto.getCity() != null) {
-            address.setCity(addressDto.getCity());
-        }
-        if (addressDto.getZipCode() != null) {
-            address.setZipCode(addressDto.getZipCode());
-        }
-        if (addressDto.getCountry() != null) {
-            address.setCountry(addressDto.getCountry());
-        }
-        return address;
-    }
 
 }

@@ -30,7 +30,7 @@ public interface CounselingApi {
     CounselingDto setCommentOnCounseling(@PathVariable("id") UUID counselingId, @RequestBody String comment);
 
     @DeleteMapping("/{id}")
-    void deleteCounseling(@PathVariable("id") UUID counselingId);
+    ResponseEntity<Void> deleteCounseling(@PathVariable("id") UUID counselingId);
 
     @GetMapping("/{id}")
     CounselingDto getSingleCounseling(@PathVariable("id") UUID counselingId);
