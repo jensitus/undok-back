@@ -220,6 +220,15 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
         WHERE jc.entity_type = 'CASE'
           AND jc.category_type IN (:categoryTypes)
           AND LOWER(cat.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+        UNION
+        SELECT DISTINCT c.*
+        FROM clients c
+        JOIN counselings co ON co.client_id = c.id
+        JOIN join_category jc ON jc.entity_id = co.id
+        JOIN categories cat ON jc.category_id = cat.id
+        WHERE jc.entity_type = 'COUNSELING'
+          AND jc.category_type IN (:categoryTypes)
+          AND LOWER(cat.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
         """, nativeQuery = true)
     List<Client> findClientsByCategoryNames(
             @Param("searchTerm") String searchTerm,
@@ -231,6 +240,7 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
     interface ClientCategoryMatch {
         UUID getClientId();
         String getCategoryName();
+        String getCategoryType();
     }
 
     /**
@@ -238,12 +248,21 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
      * Returns pairs of (client_id, category_name) for building the matchedCategories list.
      */
     @Query(value = """
-        SELECT c.id as clientId, cat.name as categoryName
+        SELECT c.id as clientId, cat.name as categoryName, jc.category_type as categoryType
         FROM clients c
         JOIN cases ca ON ca.client_id = c.id
         JOIN join_category jc ON jc.entity_id = ca.id
         JOIN categories cat ON jc.category_id = cat.id
         WHERE jc.entity_type = 'CASE'
+          AND jc.category_type IN (:categoryTypes)
+          AND LOWER(cat.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+        UNION
+        SELECT c.id as clientId, cat.name as categoryName, jc.category_type as categoryType
+        FROM clients c
+        JOIN counselings co ON co.client_id = c.id
+        JOIN join_category jc ON jc.entity_id = co.id
+        JOIN categories cat ON jc.category_id = cat.id
+        WHERE jc.entity_type = 'COUNSELING'
           AND jc.category_type IN (:categoryTypes)
           AND LOWER(cat.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
         """, nativeQuery = true)

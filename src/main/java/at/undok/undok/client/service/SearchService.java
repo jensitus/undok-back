@@ -30,7 +30,7 @@ public class SearchService {
      * Category types to include in client search.
      * Add additional types here to extend the search (e.g., "COUNSELING_LANGUAGE", "ORIGIN_OF_ATTENTION")
      */
-    private static final List<String> SEARCHABLE_CATEGORY_TYPES = List.of("INDUSTRY_UNION", "SECTOR");
+    private static final List<String> SEARCHABLE_CATEGORY_TYPES = List.of("INDUSTRY_UNION", "SECTOR", "ACTIVITY");
 
     private final CounselingRepo counselingRepository;
     private final ClientRepo clientRepository;
@@ -106,7 +106,7 @@ public class SearchService {
                 int clientsToFetch = (int) Math.min(remaining, totalClients - offset);
                 List<Client> clientResults = getMergedClientsWithDateRangeAndPagination(
                         trimmedSearch, startDate, endDate, clientsToFetch, offset);
-                Map<UUID, List<String>> matchedCategories = getMatchedCategoriesMap(trimmedSearch);
+                Map<UUID, List<MatchedCategoryResult>> matchedCategories = getMatchedCategoriesMap(trimmedSearch);
                 clientDtos = clientResults.stream()
                                           .map(c -> new ClientSearchResult(c, matchedCategories.get(c.getId())))
                                           .collect(Collectors.toList());
@@ -181,7 +181,7 @@ public class SearchService {
             if (remaining > 0 && offset < totalClients) {
                 int clientsToFetch = (int) Math.min(remaining, totalClients - offset);
                 List<Client> clientResults = getMergedClientsWithPagination(trimmedSearch, clientsToFetch, offset);
-                Map<UUID, List<String>> matchedCategories = getMatchedCategoriesMap(trimmedSearch);
+                Map<UUID, List<MatchedCategoryResult>> matchedCategories = getMatchedCategoriesMap(trimmedSearch);
                 clientDtos = clientResults.stream()
                                           .map(c -> new ClientSearchResult(c, matchedCategories.get(c.getId())))
                                           .collect(Collectors.toList());
@@ -224,7 +224,7 @@ public class SearchService {
         List<Counseling> counselingResults = counselingRepository.fullTextSearch(trimmedSearch);
         List<Client> clientResults = getMergedClients(trimmedSearch);
         List<Task> taskResults = taskRepo.fullTextSearch(trimmedSearch);
-        Map<UUID, List<String>> matchedCategories = getMatchedCategoriesMap(trimmedSearch);
+        Map<UUID, List<MatchedCategoryResult>> matchedCategories = getMatchedCategoriesMap(trimmedSearch);
 
         // Convert to DTOs
         List<CounselingSearchResult> counselingDtos = counselingResults.stream()
@@ -499,16 +499,16 @@ public class SearchService {
     }
 
     /**
-     * Get a map of client IDs to their matched category names
+     * Get a map of client IDs to their matched categories (name + type)
      */
-    private Map<UUID, List<String>> getMatchedCategoriesMap(String searchTerm) {
+    private Map<UUID, List<MatchedCategoryResult>> getMatchedCategoriesMap(String searchTerm) {
         List<ClientRepo.ClientCategoryMatch> matches = clientRepository.findMatchedCategoriesForClients(
                 searchTerm, SEARCHABLE_CATEGORY_TYPES);
 
-        Map<UUID, List<String>> result = new HashMap<>();
+        Map<UUID, List<MatchedCategoryResult>> result = new HashMap<>();
         for (ClientRepo.ClientCategoryMatch match : matches) {
             result.computeIfAbsent(match.getClientId(), k -> new ArrayList<>())
-                  .add(match.getCategoryName());
+                  .add(new MatchedCategoryResult(match.getCategoryName(), match.getCategoryType()));
         }
         return result;
     }
