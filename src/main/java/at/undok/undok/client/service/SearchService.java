@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,7 +67,7 @@ public class SearchService {
             return new UnifiedSearchResponse(List.of(), List.of(), List.of(), emptyPagination);
         }
 
-        String trimmedSearch = searchTerm.trim();
+        String trimmedSearch = prepareSearchTerm(searchTerm.trim());
 
         // If no date range specified, use the simpler method without date filtering
         if (startDate == null && endDate == null) {
@@ -145,7 +148,7 @@ public class SearchService {
             return new UnifiedSearchResponse(List.of(), List.of(), List.of(), emptyPagination);
         }
 
-        String trimmedSearch = searchTerm.trim();
+        String trimmedSearch = prepareSearchTerm(searchTerm.trim());
 
         // Get total counts for pagination metadata (including category search for clients)
         long totalCounselings = counselingRepository.countFullTextSearch(trimmedSearch);
@@ -218,7 +221,7 @@ public class SearchService {
             return new UnifiedSearchResponse(List.of(), List.of(), List.of(), emptyPagination);
         }
 
-        String trimmedSearch = searchTerm.trim();
+        String trimmedSearch = prepareSearchTerm(searchTerm.trim());
 
         // Search all three tables (clients merged from fulltext + category search)
         List<Counseling> counselingResults = counselingRepository.fullTextSearch(trimmedSearch);
@@ -386,20 +389,16 @@ public class SearchService {
      */
     private List<Client> getMergedClients(String searchTerm) {
         List<Client> fulltextResults = clientRepository.fullTextSearch(searchTerm);
-        List<Client> categoryResults = clientRepository.findClientsByCategoryNames(searchTerm, SEARCHABLE_CATEGORY_TYPES);
 
-        // Use LinkedHashSet to maintain order and remove duplicates
         Set<UUID> seenIds = new LinkedHashSet<>();
         List<Client> merged = new ArrayList<>();
 
         for (Client client : fulltextResults) {
-            if (seenIds.add(client.getId())) {
-                merged.add(client);
-            }
+            if (seenIds.add(client.getId())) merged.add(client);
         }
-        for (Client client : categoryResults) {
-            if (seenIds.add(client.getId())) {
-                merged.add(client);
+        for (String token : categoryTokens(searchTerm)) {
+            for (Client client : clientRepository.findClientsByCategoryNames(token, SEARCHABLE_CATEGORY_TYPES)) {
+                if (seenIds.add(client.getId())) merged.add(client);
             }
         }
 
@@ -424,14 +423,12 @@ public class SearchService {
      * Count merged clients from fulltext and category search
      */
     private long countMergedClients(String searchTerm) {
-        // We need to count unique clients from both sources
-        List<Client> fulltextResults = clientRepository.fullTextSearch(searchTerm);
-        List<Client> categoryResults = clientRepository.findClientsByCategoryNames(searchTerm, SEARCHABLE_CATEGORY_TYPES);
-
         Set<UUID> uniqueIds = new LinkedHashSet<>();
-        fulltextResults.forEach(c -> uniqueIds.add(c.getId()));
-        categoryResults.forEach(c -> uniqueIds.add(c.getId()));
-
+        clientRepository.fullTextSearch(searchTerm).forEach(c -> uniqueIds.add(c.getId()));
+        for (String token : categoryTokens(searchTerm)) {
+            clientRepository.findClientsByCategoryNames(token, SEARCHABLE_CATEGORY_TYPES)
+                            .forEach(c -> uniqueIds.add(c.getId()));
+        }
         return uniqueIds.size();
     }
 
@@ -439,18 +436,18 @@ public class SearchService {
      * Count merged clients from fulltext and category search with date range filter
      */
     private long countMergedClientsWithDateRange(String searchTerm, LocalDateTime startDate, LocalDateTime endDate) {
-        List<Client> fulltextResults;
-        if (startDate == null && endDate == null) {
-            fulltextResults = clientRepository.fullTextSearch(searchTerm);
-        } else {
-            fulltextResults = clientRepository.fullTextSearchWithDateRange(searchTerm, startDate, endDate);
-        }
-        List<Client> categoryResults = clientRepository.findClientsByCategoryNames(searchTerm, SEARCHABLE_CATEGORY_TYPES);
+        List<Client> fulltextResults = (startDate == null && endDate == null)
+                ? clientRepository.fullTextSearch(searchTerm)
+                : clientRepository.fullTextSearchWithDateRange(searchTerm, startDate, endDate);
 
         Set<UUID> uniqueIds = new LinkedHashSet<>();
         fulltextResults.forEach(c -> uniqueIds.add(c.getId()));
-        categoryResults.forEach(c -> uniqueIds.add(c.getId()));
-
+        for (String token : categoryTokens(searchTerm)) {
+            List<Client> categoryResults = (startDate == null && endDate == null)
+                    ? clientRepository.findClientsByCategoryNames(token, SEARCHABLE_CATEGORY_TYPES)
+                    : clientRepository.findClientsByCategoryNamesWithDateRange(token, SEARCHABLE_CATEGORY_TYPES, startDate, endDate);
+            categoryResults.forEach(c -> uniqueIds.add(c.getId()));
+        }
         return uniqueIds.size();
     }
 
@@ -458,26 +455,22 @@ public class SearchService {
      * Merge fulltext search results (with date range) with category search results
      */
     private List<Client> getMergedClientsWithDateRange(String searchTerm, LocalDateTime startDate, LocalDateTime endDate) {
-        List<Client> fulltextResults;
-        if (startDate == null && endDate == null) {
-            fulltextResults = clientRepository.fullTextSearch(searchTerm);
-        } else {
-            fulltextResults = clientRepository.fullTextSearchWithDateRange(searchTerm, startDate, endDate);
-        }
-        List<Client> categoryResults = clientRepository.findClientsByCategoryNames(searchTerm, SEARCHABLE_CATEGORY_TYPES);
+        List<Client> fulltextResults = (startDate == null && endDate == null)
+                ? clientRepository.fullTextSearch(searchTerm)
+                : clientRepository.fullTextSearchWithDateRange(searchTerm, startDate, endDate);
 
-        // Use LinkedHashSet to maintain order and remove duplicates
         Set<UUID> seenIds = new LinkedHashSet<>();
         List<Client> merged = new ArrayList<>();
 
         for (Client client : fulltextResults) {
-            if (seenIds.add(client.getId())) {
-                merged.add(client);
-            }
+            if (seenIds.add(client.getId())) merged.add(client);
         }
-        for (Client client : categoryResults) {
-            if (seenIds.add(client.getId())) {
-                merged.add(client);
+        for (String token : categoryTokens(searchTerm)) {
+            List<Client> categoryResults = (startDate == null && endDate == null)
+                    ? clientRepository.findClientsByCategoryNames(token, SEARCHABLE_CATEGORY_TYPES)
+                    : clientRepository.findClientsByCategoryNamesWithDateRange(token, SEARCHABLE_CATEGORY_TYPES, startDate, endDate);
+            for (Client client : categoryResults) {
+                if (seenIds.add(client.getId())) merged.add(client);
             }
         }
 
@@ -499,16 +492,51 @@ public class SearchService {
     }
 
     /**
+     * Splits a prepared search term (which may contain " | " separators) back into
+     * individual tokens for use with LIKE-based category search.
+     * Quotes are stripped from phrase tokens.
+     * Example: "\"foo bar\" | baz"  →  ["foo bar", "baz"]
+     */
+    private List<String> categoryTokens(String preparedTerm) {
+        return Arrays.stream(preparedTerm.split("\\s*\\|\\s*"))
+                     .map(String::trim)
+                     .map(t -> t.startsWith("\"") && t.endsWith("\"") ? t.substring(1, t.length() - 1) : t)
+                     .filter(t -> !t.isEmpty())
+                     .collect(Collectors.toList());
+    }
+
+    /**
+     * Converts a search term so that unquoted words are OR-ed together.
+     * Quoted phrases (e.g. "hello world") are kept as-is and treated as exact phrases.
+     * Examples:
+     *   "foo bar"       → "foo | bar"
+     *   "\"foo bar\""   → "\"foo bar\""   (phrase, unchanged)
+     *   "\"foo bar\" baz" → "\"foo bar\" | baz"
+     */
+    private String prepareSearchTerm(String searchTerm) {
+        List<String> tokens = new ArrayList<>();
+        Matcher matcher = Pattern.compile("\"[^\"]+\"|\\S+").matcher(searchTerm.trim());
+        while (matcher.find()) {
+            tokens.add(matcher.group());
+        }
+        if (tokens.size() <= 1) {
+            return searchTerm.trim();
+        }
+        return String.join(" | ", tokens);
+    }
+
+    /**
      * Get a map of client IDs to their matched categories (name + type)
      */
     private Map<UUID, List<MatchedCategoryResult>> getMatchedCategoriesMap(String searchTerm) {
-        List<ClientRepo.ClientCategoryMatch> matches = clientRepository.findMatchedCategoriesForClients(
-                searchTerm, SEARCHABLE_CATEGORY_TYPES);
-
         Map<UUID, List<MatchedCategoryResult>> result = new HashMap<>();
-        for (ClientRepo.ClientCategoryMatch match : matches) {
-            result.computeIfAbsent(match.getClientId(), k -> new ArrayList<>())
-                  .add(new MatchedCategoryResult(match.getCategoryName(), match.getCategoryType()));
+        for (String token : categoryTokens(searchTerm)) {
+            List<ClientRepo.ClientCategoryMatch> matches = clientRepository.findMatchedCategoriesForClients(
+                    token, SEARCHABLE_CATEGORY_TYPES);
+            for (ClientRepo.ClientCategoryMatch match : matches) {
+                result.computeIfAbsent(match.getClientId(), k -> new ArrayList<>())
+                      .add(new MatchedCategoryResult(match.getCategoryName(), match.getCategoryType()));
+            }
         }
         return result;
     }

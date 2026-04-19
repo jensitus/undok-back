@@ -234,6 +234,35 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
             @Param("searchTerm") String searchTerm,
             @Param("categoryTypes") List<String> categoryTypes);
 
+    @Query(value = """
+        SELECT DISTINCT c.*
+        FROM clients c
+        JOIN cases ca ON ca.client_id = c.id
+        JOIN join_category jc ON jc.entity_id = ca.id
+        JOIN categories cat ON jc.category_id = cat.id
+        WHERE jc.entity_type = 'CASE'
+          AND jc.category_type IN (:categoryTypes)
+          AND LOWER(cat.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+          AND ca.created_at >= :startDate
+          AND ca.created_at <= :endDate
+        UNION
+        SELECT DISTINCT c.*
+        FROM clients c
+        JOIN counselings co ON co.client_id = c.id
+        JOIN join_category jc ON jc.entity_id = co.id
+        JOIN categories cat ON jc.category_id = cat.id
+        WHERE jc.entity_type = 'COUNSELING'
+          AND jc.category_type IN (:categoryTypes)
+          AND LOWER(cat.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+          AND co.counseling_date >= :startDate
+          AND co.counseling_date <= :endDate
+        """, nativeQuery = true)
+    List<Client> findClientsByCategoryNamesWithDateRange(
+            @Param("searchTerm") String searchTerm,
+            @Param("categoryTypes") List<String> categoryTypes,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
+
     /**
      * Projection interface for client ID with matched category name
      */
