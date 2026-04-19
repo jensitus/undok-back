@@ -497,8 +497,14 @@ public class SearchService {
      * Quotes are stripped from phrase tokens.
      * Example: "\"foo bar\" | baz"  →  ["foo bar", "baz"]
      */
+    /**
+     * Splits a prepared search term back into individual tokens for LIKE-based category search.
+     * Tokens are separated by " or " (the websearch_to_tsquery OR operator).
+     * Quotes are stripped from phrase tokens.
+     * Example: "\"foo bar\" or baz"  →  ["foo bar", "baz"]
+     */
     private List<String> categoryTokens(String preparedTerm) {
-        return Arrays.stream(preparedTerm.split("\\s*\\|\\s*"))
+        return Arrays.stream(preparedTerm.split("(?i)\\s+or\\s+"))
                      .map(String::trim)
                      .map(t -> t.startsWith("\"") && t.endsWith("\"") ? t.substring(1, t.length() - 1) : t)
                      .filter(t -> !t.isEmpty())
@@ -506,12 +512,12 @@ public class SearchService {
     }
 
     /**
-     * Converts a search term so that unquoted words are OR-ed together.
-     * Quoted phrases (e.g. "hello world") are kept as-is and treated as exact phrases.
+     * Converts a search term so that unquoted words are OR-ed together using
+     * websearch_to_tsquery's "or" operator. Quoted phrases are kept as-is.
      * Examples:
-     *   "foo bar"       → "foo | bar"
-     *   "\"foo bar\""   → "\"foo bar\""   (phrase, unchanged)
-     *   "\"foo bar\" baz" → "\"foo bar\" | baz"
+     *   "foo bar"         → "foo or bar"
+     *   "\"foo bar\""     → "\"foo bar\""   (phrase, unchanged)
+     *   "\"foo bar\" baz" → "\"foo bar\" or baz"
      */
     private String prepareSearchTerm(String searchTerm) {
         List<String> tokens = new ArrayList<>();
@@ -522,22 +528,26 @@ public class SearchService {
         if (tokens.size() <= 1) {
             return searchTerm.trim();
         }
-        return String.join(" | ", tokens);
+        return String.join(" or ", tokens);
     }
 
     /**
      * Get a map of client IDs to their matched categories (name + type)
      */
     private Map<UUID, List<MatchedCategoryResult>> getMatchedCategoriesMap(String searchTerm) {
-        Map<UUID, List<MatchedCategoryResult>> result = new HashMap<>();
+        // Use a set per client to avoid adding the same category multiple times
+        // when several tokens from a multi-word search match the same category.
+        Map<UUID, LinkedHashSet<MatchedCategoryResult>> seen = new HashMap<>();
         for (String token : categoryTokens(searchTerm)) {
             List<ClientRepo.ClientCategoryMatch> matches = clientRepository.findMatchedCategoriesForClients(
                     token, SEARCHABLE_CATEGORY_TYPES);
             for (ClientRepo.ClientCategoryMatch match : matches) {
-                result.computeIfAbsent(match.getClientId(), k -> new ArrayList<>())
-                      .add(new MatchedCategoryResult(match.getCategoryName(), match.getCategoryType()));
+                seen.computeIfAbsent(match.getClientId(), k -> new LinkedHashSet<>())
+                    .add(new MatchedCategoryResult(match.getCategoryName(), match.getCategoryType()));
             }
         }
+        Map<UUID, List<MatchedCategoryResult>> result = new HashMap<>();
+        seen.forEach((id, set) -> result.put(id, new ArrayList<>(set)));
         return result;
     }
 
