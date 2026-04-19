@@ -249,12 +249,16 @@ public class CounselingRepositoryTest extends IntegrationTestBase {
         UnifiedSearchResponse response = searchService.searchAll("Tourismus", LocalDateTime.of(2000, 1, 1, 0, 0), LocalDateTime.of(2026, 2, 17, 23, 59), 0, 10);
         assertThat(response.getClients()).hasSize(1);
         assertThat(response.getClients().get(0).getKeyword()).isEqualTo("max_mustermann");
-        assertThat(response.getClients().get(0).getMatchedCategories()).containsExactly("Tourismus (Vida)");
+        assertThat(response.getClients().get(0).getMatchedCategories())
+                .extracting("categoryName")
+                .containsExactly("Tourismus (Vida)");
 
         // Partial match should also work
         UnifiedSearchResponse partialResponse = searchService.searchAll("Tour", 0, 10);
         assertThat(partialResponse.getClients()).hasSize(1);
-        assertThat(partialResponse.getClients().get(0).getMatchedCategories()).containsExactly("Tourismus (Vida)");
+        assertThat(partialResponse.getClients().get(0).getMatchedCategories())
+                .extracting("categoryName")
+                .containsExactly("Tourismus (Vida)");
     }
 
     @Test
