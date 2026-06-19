@@ -262,6 +262,46 @@ public class CounselingRepositoryTest extends IntegrationTestBase {
     }
 
     @Test
+    void shouldFindClientByCategoryNameWithUmlaut() {
+        Client client = new Client();
+        client.setFirstName("Jana");
+        client.setLastName("Bauer");
+        client.setKeyword("jana_bauer");
+        client.setCreatedAt(LocalDateTime.of(2024, 6, 1, 0, 0));
+        Client savedClient = clientRepo.save(client);
+
+        Case clientCase = new Case();
+        clientCase.setName("LEFÖ Case");
+        clientCase.setStatus("OPEN");
+        clientCase.setStartDate(LocalDate.of(2024, 6, 1));
+        clientCase.setClientId(savedClient.getId());
+        Case savedCase = caseRepo.save(clientCase);
+
+        Counseling counseling = new Counseling();
+        counseling.setConcern("test");
+        counseling.setCounselingDate(LocalDateTime.of(2024, 6, 15, 0, 0));
+        counseling.setClient(savedClient);
+        Counseling savedCounseling = counselingRepository.save(counseling);
+
+        Category category = new Category();
+        category.setName("Vermittlung/Kontakt LEFÖ IBF");
+        category.setType("ACTIVITY");
+        Category savedCategory = categoryRepo.save(category);
+
+        JoinCategory joinCategory = new JoinCategory();
+        joinCategory.setCategoryId(savedCategory.getId());
+        joinCategory.setEntityId(savedCounseling.getId());
+        joinCategory.setCategoryType("ACTIVITY");
+        joinCategory.setEntityType("COUNSELING");
+        joinCategory.setCreatedAt(LocalDateTime.now());
+        joinCategoryRepo.save(joinCategory);
+
+        UnifiedSearchResponse response = searchService.searchAll("lefö", 0, 10);
+        assertThat(response.getClients()).hasSize(1);
+        assertThat(response.getClients().get(0).getKeyword()).isEqualTo("jana_bauer");
+    }
+
+    @Test
     void shouldNotDuplicateClientInSearchResults() {
         // Create a client with "Tourismus" in the comment (matches fulltext)
         Client client = new Client();

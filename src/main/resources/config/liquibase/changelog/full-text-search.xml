@@ -207,5 +207,12 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="add-unaccent-extension" author="jensitus">
+        <comment>Add unaccent extension for locale-independent case-insensitive category name search.
+            Needed because LOWER() on C-locale PostgreSQL does not fold non-ASCII characters (e.g. Ö → ö).
+            unaccent strips diacritics first (Ö → O), then lower() works on plain ASCII.</comment>
+        <sql>CREATE EXTENSION IF NOT EXISTS unaccent;</sql>
+        <rollback>DROP EXTENSION IF EXISTS unaccent;</rollback>
+    </changeSet>
 
 </databaseChangeLog>
