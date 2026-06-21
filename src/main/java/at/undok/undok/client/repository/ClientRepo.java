@@ -198,7 +198,7 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
         JOIN categories cat ON jc.category_id = cat.id
         WHERE jc.entity_type = 'CASE'
           AND jc.category_type = :categoryType
-          AND LOWER(cat.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+          AND lower(unaccent(cat.name)) LIKE '%' || lower(unaccent(:searchTerm)) || '%'
         """, nativeQuery = true)
     List<Client> findClientsByCategoryName(
             @Param("searchTerm") String searchTerm,
@@ -219,11 +219,49 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
         JOIN categories cat ON jc.category_id = cat.id
         WHERE jc.entity_type = 'CASE'
           AND jc.category_type IN (:categoryTypes)
-          AND LOWER(cat.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+          AND lower(unaccent(cat.name)) LIKE '%' || lower(unaccent(:searchTerm)) || '%'
+        UNION
+        SELECT DISTINCT c.*
+        FROM clients c
+        JOIN counselings co ON co.client_id = c.id
+        JOIN join_category jc ON jc.entity_id = co.id
+        JOIN categories cat ON jc.category_id = cat.id
+        WHERE jc.entity_type = 'COUNSELING'
+          AND jc.category_type IN (:categoryTypes)
+          AND lower(unaccent(cat.name)) LIKE '%' || lower(unaccent(:searchTerm)) || '%'
         """, nativeQuery = true)
     List<Client> findClientsByCategoryNames(
             @Param("searchTerm") String searchTerm,
             @Param("categoryTypes") List<String> categoryTypes);
+
+    @Query(value = """
+        SELECT DISTINCT c.*
+        FROM clients c
+        JOIN cases ca ON ca.client_id = c.id
+        JOIN join_category jc ON jc.entity_id = ca.id
+        JOIN categories cat ON jc.category_id = cat.id
+        WHERE jc.entity_type = 'CASE'
+          AND jc.category_type IN (:categoryTypes)
+          AND lower(unaccent(cat.name)) LIKE '%' || lower(unaccent(:searchTerm)) || '%'
+          AND ca.created_at >= :startDate
+          AND ca.created_at <= :endDate
+        UNION
+        SELECT DISTINCT c.*
+        FROM clients c
+        JOIN counselings co ON co.client_id = c.id
+        JOIN join_category jc ON jc.entity_id = co.id
+        JOIN categories cat ON jc.category_id = cat.id
+        WHERE jc.entity_type = 'COUNSELING'
+          AND jc.category_type IN (:categoryTypes)
+          AND lower(unaccent(cat.name)) LIKE '%' || lower(unaccent(:searchTerm)) || '%'
+          AND co.counseling_date >= :startDate
+          AND co.counseling_date <= :endDate
+        """, nativeQuery = true)
+    List<Client> findClientsByCategoryNamesWithDateRange(
+            @Param("searchTerm") String searchTerm,
+            @Param("categoryTypes") List<String> categoryTypes,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
 
     /**
      * Projection interface for client ID with matched category name
@@ -231,6 +269,7 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
     interface ClientCategoryMatch {
         UUID getClientId();
         String getCategoryName();
+        String getCategoryType();
     }
 
     /**
@@ -238,14 +277,23 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
      * Returns pairs of (client_id, category_name) for building the matchedCategories list.
      */
     @Query(value = """
-        SELECT c.id as clientId, cat.name as categoryName
+        SELECT c.id as clientId, cat.name as categoryName, jc.category_type as categoryType
         FROM clients c
         JOIN cases ca ON ca.client_id = c.id
         JOIN join_category jc ON jc.entity_id = ca.id
         JOIN categories cat ON jc.category_id = cat.id
         WHERE jc.entity_type = 'CASE'
           AND jc.category_type IN (:categoryTypes)
-          AND LOWER(cat.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+          AND lower(unaccent(cat.name)) LIKE '%' || lower(unaccent(:searchTerm)) || '%'
+        UNION
+        SELECT c.id as clientId, cat.name as categoryName, jc.category_type as categoryType
+        FROM clients c
+        JOIN counselings co ON co.client_id = c.id
+        JOIN join_category jc ON jc.entity_id = co.id
+        JOIN categories cat ON jc.category_id = cat.id
+        WHERE jc.entity_type = 'COUNSELING'
+          AND jc.category_type IN (:categoryTypes)
+          AND lower(unaccent(cat.name)) LIKE '%' || lower(unaccent(:searchTerm)) || '%'
         """, nativeQuery = true)
     List<ClientCategoryMatch> findMatchedCategoriesForClients(
             @Param("searchTerm") String searchTerm,

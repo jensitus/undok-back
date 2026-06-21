@@ -65,7 +65,9 @@ public class EmployerService {
 
     public EmployerDto getEmployerById(UUID id) {
         Employer employer = employerRepo.findById(id).orElseThrow();
-        return entityToDtoMapper.mapEmployerToDto(employer);
+        EmployerDto employerDto = entityToDtoMapper.mapEmployerToDto(employer);
+        employerDto.setClients(clientEmployerService.getClientsForEmployer(id));
+        return employerDto;
     }
 
     public List<EmployerDto> getEmployers(UUID clientId) {

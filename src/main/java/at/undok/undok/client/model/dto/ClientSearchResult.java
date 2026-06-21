@@ -17,7 +17,7 @@ public class ClientSearchResult {
     private String firstName;
     private String comment;
     private String type = "client";
-    private List<String> matchedCategories = new ArrayList<>();
+    private List<MatchedCategoryResult> matchedCategories = new ArrayList<>();
 
     public ClientSearchResult() {
     }
@@ -30,7 +30,7 @@ public class ClientSearchResult {
         this.comment = client.getComment();
     }
 
-    public ClientSearchResult(Client client, List<String> matchedCategories) {
+    public ClientSearchResult(Client client, List<MatchedCategoryResult> matchedCategories) {
         this(client);
         this.matchedCategories = matchedCategories != null ? matchedCategories : new ArrayList<>();
     }
