@@ -184,6 +184,30 @@ public interface ClientRepo extends JpaRepository<Client, UUID> {
     long countFullTextSearch(@Param("searchTerm") String searchTerm);
 
     /**
+     * Find clients whose case target_group or working_relationship matches the search term.
+     */
+    @Query(value = """
+        SELECT DISTINCT c.*
+        FROM clients c
+        JOIN cases ca ON ca.client_id = c.id
+        WHERE ca.search_vector @@ websearch_to_tsquery('german', :searchTerm)
+        """, nativeQuery = true)
+    List<Client> findClientsByCaseSearch(@Param("searchTerm") String searchTerm);
+
+    @Query(value = """
+        SELECT DISTINCT c.*
+        FROM clients c
+        JOIN cases ca ON ca.client_id = c.id
+        WHERE ca.search_vector @@ websearch_to_tsquery('german', :searchTerm)
+        AND ca.created_at >= :startDate
+        AND ca.created_at <= :endDate
+        """, nativeQuery = true)
+    List<Client> findClientsByCaseSearchWithDateRange(
+            @Param("searchTerm") String searchTerm,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
+
+    /**
      * Find clients connected to categories of a specific type matching the search term.
      * Categories are linked to cases, which are linked to clients.
      *

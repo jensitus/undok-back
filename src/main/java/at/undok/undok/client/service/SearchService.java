@@ -34,7 +34,7 @@ public class SearchService {
      * Category types to include in client search.
      * Add additional types here to extend the search (e.g., "COUNSELING_LANGUAGE", "ORIGIN_OF_ATTENTION")
      */
-    private static final List<String> SEARCHABLE_CATEGORY_TYPES = List.of("INDUSTRY_UNION", "SECTOR", "ACTIVITY");
+    private static final List<String> SEARCHABLE_CATEGORY_TYPES = List.of("INDUSTRY_UNION", "SECTOR", "ACTIVITY", "JOB_MARKET_ACCESS", "JOB_FUNCTION", "TARGET_GROUP");
 
     private final CounselingRepo counselingRepository;
     private final ClientRepo clientRepository;
@@ -191,6 +191,9 @@ public class SearchService {
                 if (seenIds.add(client.getId())) merged.add(client);
             }
         }
+        for (Client client : clientRepository.findClientsByCaseSearch(searchTerm)) {
+            if (seenIds.add(client.getId())) merged.add(client);
+        }
 
         return merged;
     }
@@ -219,6 +222,7 @@ public class SearchService {
             clientRepository.findClientsByCategoryNames(token, SEARCHABLE_CATEGORY_TYPES)
                             .forEach(c -> uniqueIds.add(c.getId()));
         }
+        clientRepository.findClientsByCaseSearch(searchTerm).forEach(c -> uniqueIds.add(c.getId()));
         return uniqueIds.size();
     }
 
@@ -238,6 +242,10 @@ public class SearchService {
                     : clientRepository.findClientsByCategoryNamesWithDateRange(token, SEARCHABLE_CATEGORY_TYPES, startDate, endDate);
             categoryResults.forEach(c -> uniqueIds.add(c.getId()));
         }
+        List<Client> caseResults = (startDate == null && endDate == null)
+                ? clientRepository.findClientsByCaseSearch(searchTerm)
+                : clientRepository.findClientsByCaseSearchWithDateRange(searchTerm, startDate, endDate);
+        caseResults.forEach(c -> uniqueIds.add(c.getId()));
         return uniqueIds.size();
     }
 
@@ -262,6 +270,12 @@ public class SearchService {
             for (Client client : categoryResults) {
                 if (seenIds.add(client.getId())) merged.add(client);
             }
+        }
+        List<Client> caseResults = (startDate == null && endDate == null)
+                ? clientRepository.findClientsByCaseSearch(searchTerm)
+                : clientRepository.findClientsByCaseSearchWithDateRange(searchTerm, startDate, endDate);
+        for (Client client : caseResults) {
+            if (seenIds.add(client.getId())) merged.add(client);
         }
 
         return merged;

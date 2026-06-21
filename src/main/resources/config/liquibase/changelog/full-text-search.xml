@@ -207,6 +207,53 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="add-search-vector-to-cases" author="jensitus">
+        <addColumn tableName="cases">
+            <column name="search_vector" type="tsvector">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="create-cases-search-function" author="jensitus">
+        <sql>
+            CREATE OR REPLACE FUNCTION cases_search_vector_update() RETURNS trigger AS $$
+            BEGIN
+              NEW.search_vector :=
+                setweight(to_tsvector('german', COALESCE(NEW.target_group, '')), 'A') ||
+                setweight(to_tsvector('german', COALESCE(NEW.working_relationship, '')), 'A');
+            RETURN NEW;
+            END
+            $$ LANGUAGE plpgsql;
+        </sql>
+        <rollback>DROP FUNCTION IF EXISTS cases_search_vector_update();</rollback>
+    </changeSet>
+
+    <changeSet id="create-cases-search-trigger" author="jensitus">
+        <sql>
+            CREATE TRIGGER cases_search_vector_trigger
+                BEFORE INSERT OR UPDATE ON cases
+                                     FOR EACH ROW EXECUTE FUNCTION cases_search_vector_update();
+        </sql>
+        <rollback>DROP TRIGGER IF EXISTS cases_search_vector_trigger ON cases;</rollback>
+    </changeSet>
+
+    <changeSet id="populate-cases-search-vectors" author="jensitus">
+        <sql>
+            UPDATE cases
+            SET search_vector =
+                    setweight(to_tsvector('german', COALESCE(target_group, '')), 'A') ||
+                    setweight(to_tsvector('german', COALESCE(working_relationship, '')), 'A');
+        </sql>
+    </changeSet>
+
+    <changeSet id="create-cases-search-index" author="jensitus">
+        <sql>
+            CREATE INDEX cases_search_idx ON cases USING GIN(search_vector);
+        </sql>
+        <rollback>DROP INDEX IF EXISTS cases_search_idx;</rollback>
+    </changeSet>
+
     <changeSet id="add-unaccent-extension" author="jensitus">
         <comment>Add unaccent extension for locale-independent case-insensitive category name search.
             Needed because LOWER() on C-locale PostgreSQL does not fold non-ASCII characters (e.g. Ö → ö).
