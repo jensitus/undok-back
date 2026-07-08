@@ -34,6 +34,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -185,9 +186,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String resendConfirmationToken(String userId) {
-        User user = userRepo.findById(UUID.fromString(userId)).orElse(null);
+        User user = userRepo.findById(UUID.fromString(userId))
+                            .orElseThrow(() -> new UserNotFoundException(userId));
         String confirmationToken = UUID.randomUUID().toString();
-        assert user != null;
         user.setConfirmationTokenCreatedAt(LocalDateTime.now());
         user.setChangePassword(true);
         Message m = undokMailer.createConfirmationMail(user, confirmationToken);
@@ -199,7 +200,7 @@ public class AuthServiceImpl implements AuthService {
         int leftLimit = 48;            //\\ numeral '0'
         int rightLimit = 122;         //  \\ letter 'z'
         int targetStringLength = 10;
-        Random random = new Random();
+        Random random = new SecureRandom();
 
         return random.ints(leftLimit, rightLimit + 1)
                      .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))

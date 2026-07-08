@@ -18,17 +18,21 @@ public class DownloadService {
 
     public Resource download(String filename) {
         try {
-            Path file = Paths.get(filesPath).resolve(filename);
+            Path baseDir = Paths.get(filesPath).toAbsolutePath().normalize();
+            Path file = baseDir.resolve(filename).normalize();
+            // Reject any filename that escapes the base directory (e.g. "../../etc/passwd").
+            if (!file.startsWith(baseDir)) {
+                throw new RuntimeException("invalid filename");
+            }
             Resource resource = new UrlResource(file.toUri());
-            if (resource.exists() || resource.isReadable()) {
+            if (resource.exists() && resource.isReadable()) {
                 return resource;
             } else {
                 throw new RuntimeException("can't read file");
             }
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("can't read file", e);
         }
-        return null;
     }
 
 }

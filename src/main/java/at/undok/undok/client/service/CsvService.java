@@ -259,7 +259,12 @@ public class CsvService {
 
     @SneakyThrows
     public ByteArrayResource getBackupCsv(String fileName) {
-        Path backupPath = Paths.get(CSV_DIR + fileName);
+        Path baseDir = Paths.get(CSV_DIR).toAbsolutePath().normalize();
+        Path backupPath = baseDir.resolve(fileName).normalize();
+        // Reject any filename that escapes the backup directory (path traversal).
+        if (!backupPath.startsWith(baseDir)) {
+            throw new CsvNotFoundException(HttpStatus.BAD_REQUEST, "invalid filename");
+        }
         return new ByteArrayResource(Files.readAllBytes(backupPath));
     }
 

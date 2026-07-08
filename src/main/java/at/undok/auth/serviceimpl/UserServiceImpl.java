@@ -15,6 +15,7 @@ import at.undok.auth.model.entity.User;
 import at.undok.auth.repository.PasswordResetTokenRepo;
 import at.undok.auth.repository.RoleRepo;
 import at.undok.auth.repository.UserRepo;
+import at.undok.auth.exception.UserNotFoundException;
 import at.undok.auth.service.UserService;
 import at.undok.auth.security.JwtProvider;
 import at.undok.common.encryption.AttributeEncryptor;
@@ -106,28 +107,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Message resetPassword(PasswordResetForm passwordResetForm, String base64Token, String email) {
-        if (passwordResetForm.getPassword().equals(passwordResetForm.getPasswordConfirmation())) {
-            if (checkIfResetTokenExpired(base64Token, email)) {
-                User user = userRepo.findByEmail(attributeEncryptor.decodeUrlEncoded(passwordResetForm.getEmail()));
-                user.setPassword(encoder.encode(passwordResetForm.getPassword()));
-                userRepo.save(user);
-                return new Message("toll", true);
-            } else {
-                return new Message("Die Zeit ist abgelaufen", false);
-            }
-        } else {
+        if (!passwordResetForm.getPassword().equals(passwordResetForm.getPasswordConfirmation())) {
             return new Message("password and confirmation does not match", false);
         }
+
+        // The password is reset ONLY for the user the token was issued to (identified by the
+        // path email). The email in the request body is intentionally ignored: trusting it would
+        // let a holder of a valid token for their own account reset any other account's password.
+        String token = Base64Codec.BASE64.decodeToString(base64Token);
+        String decodedEmail = attributeEncryptor.decodeUrlEncoded(email);
+        User user = userRepo.findByEmail(decodedEmail);
+        PasswordResetToken prt = user == null ? null : passwordResetTokenRepo.findByTokenAndUserId(token, user.getId());
+        if (prt == null || prt.getExpiryDate().plusHours(2).isBefore(LocalDateTime.now())) {
+            return new Message("Die Zeit ist abgelaufen", false);
+        }
+
+        user.setPassword(encoder.encode(passwordResetForm.getPassword()));
+        userRepo.save(user);
+        passwordResetTokenRepo.delete(prt);
+        return new Message("toll", true);
     }
 
     private boolean checkIfResetTokenExpired(String base64Token, String encodedEmail) {
         String token = Base64Codec.BASE64.decodeToString(base64Token);
         String decodedEmail = attributeEncryptor.decodeUrlEncoded(encodedEmail);
         User user = userRepo.findByEmail(decodedEmail);
-        PasswordResetToken prt = passwordResetTokenRepo.findByTokenAndUserId(token, user.getId());
-        LocalDateTime exp = prt.getExpiryDate();
-        if (exp.plusHours(2).isBefore(LocalDateTime.now())) {
-            log.info(exp.toString());
+        PasswordResetToken prt = user == null ? null : passwordResetTokenRepo.findByTokenAndUserId(token, user.getId());
+        if (prt == null || prt.getExpiryDate().plusHours(2).isBefore(LocalDateTime.now())) {
             return false;
         }
         return true;
@@ -163,7 +169,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getById(UUID user_id) {
-        User user = userRepo.getOne(user_id);
+        User user = userRepo.findById(user_id)
+                            .orElseThrow(() -> new UserNotFoundException(user_id.toString()));
         return modelMapper.map(user, UserDto.class);
     }
 
@@ -172,7 +179,8 @@ public class UserServiceImpl implements UserService {
         UserDto userDto = getById(changePwDto.getUserId());
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getUsername(), changePwDto.getOldPassword()));
-            User user = userRepo.getOne(changePwDto.getUserId());
+            User user = userRepo.findById(changePwDto.getUserId())
+                                .orElseThrow(() -> new UserNotFoundException(changePwDto.getUserId().toString()));
             user.setPassword(encoder.encode(changePwDto.getPassword()));
             userRepo.save(user);
             return new Message("Bravo, Password successfully changed!", true);
@@ -183,8 +191,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void setAdmin(UUID userId, boolean admin) {
-        User user = userRepo.findById(userId).orElse(null);
-        assert user != null;
+        User user = userRepo.findById(userId)
+                            .orElseThrow(() -> new UserNotFoundException(userId.toString()));
         Set<Role> userRoles = user.getRoles();
         Role adminRole = roleService.getAdminRole();
         if (admin) {
@@ -205,23 +213,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean lockUser(LockUserDto lockUserDto) {
-        User user = userRepo.findById(lockUserDto.getId()).orElse(null);
-        assert user != null;
+        User user = userRepo.findById(lockUserDto.getId())
+                            .orElseThrow(() -> new UserNotFoundException(lockUserDto.getId().toString()));
         setAdmin(user.getId(), false);
         user.setLocked(lockUserDto.isLock());
         Set<Role> roleSet = user.getRoles();
+        roleSet.clear();
         if (user.isLocked()) {
-            for (Role role : roleSet) {
-                roleSet.remove(role);
-            }
-            Role lockedRole = roleService.getLockedRole();
-            roleSet.add(lockedRole);
+            roleSet.add(roleService.getLockedRole());
         } else {
-            for (Role role : roleSet) {
-                roleSet.remove(role);
-            }
-            Role userRole = roleService.getUserRole();
-            roleSet.add(userRole);
+            roleSet.add(roleService.getUserRole());
         }
         user.setRoles(roleSet);
         User saved = userRepo.save(user);

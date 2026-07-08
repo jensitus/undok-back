@@ -228,6 +228,19 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- IT classes (e.g. TestIT) are run by failsafe in the `it` profile.
+                         Excluding them here prevents surefire from also picking up names that
+                         match its default Test*.java pattern, which would run them twice
+                         against the shared Testcontainer DB. -->
+                    <excludes>
+                        <exclude>**/*IT.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>17</source>
