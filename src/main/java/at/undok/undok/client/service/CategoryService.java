@@ -79,21 +79,24 @@ public class CategoryService {
 
     public void addJoinCategory(List<JoinCategoryForm> joinCategoryFormList) {
         for (JoinCategoryForm joinCategoryForm : joinCategoryFormList) {
+            // Check up front rather than letting the insert fail: catching the constraint
+            // violation would leave the failed entity in the persistence context with no id,
+            // and the next flush dies with "null id in JoinCategory entry".
+            if (joinCategoryRepo.existsByEntityTypeAndEntityIdAndCategoryTypeAndCategoryId(
+                    joinCategoryForm.getEntityType(),
+                    joinCategoryForm.getEntityId(),
+                    joinCategoryForm.getCategoryType(),
+                    joinCategoryForm.getCategoryId())) {
+                log.warn("joinCategory already exists");
+                continue;
+            }
             JoinCategory joinCategory = new JoinCategory();
             joinCategory.setCategoryId(joinCategoryForm.getCategoryId());
             joinCategory.setEntityId(joinCategoryForm.getEntityId());
             joinCategory.setCategoryType(joinCategoryForm.getCategoryType());
             joinCategory.setEntityType(joinCategoryForm.getEntityType());
             joinCategory.setCreatedAt(LocalDateTime.now());
-            try {
-                joinCategoryRepo.save(joinCategory);
-            } catch (DataIntegrityViolationException e) {
-                log.info(e.getClass().getName());
-                log.info(e.getClass().getCanonicalName());
-                log.info(e.getClass().getTypeName());
-                log.debug(e.getMessage());
-                log.warn("joinCategory already exists");
-            }
+            joinCategoryRepo.save(joinCategory);
         }
     }
 
@@ -114,10 +117,16 @@ public class CategoryService {
                                                                          .toList();
 
         log.info("Categories to be deleted: {}", categoriesToBeDeleted.size());
-        addJoinCategory(categoriesToBeAdded);
 
+        // Delete before adding, and flush in between. Single-select types carry a partial
+        // unique index on (entity_id, category_type), so replacing value A with value B would
+        // collide while A is still present. Reordering the calls alone is not enough:
+        // Hibernate's action queue runs every insert before any delete within one flush.
         List<JoinCategoryDto> joinCategoryDtos = mapJoinCategoryList(categoriesToBeDeleted);
         deleteJoinCategories(joinCategoryDtos);
+        joinCategoryRepo.flush();
+
+        addJoinCategory(categoriesToBeAdded);
     }
 
     private JoinCategoryForm mapToJoinCategoryForm(JoinCategory joinCategory) {
@@ -139,7 +148,10 @@ public class CategoryService {
         List<JoinCategory> joinCategories = new ArrayList<>();
         for (JoinCategoryDto joinCategoryDto : joinCategoryDtos) {
             JoinCategory joinCategory = joinCategoryRepo.findByEntityTypeAndEntityIdAndCategoryTypeAndCategoryId(joinCategoryDto.getEntityType(), joinCategoryDto.getEntityId(), joinCategoryDto.getCategoryType(), joinCategoryDto.getCategoryId());
-            joinCategories.add(joinCategory);
+            // The row may already be gone (concurrent edit); deleteAll would NPE on a null element.
+            if (joinCategory != null) {
+                joinCategories.add(joinCategory);
+            }
         }
         joinCategoryRepo.deleteAll(joinCategories);
     }

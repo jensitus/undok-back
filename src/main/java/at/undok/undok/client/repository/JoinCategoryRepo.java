@@ -14,4 +14,6 @@ public interface JoinCategoryRepo extends JpaRepository<JoinCategory, UUID> {
 
     JoinCategory findByEntityTypeAndEntityIdAndCategoryTypeAndCategoryId(String entityType, UUID entityId, String categoryType, UUID categoryId);
 
+    boolean existsByEntityTypeAndEntityIdAndCategoryTypeAndCategoryId(String entityType, UUID entityId, String categoryType, UUID categoryId);
+
 }

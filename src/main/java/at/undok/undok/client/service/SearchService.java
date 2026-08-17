@@ -9,6 +9,7 @@ import at.undok.undok.client.model.entity.Task;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.CounselingRepo;
 import at.undok.undok.client.repository.TaskRepo;
+import at.undok.undok.client.util.CategoryType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,9 +33,15 @@ public class SearchService {
 
     /**
      * Category types to include in client search.
-     * Add additional types here to extend the search (e.g., "COUNSELING_LANGUAGE", "ORIGIN_OF_ATTENTION")
+     * Add additional types here to extend the search (e.g., "COUNSELING_LANGUAGE", "ORIGIN_OF_ATTENTION").
+     * Only types stored in join_category are searchable, and only where the entity they hang off
+     * is covered by the queries in ClientRepo (currently CASE and COUNSELING).
      */
-    private static final List<String> SEARCHABLE_CATEGORY_TYPES = List.of("INDUSTRY_UNION", "SECTOR", "ACTIVITY");
+    private static final List<String> SEARCHABLE_CATEGORY_TYPES = List.of(
+            CategoryType.INDUSTRY_UNION,
+            CategoryType.SECTOR,
+            CategoryType.ACTIVITY,
+            CategoryType.AUFENTHALTSTITEL);
 
     private final CounselingRepo counselingRepository;
     private final ClientRepo clientRepository;

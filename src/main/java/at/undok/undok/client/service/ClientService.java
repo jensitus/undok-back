@@ -350,9 +350,15 @@ public class ClientService {
         updateCategorySelection(clientForm.getIndustryUnionSelected(), CategoryType.INDUSTRY_UNION, caseId);
         updateCategorySelection(clientForm.getJobFunctionSelected(), CategoryType.JOB_FUNCTION, caseId);
         updateCategorySelection(clientForm.getSectorSelected(), CategoryType.SECTOR, caseId);
+        updateCategorySelection(clientForm.getResidenceStatusSelected(), CategoryType.AUFENTHALTSTITEL, caseId);
     }
 
     private void updateCategorySelection(List<JoinCategoryForm> selectedIds, String categoryType, UUID caseId) {
+        // A missing list means the payload did not carry this category type at all — leave it untouched.
+        // An empty list is a real deselect-everything and must still be passed through.
+        if (selectedIds == null) {
+            return;
+        }
         categoryService.sortOutDeselected(selectedIds, categoryType, caseId);
     }
 

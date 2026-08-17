@@ -60,6 +60,7 @@ public class ClientForm {
     private List<JoinCategoryForm> industryUnionSelected;
     private List<JoinCategoryForm> jobFunctionSelected;
     private List<JoinCategoryForm> sectorSelected;
+    private List<JoinCategoryForm> residenceStatusSelected;
 
     private String furtherContact;
     private String comment;
