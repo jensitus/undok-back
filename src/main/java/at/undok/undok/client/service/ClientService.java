@@ -166,7 +166,7 @@ public class ClientService {
         client.setInterpreterNecessary(clientForm.getInterpreterNecessary());
         client.setVulnerableWhenAssertingRights(clientForm.getVulnerableWhenAssertingRights());
         client.setMaritalStatus(clientForm.getMaritalStatus());
-        client.setCurrentResidentStatus(clientForm.getCurrentResidentStatus());
+        // client.setCurrentResidentStatus(clientForm.getCurrentResidentStatus());
         client.setLabourMarketAccess(clientForm.getLabourMarketAccess());
         client.setLanguage(clientForm.getLanguage());
         client.setUnion(clientForm.getUnion());
