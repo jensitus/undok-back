@@ -64,14 +64,14 @@ public class ClientService {
 
     /**
      * The list path never populates openCase, so CASE-scoped categories have to be fetched
-     * separately — in one batch query rather than per client.
+     * separately — in one batch query per category type rather than per client.
      */
-    private Map<UUID, List<CategoryDto>> loadResidenceStatusByClient(List<ClientDto> clientDtos) {
+    private Map<UUID, List<CategoryDto>> loadCaseCategoriesByClient(List<ClientDto> clientDtos, String categoryType) {
         List<UUID> clientIds = clientDtos.stream()
                                          .map(ClientDto::getId)
                                          .toList();
         return categoryService.getCaseCategoriesByTypeForClients(
-                CategoryType.AUFENTHALTSTITEL, StatusService.STATUS_OPEN, clientIds);
+                categoryType, StatusService.STATUS_OPEN, clientIds);
     }
 
     public List<ClientDto> getAllActiveClients() {
@@ -209,7 +209,10 @@ public class ClientService {
 
     private List<AllClientDto> turnClientDtoListToAllClientDtoList(List<ClientDto> clientDtoList) {
         List<AllClientDto> allClientDtoList = new ArrayList<>();
-        Map<UUID, List<CategoryDto>> residenceStatusByClient = loadResidenceStatusByClient(clientDtoList);
+        Map<UUID, List<CategoryDto>> residenceStatusByClient =
+                loadCaseCategoriesByClient(clientDtoList, CategoryType.AUFENTHALTSTITEL);
+        Map<UUID, List<CategoryDto>> sectorByClient =
+                loadCaseCategoriesByClient(clientDtoList, CategoryType.SECTOR);
 
         for (ClientDto clientDto : clientDtoList) {
             AllClientDto allClientDto = new AllClientDto();
@@ -230,7 +233,8 @@ public class ClientService {
             allClientDto.setKeyword(clientDto.getKeyword());
             allClientDto.setEducation(clientDto.getEducation());
             allClientDto.setLanguage(clientDto.getLanguage());
-            // allClientDto.setSector(clientDto.getSector());
+            allClientDto.setSector(
+                    sectorByClient.getOrDefault(clientDto.getId(), Collections.emptyList()));
             allClientDto.setUnion(clientDto.getUnion());
             allClientDto.setMembership(clientDto.getMembership());
             allClientDto.setPosition(clientDto.getPosition());

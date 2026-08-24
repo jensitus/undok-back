@@ -30,7 +30,11 @@ public class AllClientDto {
     private String formerResidentStatus;
     private String labourMarketAccess;
     private String position;
-    private String sector;
+    /**
+     * Sektor from join_category, scoped to the client's OPEN case. Replaces the legacy
+     * clients.sector column, which is no longer written.
+     */
+    private List<CategoryDto> sector;
     private String union;
     private Boolean membership;
     private String organization;

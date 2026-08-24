@@ -52,7 +52,7 @@ public class CsvService {
     private static final String[] CLIENT_HEADERS = {"id", "keyword", "Vorname", "Nachname", "SV-Nummer", "Geburtsdatum", "Email",
             "Telephon", "Straße", "Plz", "Stadt", "Land", "Bildung", "Familienstatus", "Dolmetsch erforderlich",
             "Woher kennt uns die Person", "gefährdet bei Geltendmachung", "Nationalität", "Sprache",
-            "Aufenthaltsstatus", "Arbeitsmarktzugang", "Position", "Branche", "Gewerkschaft",
+            "Aufenthaltsstatus", "Arbeitsmarktzugang", "Position", "Sektor", "Gewerkschaft",
             "Mitgliedschaft", "Organization", "Gender"};
 
     private static final String CSV_DIR = "csv/";
@@ -115,7 +115,7 @@ public class CsvService {
                 joinCategoryNames(clientDto.getResidenceStatus()),
                 clientDto.getLabourMarketAccess(),
                 clientDto.getPosition(),
-                clientDto.getSector(),
+                joinCategoryNames(clientDto.getSector()),
                 clientDto.getUnion(),
                 getMembership,
                 clientDto.getOrganization(),

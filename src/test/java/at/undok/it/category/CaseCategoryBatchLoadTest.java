@@ -1,6 +1,7 @@
 package at.undok.it.category;
 
 import at.undok.it.IntegrationTestBase;
+import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.CategoryDto;
 import at.undok.undok.client.model.entity.Case;
 import at.undok.undok.client.model.entity.Category;
@@ -11,6 +12,7 @@ import at.undok.undok.client.repository.CategoryRepo;
 import at.undok.undok.client.repository.ClientRepo;
 import at.undok.undok.client.repository.JoinCategoryRepo;
 import at.undok.undok.client.service.CategoryService;
+import at.undok.undok.client.service.ClientService;
 import at.undok.undok.client.util.CategoryType;
 import at.undok.undok.client.util.StatusService;
 import org.junit.jupiter.api.DisplayName;
@@ -49,6 +51,9 @@ public class CaseCategoryBatchLoadTest extends IntegrationTestBase {
     @Autowired
     private CaseRepo caseRepo;
 
+    @Autowired
+    private ClientService clientService;
+
     private Client givenClient() {
         Client client = new Client();
         client.setKeyword("client-" + UUID.randomUUID());
@@ -66,18 +71,26 @@ public class CaseCategoryBatchLoadTest extends IntegrationTestBase {
     }
 
     private Category givenCategory(String name) {
+        return givenCategory(name, CategoryType.AUFENTHALTSTITEL);
+    }
+
+    private Category givenCategory(String name, String type) {
         Category category = new Category();
         category.setName(name);
-        category.setType(CategoryType.AUFENTHALTSTITEL);
+        category.setType(type);
         category.setCreatedAt(LocalDateTime.now());
         return categoryRepo.saveAndFlush(category);
     }
 
     private void link(Category category, Case theCase) {
+        link(category, theCase, CategoryType.AUFENTHALTSTITEL);
+    }
+
+    private void link(Category category, Case theCase, String categoryType) {
         JoinCategory joinCategory = new JoinCategory();
         joinCategory.setCategoryId(category.getId());
         joinCategory.setEntityId(theCase.getId());
-        joinCategory.setCategoryType(CategoryType.AUFENTHALTSTITEL);
+        joinCategory.setCategoryType(categoryType);
         joinCategory.setEntityType(ENTITY_TYPE_CASE);
         joinCategory.setCreatedAt(LocalDateTime.now());
         joinCategoryRepo.saveAndFlush(joinCategory);
@@ -132,6 +145,72 @@ public class CaseCategoryBatchLoadTest extends IntegrationTestBase {
                 List.of(client.getId()));
 
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("the /all list endpoint carries the Aufenthaltstitel through to AllClientDto")
+    void getAllShouldPopulateResidenceStatus() {
+        Client client = givenClient();
+        Category category = givenCategory("Rot-Weiss-Rot Karte plus " + UUID.randomUUID());
+        link(category, givenCase(client, StatusService.STATUS_OPEN));
+
+        AllClientDto listed = clientService.getAll().stream()
+                                           .filter(dto -> dto.getId().equals(client.getId()))
+                                           .findFirst()
+                                           .orElseThrow();
+
+        assertThat(listed.getResidenceStatus())
+                .singleElement()
+                .extracting(CategoryDto::getName)
+                .isEqualTo(category.getName());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("the /all list endpoint carries the multi-select Sektor through to AllClientDto")
+    void getAllShouldPopulateSector() {
+        Client client = givenClient();
+        Case openCase = givenCase(client, StatusService.STATUS_OPEN);
+        Category bau = givenCategory("Bau " + UUID.randomUUID(), CategoryType.SECTOR);
+        Category gastro = givenCategory("Gastronomie " + UUID.randomUUID(), CategoryType.SECTOR);
+        link(bau, openCase, CategoryType.SECTOR);
+        link(gastro, openCase, CategoryType.SECTOR);
+
+        AllClientDto listed = clientService.getAll().stream()
+                                           .filter(dto -> dto.getId().equals(client.getId()))
+                                           .findFirst()
+                                           .orElseThrow();
+
+        assertThat(listed.getSector())
+                .extracting(CategoryDto::getName)
+                .containsExactlyInAnyOrder(bau.getName(), gastro.getName());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("Sektor and Aufenthaltstitel on the same case do not bleed into each other")
+    void shouldKeepCategoryTypesSeparate() {
+        Client client = givenClient();
+        Case openCase = givenCase(client, StatusService.STATUS_OPEN);
+        Category title = givenCategory("Asylberechtigt " + UUID.randomUUID());
+        Category sector = givenCategory("Reinigung " + UUID.randomUUID(), CategoryType.SECTOR);
+        link(title, openCase);
+        link(sector, openCase, CategoryType.SECTOR);
+
+        AllClientDto listed = clientService.getAll().stream()
+                                           .filter(dto -> dto.getId().equals(client.getId()))
+                                           .findFirst()
+                                           .orElseThrow();
+
+        assertThat(listed.getResidenceStatus())
+                .singleElement()
+                .extracting(CategoryDto::getName)
+                .isEqualTo(title.getName());
+        assertThat(listed.getSector())
+                .singleElement()
+                .extracting(CategoryDto::getName)
+                .isEqualTo(sector.getName());
     }
 
     @Test
