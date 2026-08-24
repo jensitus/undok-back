@@ -41,7 +41,7 @@ public class SearchService {
             CategoryType.INDUSTRY_UNION,
             CategoryType.SECTOR,
             CategoryType.ACTIVITY,
-            CategoryType.AUFENTHALTSTITEL);
+            CategoryType.AUFENTHALTSTITEL, CategoryType.JOB_MARKET_ACCESS);
 
     private final CounselingRepo counselingRepository;
     private final ClientRepo clientRepository;
