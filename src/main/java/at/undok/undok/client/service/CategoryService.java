@@ -4,6 +4,7 @@ import at.undok.undok.client.exception.CategoryNotFoundException;
 import at.undok.undok.client.exception.UniqueCategoryException;
 import at.undok.undok.client.mapper.inter.JoinCategoryMapper;
 import at.undok.undok.client.model.dto.CategoryDto;
+import at.undok.undok.client.model.dto.ClientCategoryProjection;
 import at.undok.undok.client.model.dto.JoinCategoryDto;
 import at.undok.undok.client.model.entity.Category;
 import at.undok.undok.client.model.entity.JoinCategory;
@@ -20,7 +21,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -142,6 +145,32 @@ public class CategoryService {
         List<Category> categoryList = categoryRepo.getCategoryByTypeAndEntity(categoryType, entityId);
         List<CategoryDto> categoryDtoList = mapListModelMapper(categoryList, CategoryDto.class);
         return categoryDtoList;
+    }
+
+    /**
+     * Batch-loads a CASE-scoped category type for a whole list of clients in one query, keyed by
+     * client id. The list endpoints don't populate openCase, so they cannot go through
+     * {@link #getCategoryListByTypeAndEntity} without an N+1 per client.
+     *
+     * @param caseStatus which cases to look at, e.g. {@link StatusService#STATUS_OPEN}
+     */
+    public Map<UUID, List<CategoryDto>> getCaseCategoriesByTypeForClients(String categoryType, String caseStatus, List<UUID> clientIds) {
+        if (clientIds == null || clientIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        return categoryRepo.findCaseCategoriesByTypeForClients(categoryType, caseStatus, clientIds)
+                           .stream()
+                           .collect(Collectors.groupingBy(
+                                   ClientCategoryProjection::getClientId,
+                                   Collectors.mapping(CategoryService::toCategoryDto, Collectors.toList())));
+    }
+
+    private static CategoryDto toCategoryDto(ClientCategoryProjection projection) {
+        CategoryDto categoryDto = new CategoryDto();
+        categoryDto.setId(projection.getCategoryId());
+        categoryDto.setName(projection.getName());
+        categoryDto.setType(projection.getType());
+        return categoryDto;
     }
 
     public void deleteJoinCategories(List<JoinCategoryDto> joinCategoryDtos) {

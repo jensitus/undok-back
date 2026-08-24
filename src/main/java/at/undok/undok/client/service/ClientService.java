@@ -62,6 +62,18 @@ public class ClientService {
         return allClientDtoList;
     }
 
+    /**
+     * The list path never populates openCase, so CASE-scoped categories have to be fetched
+     * separately — in one batch query rather than per client.
+     */
+    private Map<UUID, List<CategoryDto>> loadResidenceStatusByClient(List<ClientDto> clientDtos) {
+        List<UUID> clientIds = clientDtos.stream()
+                                         .map(ClientDto::getId)
+                                         .toList();
+        return categoryService.getCaseCategoriesByTypeForClients(
+                CategoryType.AUFENTHALTSTITEL, StatusService.STATUS_OPEN, clientIds);
+    }
+
     public List<ClientDto> getAllActiveClients() {
         return entityToDtoMapper.convertClientListToDtoList(
                 clientRepo.findByStatusOrderByCreatedAtDesc(StatusService.STATUS_ACTIVE));
@@ -197,6 +209,7 @@ public class ClientService {
 
     private List<AllClientDto> turnClientDtoListToAllClientDtoList(List<ClientDto> clientDtoList) {
         List<AllClientDto> allClientDtoList = new ArrayList<>();
+        Map<UUID, List<CategoryDto>> residenceStatusByClient = loadResidenceStatusByClient(clientDtoList);
 
         for (ClientDto clientDto : clientDtoList) {
             AllClientDto allClientDto = new AllClientDto();
@@ -224,6 +237,8 @@ public class ClientService {
             allClientDto.setNationality(clientDto.getNationality());
             allClientDto.setOrganization(clientDto.getOrganization());
             allClientDto.setCurrentResidentStatus(clientDto.getCurrentResidentStatus());
+            allClientDto.setResidenceStatus(
+                    residenceStatusByClient.getOrDefault(clientDto.getId(), Collections.emptyList()));
             allClientDto.setHowHasThePersonHeardFromUs(clientDto.getHowHasThePersonHeardFromUs());
             allClientDto.setVulnerableWhenAssertingRights(clientDto.getVulnerableWhenAssertingRights());
             allClientDto.setInterpreterNecessary(clientDto.getInterpreterNecessary());

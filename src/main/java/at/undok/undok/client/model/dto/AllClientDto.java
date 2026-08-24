@@ -21,6 +21,11 @@ public class AllClientDto {
     private Boolean interpreterNecessary;
     private String howHasThePersonHeardFromUs;
     private String currentResidentStatus;
+    /**
+     * Aufenthaltstitel from join_category, scoped to the client's OPEN case. Replaces
+     * currentResidentStatus, which is no longer written and will be dropped.
+     */
+    private List<CategoryDto> residenceStatus;
     private Boolean vulnerableWhenAssertingRights;
     private String formerResidentStatus;
     private String labourMarketAccess;

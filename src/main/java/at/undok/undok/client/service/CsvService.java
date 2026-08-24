@@ -112,7 +112,7 @@ public class CsvService {
                 getVulnerableWhenAssertingRights,
                 clientDto.getNationality(),
                 clientDto.getLanguage(),
-                clientDto.getCurrentResidentStatus(),
+                joinCategoryNames(clientDto.getResidenceStatus()),
                 clientDto.getLabourMarketAccess(),
                 clientDto.getPosition(),
                 clientDto.getSector(),
@@ -182,6 +182,20 @@ public class CsvService {
                 counselingForCsvResult.getComment()
         );
         return data;
+    }
+
+    /**
+     * Same output as {@link #getCategories}, but for a list already batch-loaded onto the DTO.
+     */
+    private String joinCategoryNames(List<CategoryDto> categories) {
+        if (categories == null || categories.isEmpty()) {
+            return null;
+        }
+        StringJoiner sj = new StringJoiner(",");
+        for (CategoryDto categoryDto : categories) {
+            sj.add(categoryDto.getName());
+        }
+        return sj.toString();
     }
 
     private String getCategories(String categoryType, UUID entityId) {
