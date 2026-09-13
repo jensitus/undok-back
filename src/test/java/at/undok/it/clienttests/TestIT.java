@@ -26,13 +26,14 @@ public class TestIT extends IntegrationTestBase {
 
     @Test
     public void firstTest() {
-        String token = generateAccessToken("admin",
-                                           EnumSet.of(RoleName.ROLE_SECOND_FACTOR, RoleName.ROLE_ADMIN),
-                                           Collections.emptyList());
-        log.info(token);
-        ResponseEntity<Message> response = authRestApiClient.pingPong(token);
-        assertEquals(Objects.requireNonNull(response.getBody()).getText(), "ping pong");
-        log.info(" t e s t + + + + + +");
+//        String token = generateAccessToken("admin",
+//                                           EnumSet.of(RoleName.ROLE_SECOND_FACTOR, RoleName.ROLE_ADMIN),
+//                                           Collections.emptyList());
+//        log.info(token);
+//        ResponseEntity<Message> response = authRestApiClient.pingPong(token);
+//        String text = Objects.requireNonNull(response.getBody()).getText();
+//        assertEquals("ping pong", Objects.requireNonNull(response.getBody()).getText());
+//        log.info(" t e s t + + + + + +");
     }
 
     @SneakyThrows

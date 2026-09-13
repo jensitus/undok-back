@@ -7,6 +7,8 @@ import at.undok.auth.model.dto.SignUpDto;
 import at.undok.auth.model.dto.UserDto;
 import at.undok.auth.model.form.CreateUserForm;
 import at.undok.auth.model.form.SecondFactorForm;
+import at.undok.auth.repository.UserRepo;
+import at.undok.auth.service.UserService;
 import at.undok.common.message.Message;
 import at.undok.it.IntegrationTestBase;
 import at.undok.it.cucumber.UndokTestData;
@@ -46,6 +48,12 @@ public class UserApiTest extends IntegrationTestBase {
 
     @Autowired
     private UserVerifications userVerifications;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private UserRepo userRepo;
 
     @LocalServerPort
     private int serverPort;
@@ -356,10 +364,14 @@ public class UserApiTest extends IntegrationTestBase {
     private UserDto createAndAuthenticateUser(SignUpDto signUpDto, boolean asAdmin) {
         registerAndConfirmUser(signUpDto);
 
-        // If this should be an admin, make them admin
-        if (asAdmin && adminUserToken != null) {
-            ResponseEntity<UserDto> tempUser = authRestApiClient.getUserByUsername(signUpDto.getUsername(), adminUserToken);
-            authRestApiClient.setAdminFlag(tempUser.getBody().getId(), true, adminUserToken);
+        // Grant admin directly via the service layer. This must happen before login so the
+        // issued token carries ROLE_ADMIN, and it also bootstraps the very first admin, for
+        // which no admin token exists yet to call the HTTP endpoint.
+        if (asAdmin) {
+            UUID adminId = userRepo.findByUsername(signUpDto.getUsername())
+                    .orElseThrow(() -> new IllegalStateException("User not found: " + signUpDto.getUsername()))
+                    .getId();
+            userService.setAdmin(adminId, true);
         }
 
         // Login and get second factor
@@ -373,13 +385,6 @@ public class UserApiTest extends IntegrationTestBase {
         ResponseEntity<JwtResponse> secFacResponse = authRestApiClient.secFac(secondFactorForm, userDto.getAccessToken());
 
         UserDto authenticatedUser = Objects.requireNonNull(secFacResponse.getBody()).getUserDto();
-
-        // Set admin flag in first iteration for admin user
-        if (asAdmin && adminUserToken == null) {
-            // First admin user - need to manually set in DB or use different approach
-            // For testing, we'll assume the first user can be set as admin through test configuration
-            log.warn("First admin user created - admin flag may need manual setup");
-        }
 
         return authenticatedUser;
     }

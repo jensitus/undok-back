@@ -33,6 +33,7 @@ public class CaseDto {
     private List<CategoryDto> industryUnion;
     private List<CategoryDto> jobFunction;
     private List<CategoryDto> sector;
+    private List<CategoryDto> residenceStatus;
 
     public CaseDto(UUID id, String createdAt, String updatedAt, String name, String status,
                    LocalDate startDate, LocalDate endDate, String referredTo, UUID clientId, Integer totalConsultationTime,

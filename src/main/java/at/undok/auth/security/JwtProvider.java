@@ -13,9 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,11 +68,8 @@ public class JwtProvider {
 
   public Message validateJwtToken(String authToken) {
     try {
+      // parseClaimsJws verifies the signature and throws ExpiredJwtException when past expiry.
       Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
-      Date parsedToken = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken).getBody().getExpiration();
-      ZoneId defaultZoneId = ZoneId.systemDefault();
-      Instant instant = parsedToken.toInstant();
-      LocalDateTime localDateTime = instant.atZone(defaultZoneId).toLocalDateTime();
       return new Message(true);
     } catch (SignatureException e) {
       logger.error("Invalid JWT signature -> Message: {} ", e);

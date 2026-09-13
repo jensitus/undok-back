@@ -34,4 +34,5 @@
     <include file="config/liquibase/changelog/undok.xml"/>
     <include file="config/liquibase/changelog/full-text-search.xml" />
     <include file="config/liquibase/changelog/refactor-employer-remove-person.xml" />
+    <include file="config/liquibase/changelog/migrate-aufenthaltstitel-to-join-category.xml" />
 </databaseChangeLog> 

@@ -89,6 +89,7 @@ public class CaseService {
             caseDto.setIndustryUnion(categoryService.getCategoryListByTypeAndEntity(CategoryType.INDUSTRY_UNION, caseDto.getId()));
             caseDto.setJobFunction(categoryService.getCategoryListByTypeAndEntity(CategoryType.JOB_FUNCTION, caseDto.getId()));
             caseDto.setSector(categoryService.getCategoryListByTypeAndEntity(CategoryType.SECTOR, caseDto.getId()));
+            caseDto.setResidenceStatus(categoryService.getCategoryListByTypeAndEntity(CategoryType.AUFENTHALTSTITEL, caseDto.getId()));
         }
         return caseDtoList;
     }

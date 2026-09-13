@@ -62,6 +62,18 @@ public class ClientService {
         return allClientDtoList;
     }
 
+    /**
+     * The list path never populates openCase, so CASE-scoped categories have to be fetched
+     * separately — in one batch query per category type rather than per client.
+     */
+    private Map<UUID, List<CategoryDto>> loadCaseCategoriesByClient(List<ClientDto> clientDtos, String categoryType) {
+        List<UUID> clientIds = clientDtos.stream()
+                                         .map(ClientDto::getId)
+                                         .toList();
+        return categoryService.getCaseCategoriesByTypeForClients(
+                categoryType, StatusService.STATUS_OPEN, clientIds);
+    }
+
     public List<ClientDto> getAllActiveClients() {
         return entityToDtoMapper.convertClientListToDtoList(
                 clientRepo.findByStatusOrderByCreatedAtDesc(StatusService.STATUS_ACTIVE));
@@ -166,7 +178,7 @@ public class ClientService {
         client.setInterpreterNecessary(clientForm.getInterpreterNecessary());
         client.setVulnerableWhenAssertingRights(clientForm.getVulnerableWhenAssertingRights());
         client.setMaritalStatus(clientForm.getMaritalStatus());
-        client.setCurrentResidentStatus(clientForm.getCurrentResidentStatus());
+        // client.setCurrentResidentStatus(clientForm.getCurrentResidentStatus());
         client.setLabourMarketAccess(clientForm.getLabourMarketAccess());
         client.setLanguage(clientForm.getLanguage());
         client.setUnion(clientForm.getUnion());
@@ -197,6 +209,10 @@ public class ClientService {
 
     private List<AllClientDto> turnClientDtoListToAllClientDtoList(List<ClientDto> clientDtoList) {
         List<AllClientDto> allClientDtoList = new ArrayList<>();
+        Map<UUID, List<CategoryDto>> residenceStatusByClient =
+                loadCaseCategoriesByClient(clientDtoList, CategoryType.AUFENTHALTSTITEL);
+        Map<UUID, List<CategoryDto>> sectorByClient =
+                loadCaseCategoriesByClient(clientDtoList, CategoryType.SECTOR);
 
         for (ClientDto clientDto : clientDtoList) {
             AllClientDto allClientDto = new AllClientDto();
@@ -217,13 +233,16 @@ public class ClientService {
             allClientDto.setKeyword(clientDto.getKeyword());
             allClientDto.setEducation(clientDto.getEducation());
             allClientDto.setLanguage(clientDto.getLanguage());
-            // allClientDto.setSector(clientDto.getSector());
+            allClientDto.setSector(
+                    sectorByClient.getOrDefault(clientDto.getId(), Collections.emptyList()));
             allClientDto.setUnion(clientDto.getUnion());
             allClientDto.setMembership(clientDto.getMembership());
             allClientDto.setPosition(clientDto.getPosition());
             allClientDto.setNationality(clientDto.getNationality());
             allClientDto.setOrganization(clientDto.getOrganization());
             allClientDto.setCurrentResidentStatus(clientDto.getCurrentResidentStatus());
+            allClientDto.setResidenceStatus(
+                    residenceStatusByClient.getOrDefault(clientDto.getId(), Collections.emptyList()));
             allClientDto.setHowHasThePersonHeardFromUs(clientDto.getHowHasThePersonHeardFromUs());
             allClientDto.setVulnerableWhenAssertingRights(clientDto.getVulnerableWhenAssertingRights());
             allClientDto.setInterpreterNecessary(clientDto.getInterpreterNecessary());
@@ -350,9 +369,15 @@ public class ClientService {
         updateCategorySelection(clientForm.getIndustryUnionSelected(), CategoryType.INDUSTRY_UNION, caseId);
         updateCategorySelection(clientForm.getJobFunctionSelected(), CategoryType.JOB_FUNCTION, caseId);
         updateCategorySelection(clientForm.getSectorSelected(), CategoryType.SECTOR, caseId);
+        updateCategorySelection(clientForm.getResidenceStatusSelected(), CategoryType.AUFENTHALTSTITEL, caseId);
     }
 
     private void updateCategorySelection(List<JoinCategoryForm> selectedIds, String categoryType, UUID caseId) {
+        // A missing list means the payload did not carry this category type at all — leave it untouched.
+        // An empty list is a real deselect-everything and must still be passed through.
+        if (selectedIds == null) {
+            return;
+        }
         categoryService.sortOutDeselected(selectedIds, categoryType, caseId);
     }
 

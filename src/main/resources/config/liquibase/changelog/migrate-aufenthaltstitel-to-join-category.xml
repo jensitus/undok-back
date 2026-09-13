@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!--
+        Moves Aufenthaltstitel off the free-text column clients.current_resident_status
+        onto join_category, scoped to the CASE (product decision), so it becomes searchable
+        through the existing SEARCHABLE_CATEGORY_TYPES mechanism in SearchService.
+
+        clients.current_resident_status is deliberately NOT dropped here. The application
+        dual-writes both the column and the join row until this migration is verified on
+        production; dropping the column is a separate, later changeset.
+
+        Clients that hold a residence status but have no case at all cannot receive a join
+        row. They keep the column value and are reported by the verification query below.
+    -->
+
+    <changeSet id="migrate-aufenthaltstitel-categories" author="jens@ist-ur.org">
+        <comment>Create Aufenthaltstitel categories for any residence-status value not already in the list</comment>
+        <sql>
+            INSERT INTO categories (id, name, type, created_at, to_be_deleted)
+            SELECT gen_random_uuid(), v.name, 'Aufenthaltstitel', now(), false
+            FROM (
+                SELECT DISTINCT trim(current_resident_status) AS name
+                FROM clients
+                WHERE current_resident_status IS NOT NULL
+                  AND trim(current_resident_status) &lt;&gt; ''
+            ) v
+            WHERE NOT EXISTS (
+                SELECT 1 FROM categories c
+                WHERE c.type = 'Aufenthaltstitel'
+                  AND c.name = v.name
+            );
+        </sql>
+        <rollback/>
+    </changeSet>
+
+    <changeSet id="migrate-aufenthaltstitel-join-rows" author="jens@ist-ur.org">
+        <comment>Link each client's residence status to every case of that client</comment>
+        <sql>
+            INSERT INTO join_category (category_id, entity_id, category_type, entity_type, created_at)
+            SELECT cat.id, ca.id, 'Aufenthaltstitel', 'CASE', now()
+            FROM clients cl
+            JOIN cases ca ON ca.client_id = cl.id
+            JOIN categories cat ON cat.type = 'Aufenthaltstitel'
+                               AND cat.name = trim(cl.current_resident_status)
+            WHERE cl.current_resident_status IS NOT NULL
+              AND trim(cl.current_resident_status) &lt;&gt; ''
+              AND NOT EXISTS (
+                  SELECT 1 FROM join_category jc
+                  WHERE jc.entity_id = ca.id
+                    AND jc.entity_type = 'CASE'
+                    AND jc.category_type = 'Aufenthaltstitel'
+              );
+        </sql>
+        <rollback>
+            DELETE FROM join_category WHERE category_type = 'Aufenthaltstitel';
+        </rollback>
+    </changeSet>
+
+    <changeSet id="enforce-single-aufenthaltstitel-per-case" author="jens@ist-ur.org">
+        <comment>
+            Aufenthaltstitel is a single-select. The table's own unique constraint is on
+            (category_id, entity_id, category_type, entity_type) and therefore permits several
+            different titles on one case; this partial index enforces at most one.
+        </comment>
+        <sql>
+            CREATE UNIQUE INDEX join_category_single_aufenthaltstitel
+                ON join_category (entity_id, category_type)
+                WHERE category_type = 'Aufenthaltstitel';
+        </sql>
+        <rollback>
+            DROP INDEX IF EXISTS join_category_single_aufenthaltstitel;
+        </rollback>
+    </changeSet>
+
+    <!--
+        Verification after deploy — expects zero rows apart from caseless clients:
+
+        SELECT cl.keyword, cl.current_resident_status, cl.status
+        FROM clients cl
+        WHERE cl.current_resident_status IS NOT NULL
+          AND trim(cl.current_resident_status) <> ''
+          AND NOT EXISTS (
+              SELECT 1 FROM cases ca
+              JOIN join_category jc ON jc.entity_id = ca.id
+                                   AND jc.entity_type = 'CASE'
+                                   AND jc.category_type = 'Aufenthaltstitel'
+              WHERE ca.client_id = cl.id
+          );
+    -->
+
+</databaseChangeLog>

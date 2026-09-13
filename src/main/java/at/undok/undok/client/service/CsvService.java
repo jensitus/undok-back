@@ -52,7 +52,7 @@ public class CsvService {
     private static final String[] CLIENT_HEADERS = {"id", "keyword", "Vorname", "Nachname", "SV-Nummer", "Geburtsdatum", "Email",
             "Telephon", "Straße", "Plz", "Stadt", "Land", "Bildung", "Familienstatus", "Dolmetsch erforderlich",
             "Woher kennt uns die Person", "gefährdet bei Geltendmachung", "Nationalität", "Sprache",
-            "Aufenthaltsstatus", "Arbeitsmarktzugang", "Position", "Branche", "Gewerkschaft",
+            "Aufenthaltsstatus", "Arbeitsmarktzugang", "Position", "Sektor", "Gewerkschaft",
             "Mitgliedschaft", "Organization", "Gender"};
 
     private static final String CSV_DIR = "csv/";
@@ -112,10 +112,10 @@ public class CsvService {
                 getVulnerableWhenAssertingRights,
                 clientDto.getNationality(),
                 clientDto.getLanguage(),
-                clientDto.getCurrentResidentStatus(),
+                joinCategoryNames(clientDto.getResidenceStatus()),
                 clientDto.getLabourMarketAccess(),
                 clientDto.getPosition(),
-                clientDto.getSector(),
+                joinCategoryNames(clientDto.getSector()),
                 clientDto.getUnion(),
                 getMembership,
                 clientDto.getOrganization(),
@@ -182,6 +182,20 @@ public class CsvService {
                 counselingForCsvResult.getComment()
         );
         return data;
+    }
+
+    /**
+     * Same output as {@link #getCategories}, but for a list already batch-loaded onto the DTO.
+     */
+    private String joinCategoryNames(List<CategoryDto> categories) {
+        if (categories == null || categories.isEmpty()) {
+            return null;
+        }
+        StringJoiner sj = new StringJoiner(",");
+        for (CategoryDto categoryDto : categories) {
+            sj.add(categoryDto.getName());
+        }
+        return sj.toString();
     }
 
     private String getCategories(String categoryType, UUID entityId) {
@@ -259,7 +273,12 @@ public class CsvService {
 
     @SneakyThrows
     public ByteArrayResource getBackupCsv(String fileName) {
-        Path backupPath = Paths.get(CSV_DIR + fileName);
+        Path baseDir = Paths.get(CSV_DIR).toAbsolutePath().normalize();
+        Path backupPath = baseDir.resolve(fileName).normalize();
+        // Reject any filename that escapes the backup directory (path traversal).
+        if (!backupPath.startsWith(baseDir)) {
+            throw new CsvNotFoundException(HttpStatus.BAD_REQUEST, "invalid filename");
+        }
         return new ByteArrayResource(Files.readAllBytes(backupPath));
     }
 

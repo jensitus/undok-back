@@ -227,6 +227,7 @@ public class CounselingRepositoryTest extends IntegrationTestBase {
         clientCase.setName("Tourismus Case");
         clientCase.setStatus("OPEN");
         clientCase.setStartDate(LocalDate.of(2024, 6, 1));
+        clientCase.setCreatedAt(LocalDateTime.of(2024, 6, 1, 0, 0));
         clientCase.setClientId(savedClient.getId());
         Case savedCase = caseRepo.save(clientCase);
 

@@ -13,7 +13,9 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 
 public class TokenUtils {
-    private static final String jwtSecret = "Pfm49mU!#xat6jXVfRRRD9";
+    // Must match service.b.org.app.jwtSecret in application-test.properties so the
+    // server can verify tokens minted here (otherwise validation fails with a 401).
+    private static final String jwtSecret = "Xfm49mU?#xat6jXVfRRRD2";
 
     @Builder(builderClassName = "JwtTokenBuilder", builderMethodName = "jwtTokenBuilder")
     private static String generateToken(@Singular Map<String,Object> claims) {
