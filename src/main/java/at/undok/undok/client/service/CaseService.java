@@ -1,8 +1,12 @@
 package at.undok.undok.client.service;
 
+import at.undok.undok.client.exception.CaseAlreadyClosedException;
+import at.undok.undok.client.exception.InvalidCaseEndDateException;
 import at.undok.undok.client.exception.TooMuchCasesException;
 import at.undok.undok.client.mapper.inter.CaseMapper;
 import at.undok.undok.client.model.dto.CaseDto;
+import at.undok.undok.client.model.dto.ClientCaseProjection;
+import at.undok.undok.client.model.form.CloseCaseForm;
 import at.undok.undok.client.model.entity.Case;
 import at.undok.undok.client.repository.CaseRepo;
 import at.undok.undok.client.repository.CounselingRepo;
@@ -14,9 +18,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,16 +53,51 @@ public class CaseService {
         return modelMapper.map(aCase, CaseDto.class);
     }
 
-    public CaseDto updateStatus(CaseDto caseDto) {
-        Case aCase = caseRepo.findById(caseDto.getId()).orElseThrow();
-        aCase.setStatus(caseDto.getStatus());
-        aCase.setReferredTo(caseDto.getReferredTo());
+    /**
+     * Closes a case: stamps the end date the counsellor picked, records who the client was
+     * referred on to, and freezes the total consultation time summed over the case's counselings.
+     */
+    public CaseDto closeCase(UUID caseId, CloseCaseForm form) {
+        Case aCase = caseRepo.findById(caseId).orElseThrow();
+        if (StatusService.STATUS_CLOSED.equals(aCase.getStatus())) {
+            throw new CaseAlreadyClosedException("Dieser Fall ist bereits abgeschlossen.");
+        }
+        LocalDate endDate = form.getEndDate() != null ? form.getEndDate() : LocalDate.now();
+        if (endDate.isAfter(LocalDate.now())) {
+            throw new InvalidCaseEndDateException("Das Enddatum darf nicht in der Zukunft liegen.");
+        }
+        if (aCase.getStartDate() != null && endDate.isBefore(aCase.getStartDate())) {
+            throw new InvalidCaseEndDateException("Das Enddatum darf nicht vor dem Startdatum liegen.");
+        }
+        aCase.setStatus(StatusService.STATUS_CLOSED);
+        aCase.setEndDate(endDate);
+        aCase.setReferredTo(form.getReferredTo());
+        aCase.setTotalConsultationTime(counselingRepo.selectTotalConsultationTime(aCase.getId()));
         aCase.setUpdatedAt(LocalDateTime.now());
-        aCase.setTotalConsultationTime(Objects.equals(caseDto.getStatus(), "CLOSED") ? counselingRepo.selectTotalConsultationTime(aCase.getId()) : null);
-        aCase.setEndDate(Objects.equals(caseDto.getStatus(), "CLOSED") ? LocalDate.now() : null);
         return caseMapper.toDto(caseRepo.save(aCase));
     }
 
+    /**
+     * Batch-loads the case that currently represents each client, keyed by client id, so the
+     * clients list can be split into open and closed without an N+1 per client.
+     *
+     * @return clients with no case at all are simply absent from the map
+     */
+    public Map<UUID, ClientCaseProjection> getCurrentCaseByClient(List<UUID> clientIds) {
+        if (clientIds == null || clientIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        return caseRepo.findCurrentCaseForClients(clientIds)
+                       .stream()
+                       .collect(Collectors.toMap(ClientCaseProjection::getClientId, projection -> projection));
+    }
+
+    /**
+     * Updates the client's OPEN case from the client form.
+     *
+     * @return null when the client has no open case — e.g. every case is closed, or the client
+     *         has none at all. Callers must guard: there is nothing to hang case-scoped data off.
+     */
     public CaseDto updateCase(UUID clientId,
                               String workingRelationship,
                               Boolean humanTrafficking,
@@ -77,8 +118,12 @@ public class CaseService {
         return null;
     }
 
+    /**
+     * @return oldest first, so the last element is the most recently closed case — which is the
+     *         one the client detail page and the edit form fall back to once nothing is open.
+     */
     public List<CaseDto> getCaseByClientIdAndStatus(UUID clientId, String status) {
-        List<Case> caseList = caseRepo.findByClientIdAndStatus(clientId, status);
+        List<Case> caseList = caseRepo.findByClientIdAndStatusOrderByEndDateAsc(clientId, status);
         List<CaseDto> caseDtoList = caseList.stream().map(caseMapper::toDto).toList();
         for (CaseDto caseDto : caseDtoList) {
             caseDto.setCounselingLanguages(categoryService.getCategoryListByTypeAndEntity(CategoryType.COUNSELING_LANGUAGE, caseDto.getId()));

@@ -4,6 +4,7 @@ import at.undok.common.util.ToLocalDateService;
 import at.undok.undok.client.model.dto.AllClientDto;
 import at.undok.undok.client.model.dto.CaseDto;
 import at.undok.undok.client.model.dto.CategoryDto;
+import at.undok.undok.client.model.dto.ClientCaseProjection;
 import at.undok.undok.client.model.dto.ClientDto;
 import at.undok.undok.client.model.entity.*;
 import at.undok.undok.client.model.form.ClientForm;
@@ -201,8 +202,15 @@ public class ClientService {
         // client.setPerson(person);
         Client savedClient = clientRepo.save(client);
 
+        // Null when the client has no OPEN case — every case-scoped field on the form then has
+        // nowhere to go, so the client's own fields are saved and the rest is skipped. Skipping
+        // also protects the concluded case: the form reads client.openCase, so it comes up blank
+        // for a closed case, and updateCategorySelection treats an empty list as a real
+        // deselect-all, which would wipe that case's categories.
         CaseDto caseDto = updateCaseFromForm(clientId, clientForm);
-        updateCategorySelections(clientForm, caseDto.getId());
+        if (caseDto != null) {
+            updateCategorySelections(clientForm, caseDto.getId());
+        }
 
         return entityToDtoMapper.convertClientToDto(savedClient);
     }
@@ -213,6 +221,8 @@ public class ClientService {
                 loadCaseCategoriesByClient(clientDtoList, CategoryType.AUFENTHALTSTITEL);
         Map<UUID, List<CategoryDto>> sectorByClient =
                 loadCaseCategoriesByClient(clientDtoList, CategoryType.SECTOR);
+        Map<UUID, ClientCaseProjection> currentCaseByClient =
+                caseService.getCurrentCaseByClient(clientDtoList.stream().map(ClientDto::getId).toList());
 
         for (ClientDto clientDto : clientDtoList) {
             AllClientDto allClientDto = new AllClientDto();
@@ -249,6 +259,15 @@ public class ClientService {
             allClientDto.setMaritalStatus(clientDto.getMaritalStatus());
             allClientDto.setLabourMarketAccess(clientDto.getLabourMarketAccess());
             allClientDto.setSocialInsuranceNumber(clientDto.getSocialInsuranceNumber());
+            // case stuff: absent when the client has no case at all, which leaves caseStatus null
+            ClientCaseProjection currentCase = currentCaseByClient.get(clientDto.getId());
+            if (currentCase != null) {
+                allClientDto.setCaseId(currentCase.getCaseId());
+                allClientDto.setCaseStatus(currentCase.getStatus());
+                allClientDto.setCaseStartDate(currentCase.getStartDate());
+                allClientDto.setCaseEndDate(currentCase.getEndDate());
+                allClientDto.setReferredTo(currentCase.getReferredTo());
+            }
 
             allClientDtoList.add(allClientDto);
         }

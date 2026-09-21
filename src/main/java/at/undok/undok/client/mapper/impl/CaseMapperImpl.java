@@ -10,8 +10,11 @@ public class CaseMapperImpl implements CaseMapper {
 
     @Override
     public CaseDto toDto(Case entity) {
+        if (entity == null) {
+            return null;
+        }
         return new CaseDto(entity.getId(),
-                           entity.getCreatedAt().toString(),
+                           entity.getCreatedAt() != null ? entity.getCreatedAt().toString() : null,
                            entity.getUpdatedAt() != null ? entity.getUpdatedAt().toString() : null,
                            entity.getName(),
                            entity.getStatus(),

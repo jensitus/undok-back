@@ -1,6 +1,7 @@
 package at.undok.undok.client.api;
 
 import at.undok.undok.client.model.dto.CaseDto;
+import at.undok.undok.client.model.form.CloseCaseForm;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +18,8 @@ public interface CaseApi {
     @PostMapping
     ResponseEntity<CaseDto> createCase(@RequestBody CaseDto caseDto);
 
-    @PutMapping("{id}")
-    ResponseEntity<CaseDto> updateCase(@RequestBody CaseDto caseDto, @PathVariable("id") String id);
+    @PutMapping("{id}/close")
+    ResponseEntity<CaseDto> closeCase(@PathVariable("id") UUID id, @RequestBody CloseCaseForm form);
 
 
 }

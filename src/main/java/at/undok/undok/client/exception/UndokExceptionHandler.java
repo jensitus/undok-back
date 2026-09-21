@@ -39,4 +39,14 @@ public class UndokExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new Message(e.getMessage()));
     }
 
+    @ExceptionHandler(CaseAlreadyClosedException.class)
+    public ResponseEntity<Message> handleCaseAlreadyClosedException(CaseAlreadyClosedException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new Message(e.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidCaseEndDateException.class)
+    public ResponseEntity<Message> handleInvalidCaseEndDateException(InvalidCaseEndDateException e) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new Message(e.getMessage()));
+    }
+
 }
