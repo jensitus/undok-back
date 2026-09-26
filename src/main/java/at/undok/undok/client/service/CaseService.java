@@ -1,6 +1,7 @@
 package at.undok.undok.client.service;
 
 import at.undok.undok.client.exception.CaseAlreadyClosedException;
+import at.undok.undok.client.exception.CaseReopenNotAllowedException;
 import at.undok.undok.client.exception.InvalidCaseEndDateException;
 import at.undok.undok.client.exception.TooMuchCasesException;
 import at.undok.undok.client.mapper.inter.CaseMapper;
@@ -73,6 +74,31 @@ public class CaseService {
         aCase.setEndDate(endDate);
         aCase.setReferredTo(form.getReferredTo());
         aCase.setTotalConsultationTime(counselingRepo.selectTotalConsultationTime(aCase.getId()));
+        aCase.setUpdatedAt(LocalDateTime.now());
+        return caseMapper.toDto(caseRepo.save(aCase));
+    }
+
+    /**
+     * Reopens a closed case so its properties can be edited again. The close is undone
+     * completely: end date, referral and the frozen consultation time are cleared, because
+     * closing again recomputes all three.
+     *
+     * @throws CaseReopenNotAllowedException if the case is not closed, or the client already has
+     *         an open case — two open cases break {@link #updateCase} and the client detail page,
+     *         both of which expect at most one.
+     */
+    public CaseDto reopenCase(UUID caseId) {
+        Case aCase = caseRepo.findById(caseId).orElseThrow();
+        if (!StatusService.STATUS_CLOSED.equals(aCase.getStatus())) {
+            throw new CaseReopenNotAllowedException("Dieser Fall ist nicht abgeschlossen.");
+        }
+        if (!caseRepo.findByClientIdAndStatus(aCase.getClientId(), OPEN).isEmpty()) {
+            throw new CaseReopenNotAllowedException("Dieser Klient bzw. diese Klientin hat bereits einen offenen Fall.");
+        }
+        aCase.setStatus(StatusService.STATUS_OPEN);
+        aCase.setEndDate(null);
+        aCase.setReferredTo(null);
+        aCase.setTotalConsultationTime(null);
         aCase.setUpdatedAt(LocalDateTime.now());
         return caseMapper.toDto(caseRepo.save(aCase));
     }

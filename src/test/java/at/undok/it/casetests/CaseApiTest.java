@@ -30,12 +30,13 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * The close endpoint over HTTP: routing, the security annotation, and the JSON binding of
- * CloseCaseForm — none of which CloseCaseTest exercises, since it calls the service directly.
+ * The close and reopen endpoints over HTTP: routing, the security annotation, and the JSON
+ * binding of CloseCaseForm — none of which CloseCaseTest and ReopenCaseTest exercise, since
+ * they call the service directly.
  */
 @Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("PUT /service/undok/case/{id}/close")
+@DisplayName("PUT /service/undok/case/{id}/close and /reopen")
 public class CaseApiTest extends IntegrationTestBase {
 
     private static final String HOST = "http://localhost:";
@@ -82,6 +83,13 @@ public class CaseApiTest extends IntegrationTestBase {
         headers.setBearerAuth(accessToken);
         String url = HOST + SERVER_PORT + "/service/undok/case/" + caseId + "/close";
         return testRestTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(form, headers), responseType);
+    }
+
+    private <T> ResponseEntity<T> reopen(UUID caseId, Class<T> responseType) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        String url = HOST + SERVER_PORT + "/service/undok/case/" + caseId + "/reopen";
+        return testRestTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(headers), responseType);
     }
 
     private CloseCaseForm form(LocalDate endDate, String referredTo) {
@@ -163,6 +171,51 @@ public class CaseApiTest extends IntegrationTestBase {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(response.getBody()).getEndDate()).isEqualTo(LocalDate.now());
+    }
+
+    @Test
+    @DisplayName("reopens the case and serves it as the open one again")
+    void shouldReopenTheCase() {
+        ClientDto client = givenClientWithOpenCase();
+        UUID caseId = client.getOpenCase().getId();
+        close(caseId, form(LocalDate.now(), "AK Wien"), CaseDto.class);
+
+        ResponseEntity<CaseDto> response = reopen(caseId, CaseDto.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        CaseDto reopened = Objects.requireNonNull(response.getBody());
+        assertThat(reopened.getStatus()).isEqualTo(StatusService.STATUS_OPEN);
+        assertThat(reopened.getEndDate()).isNull();
+        assertThat(reopened.getReferredTo()).isNull();
+
+        ClientDto reloaded = authRestApiClient.getClient(client.getId(), accessToken);
+        assertThat(reloaded.getOpenCase()).isNotNull();
+        assertThat(reloaded.getOpenCase().getId()).isEqualTo(caseId);
+        assertThat(reloaded.getClosedCases()).isNullOrEmpty();
+    }
+
+    @Test
+    @DisplayName("reopening a case that is already open comes back as 409 with a showable message")
+    void shouldRejectReopenOfOpenCase() {
+        ClientDto client = givenClientWithOpenCase();
+
+        ResponseEntity<Message> response = reopen(client.getOpenCase().getId(), Message.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(Objects.requireNonNull(response.getBody()).getText())
+                .isEqualTo("Dieser Fall ist nicht abgeschlossen.");
+    }
+
+    @Test
+    @DisplayName("the reopen endpoint is not reachable without a token")
+    void shouldRequireAuthenticationForReopen() {
+        ClientDto client = givenClientWithOpenCase();
+        String url = HOST + SERVER_PORT + "/service/undok/case/" + client.getOpenCase().getId() + "/reopen";
+
+        ResponseEntity<String> response = testRestTemplate.exchange(
+                url, HttpMethod.PUT, new HttpEntity<>(new HttpHeaders()), String.class);
+
+        assertThat(response.getStatusCode().is2xxSuccessful()).isFalse();
     }
 
     @Test

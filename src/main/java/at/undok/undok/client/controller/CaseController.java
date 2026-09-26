@@ -31,4 +31,9 @@ public class CaseController implements CaseApi {
         return ResponseEntity.ok(caseService.closeCase(id, form));
     }
 
+    @Override
+    public ResponseEntity<CaseDto> reopenCase(UUID id) {
+        return ResponseEntity.ok(caseService.reopenCase(id));
+    }
+
 }

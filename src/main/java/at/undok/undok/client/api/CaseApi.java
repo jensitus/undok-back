@@ -21,5 +21,8 @@ public interface CaseApi {
     @PutMapping("{id}/close")
     ResponseEntity<CaseDto> closeCase(@PathVariable("id") UUID id, @RequestBody CloseCaseForm form);
 
+    @PutMapping("{id}/reopen")
+    ResponseEntity<CaseDto> reopenCase(@PathVariable("id") UUID id);
+
 
 }
