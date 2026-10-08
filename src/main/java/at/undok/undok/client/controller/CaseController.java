@@ -2,6 +2,7 @@ package at.undok.undok.client.controller;
 
 import at.undok.undok.client.api.CaseApi;
 import at.undok.undok.client.model.dto.CaseDto;
+import at.undok.undok.client.model.form.CloseCaseForm;
 import at.undok.undok.client.service.CaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +27,13 @@ public class CaseController implements CaseApi {
     }
 
     @Override
-    public ResponseEntity<CaseDto> updateCase(CaseDto caseDto, String id) {
-        return ResponseEntity.ok(caseService.updateStatus(caseDto));
+    public ResponseEntity<CaseDto> closeCase(UUID id, CloseCaseForm form) {
+        return ResponseEntity.ok(caseService.closeCase(id, form));
+    }
+
+    @Override
+    public ResponseEntity<CaseDto> reopenCase(UUID id) {
+        return ResponseEntity.ok(caseService.reopenCase(id));
     }
 
 }

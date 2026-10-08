@@ -1,6 +1,7 @@
 package at.undok.it;
 
 import at.undok.auth.repository.UserRepo;
+import at.undok.it.auth.TestUserAuthenticator;
 import at.undok.it.cucumber.UndokTestData;
 import at.undok.it.cucumber.auth.AuthRestApiClient;
 import at.undok.it.cucumber.auth.EmailVerifications;
@@ -63,6 +64,14 @@ public class IntegrationTestConfiguration {
     @Bean
     HttpVerifications httpVerifications() {
         return new HttpVerifications();
+    }
+
+    @Bean
+    TestUserAuthenticator testUserAuthenticator(AuthRestApiClient authRestApiClient,
+                                                EmailVerifications emailVerifications,
+                                                UserVerifications userVerifications,
+                                                UndokTestData testData) {
+        return new TestUserAuthenticator(authRestApiClient, emailVerifications, userVerifications, testData);
     }
 
 }

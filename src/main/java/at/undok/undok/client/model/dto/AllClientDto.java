@@ -61,4 +61,17 @@ public class AllClientDto {
     private String furtherContact;
     private String comment;
 
+    // case:
+
+    /**
+     * The case that currently represents this client: the OPEN one if there is one, otherwise
+     * the most recently closed one. All five fields are null when the client has no case at all,
+     * which the clients list renders as "kein Fall" in the open section.
+     */
+    private UUID caseId;
+    private String caseStatus;
+    private LocalDate caseStartDate;
+    private LocalDate caseEndDate;
+    private String referredTo;
+
 }

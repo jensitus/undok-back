@@ -91,7 +91,8 @@ public class AuthRestApiClient {
         HttpHeaders httpHeaders = getHeaders(accessToken);
         String url = HOST + serverPort + UNDOK_CLIENTS_PATH + "/" + clientId;
         HttpEntity entity = new HttpEntity<>(httpHeaders);
-        return testRestTemplate.getForObject(url, ClientDto.class);
+        // getForObject would drop the entity and so the bearer token, coming back 401/null.
+        return testRestTemplate.exchange(url, HttpMethod.GET, entity, ClientDto.class).getBody();
     }
 
     public List<ClientDto> getAllClients(String accessToken) {
